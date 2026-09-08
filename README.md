@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="docs/screenshots/AnimeWaveBanners.png"
+       alt="AnimeWave Banner"
+       width="100%">
+</p>
+
 <div align="center">
 
 # 🌊 AnimeWave
