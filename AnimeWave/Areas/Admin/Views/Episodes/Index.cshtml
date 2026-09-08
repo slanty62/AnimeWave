@@ -1,0 +1,477 @@
+﻿@model IEnumerable<AnimeWave.Models.Episode>
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+    ViewData["Title"] = "Серии";
+
+    var anime =
+        ViewBag.Anime as AnimeWave.Models.Anime;
+
+    var episodes =
+        Model?.ToList()
+        ?? new List<AnimeWave.Models.Episode>();
+}
+
+
+<section class="aw-episodes-admin-page">
+
+    <div class="aw-episodes-admin-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="aw-episodes-admin-header">
+
+            <div>
+
+                <!-- НАЗАД В СПИСОК АНИМЕ -->
+
+                <a href="/Admin/Anime"
+                   class="aw-episodes-back">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2Z" />
+
+                    </svg>
+
+                    Назад к аниме
+
+                </a>
+
+
+                <span class="aw-episodes-eyebrow">
+                    EPISODE MANAGEMENT
+                </span>
+
+
+                <h1>
+
+                    Серии
+
+                    @if (anime != null)
+                    {
+                        <span>
+                            @anime.Title
+                        </span>
+                    }
+
+                </h1>
+
+
+                <p>
+                    Добавляй демонстрационные серии,
+                    редактируй их данные и управляй отображением.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ВЕРХНЯЯ КНОПКА ДОБАВЛЕНИЯ
+                 ================================================= -->
+            @if (anime != null)
+            {
+                <a href="/Admin/Episodes/Create?animeId=@anime.Id"
+                   class="aw-episodes-add">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z" />
+
+                    </svg>
+
+                    <span>
+                        Добавить серию
+                    </span>
+
+                </a>
+            }
+
+        </div>
+
+
+
+        <!-- =====================================================
+             СТАТИСТИКА
+             ===================================================== -->
+
+        <div class="aw-episodes-stats">
+
+
+            <!-- ДОБАВЛЕНО -->
+
+            <div class="aw-episodes-stat">
+
+                <span>
+                    Добавлено
+                </span>
+
+                <strong>
+                    @episodes.Count
+                </strong>
+
+                <small>
+                    демонстрационных серий
+                </small>
+
+            </div>
+
+
+
+            <!-- ВСЕГО СЕРИЙ -->
+
+            <div class="aw-episodes-stat">
+
+                <span>
+                    Указано у аниме
+                </span>
+
+                <strong>
+                    @(anime?.EpisodesCount ?? 0)
+                </strong>
+
+                <small>
+                    серий всего
+                </small>
+
+            </div>
+
+
+
+            <!-- СТАТУС -->
+
+            <div class="aw-episodes-stat">
+
+                <span>
+                    Статус
+                </span>
+
+                <strong class="aw-episodes-stat-status">
+                    @(anime?.Status ?? "Не указан")
+                </strong>
+
+                <small>
+                    текущий статус тайтла
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             ЕСЛИ ANIME НЕ ПЕРЕДАЛСЯ
+             ===================================================== -->
+        @if (anime == null)
+        {
+            <div class="aw-episodes-empty">
+
+                <div class="aw-episodes-empty-icon">
+
+                    <span style="
+                        font-size: 22px;
+                        color: #a78bfa;">
+
+                        !
+
+                    </span>
+
+                </div>
+
+
+                <span>
+                    ERROR
+                </span>
+
+
+                <h2>
+                    Аниме не найдено
+                </h2>
+
+
+                <p>
+                    Не удалось определить,
+                    для какого аниме нужно показать серии.
+                </p>
+
+
+                <a href="/Admin/Anime">
+                    ← Вернуться к списку аниме
+                </a>
+
+            </div>
+        }
+
+        <!-- =====================================================
+             ЕСЛИ СЕРИЙ НЕТ
+             ===================================================== -->
+        else if (!episodes.Any())
+        {
+        <div class="aw-episodes-empty">
+
+            <div class="aw-episodes-empty-icon">
+
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <path d="M8 5v14l11-7L8 5Z" />
+
+                </svg>
+
+            </div>
+
+
+            <span>
+                EPISODES
+            </span>
+
+
+            <h2>
+                Серии ещё не добавлены
+            </h2>
+
+
+            <p>
+                Добавь несколько демонстрационных эпизодов.
+                Настоящие видеофайлы не нужны — достаточно
+                номера серии, описания и картинки-превью.
+            </p>
+
+
+
+            <!-- ВАЖНО:
+                     AnimeId явно передаётся в URL -->
+
+            <a href="/Admin/Episodes/Create?animeId=@anime.Id">
+
+                + Добавить первую серию
+
+            </a>
+
+        </div>
+        }
+
+        <!-- =====================================================
+             ЕСЛИ СЕРИИ ЕСТЬ
+             ===================================================== -->
+        else
+        {
+        <div class="aw-episodes-list">
+
+            @foreach (var episode in episodes)
+            {
+                <article class="aw-episode-admin-card">
+
+
+                    <!-- =====================================
+                             THUMBNAIL
+                             ===================================== -->
+
+                    <div class="aw-episode-admin-thumbnail">
+
+
+                        @if (!string.IsNullOrWhiteSpace(
+                            episode.ThumbnailUrl))
+                        {
+                            <img src="@episode.ThumbnailUrl"
+                                 alt="@episode.Title"
+                                 loading="lazy"
+                                 onerror="
+                            this.style.display='none';
+                            " />
+                        }
+
+
+
+                        <!-- PLAY -->
+
+                        <div class="aw-episode-admin-play">
+
+                            <svg viewBox="0 0 24 24"
+                                 aria-hidden="true">
+
+                                <path d="M8 5v14l11-7L8 5Z" />
+
+                            </svg>
+
+                        </div>
+
+
+
+                        <!-- НОМЕР -->
+
+                        <span class="aw-episode-admin-number">
+
+                            EP @episode.EpisodeNumber
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =====================================
+                             INFO
+                             ===================================== -->
+
+                    <div class="aw-episode-admin-info">
+
+
+                        <div class="aw-episode-admin-title-row">
+
+                            <div>
+
+                                <span>
+                                    Серия @episode.EpisodeNumber
+                                </span>
+
+
+                                <h3>
+                                    @episode.Title
+                                </h3>
+
+                            </div>
+
+
+
+                            <!-- ДЛИТЕЛЬНОСТЬ -->
+
+                            <div class="aw-episode-duration">
+
+                                <svg viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 5v4.59l3.2 3.2-1.41 1.41L11 12.41V7h2Z" />
+
+                                </svg>
+
+
+                                @episode.DurationMinutes мин.
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- ОПИСАНИЕ -->
+                        @if (!string.IsNullOrWhiteSpace(
+                                                        episode.Description))
+                        {
+                            <p>
+                                @episode.Description
+                            </p>
+                        }
+
+
+
+                        <!-- =================================
+                                 НИЖНЯЯ СТРОКА
+                                 ================================= -->
+
+                        <div class="aw-episode-admin-bottom">
+
+
+                            <!-- ДАТА -->
+                            @if (episode.ReleaseDate.HasValue)
+                            {
+                                <span class="aw-episode-date">
+
+                                    @episode.ReleaseDate.Value
+                                    .ToString("dd.MM.yyyy")
+
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="aw-episode-date">
+
+                                    Дата не указана
+
+                                </span>
+                            }
+
+
+
+                            <!-- =============================
+                                     ACTIONS
+                                     ============================= -->
+
+                            <div class="aw-episode-admin-actions">
+
+
+                                <!-- РЕДАКТИРОВАТЬ -->
+
+                                <a href="/Admin/Episodes/Edit/@episode.Id"
+                                   class="aw-episode-edit">
+
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75L4 17.25ZM20.71 6.04a1 1 0 0 0 0-1.41l-1.34-1.34a1 1 0 0 0-1.41 0l-1.05 1.05 2.75 2.75 1.05-1.05Z" />
+
+                                    </svg>
+
+                                    Изменить
+
+                                </a>
+
+
+
+                                <!-- УДАЛИТЬ -->
+
+                                <form action="/Admin/Episodes/Delete"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@episode.Id" />
+
+
+                                    <button type="submit"
+                                            class="aw-episode-delete"
+                                            onclick="
+                                        return confirm(
+                                        'Удалить серию №@episode.EpisodeNumber?'
+                                        );
+                                        ">
+
+                                        <svg viewBox="0 0 24 24"
+                                             aria-hidden="true">
+
+                                            <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Zm3-9h2v8H9v-8Zm4 0h2v8h-2v-8Zm2.5-6-1-1h-5l-1 1H5v2h14V4h-3.5Z" />
+
+                                        </svg>
+
+                                        Удалить
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+            }
+
+        </div>
+        }
+
+    </div>
+
+</section>

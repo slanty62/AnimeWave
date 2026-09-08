@@ -1,0 +1,327 @@
+﻿@model AnimeWave.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<section class="aw-auth-page aw-register-page">
+
+    <!-- ДЕКОРАТИВНЫЙ ФОН -->
+
+    <div class="aw-auth-glow aw-auth-glow-one"></div>
+    <div class="aw-auth-glow aw-auth-glow-two"></div>
+
+    <div class="aw-auth-grid"></div>
+
+
+    <div class="aw-auth-container aw-register-container">
+
+        <!-- ЛЕВАЯ ЧАСТЬ -->
+
+        <div class="aw-auth-promo">
+
+            <div class="aw-auth-promo-content">
+
+                <div class="aw-auth-big-logo">
+                    A
+                </div>
+
+                <span class="aw-auth-eyebrow">
+                    JOIN ANIMEWAVE
+                </span>
+
+                <h1>
+                    Твоя коллекция
+                    <span>начинается здесь.</span>
+                </h1>
+
+                <p>
+                    Создай аккаунт AnimeWave и собирай
+                    собственную библиотеку любимых аниме.
+                </p>
+
+
+                <div class="aw-auth-features">
+
+                    <div class="aw-auth-feature">
+
+                        <div class="aw-auth-feature-icon">
+                            ✓
+                        </div>
+
+                        <span>
+                            Бесплатная регистрация
+                        </span>
+
+                    </div>
+
+
+                    <div class="aw-auth-feature">
+
+                        <div class="aw-auth-feature-icon">
+                            ✓
+                        </div>
+
+                        <span>
+                            Персональное избранное
+                        </span>
+
+                    </div>
+
+
+                    <div class="aw-auth-feature">
+
+                        <div class="aw-auth-feature-icon">
+                            ✓
+                        </div>
+
+                        <span>
+                            Единый аккаунт AnimeWave
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ФОРМА -->
+
+        <div class="aw-auth-form-side">
+
+            <div class="aw-auth-form-header">
+
+                <span class="aw-auth-mobile-logo">
+                    A
+                </span>
+
+                <span class="aw-auth-small-label">
+                    CREATE ACCOUNT
+                </span>
+
+                <h2>
+                    Регистрация
+                </h2>
+
+                <p>
+                    Создай свой аккаунт за несколько секунд.
+                </p>
+
+            </div>
+
+
+            <form asp-controller="Account"
+                  asp-action="Register"
+                  method="post"
+                  class="aw-auth-form">
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="aw-validation-summary">
+                </div>
+
+
+                <!-- ИМЯ -->
+
+                <div class="aw-auth-field">
+
+                    <label asp-for="DisplayName">
+                        Имя
+                    </label>
+
+                    <div class="aw-auth-input-wrap">
+
+                        <span class="aw-auth-input-icon">
+
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 10c4.42 0 8 2.24 8 5v3H4v-3c0-2.76 3.58-5 8-5Zm0 2c-3.53 0-6 1.64-6 3v1h12v-1c0-1.36-2.47-3-6-3Z" />
+                            </svg>
+
+                        </span>
+
+                        <input asp-for="DisplayName"
+                               autocomplete="name"
+                               placeholder="Например, Kirito" />
+
+                    </div>
+
+                    <span asp-validation-for="DisplayName"
+                          class="aw-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="aw-auth-field">
+
+                    <label asp-for="Email">
+                        Email
+                    </label>
+
+                    <div class="aw-auth-input-wrap">
+
+                        <span class="aw-auth-input-icon">
+
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 3.4V18h16V7.4l-8 5-8-5Zm1.2-1.4L12 10.25 18.8 6H5.2Z" />
+                            </svg>
+
+                        </span>
+
+                        <input asp-for="Email"
+                               autocomplete="email"
+                               placeholder="name@example.com" />
+
+                    </div>
+
+                    <span asp-validation-for="Email"
+                          class="aw-field-error">
+                    </span>
+
+                </div>
+
+
+                <!-- ПАРОЛИ -->
+
+                <div class="aw-auth-password-grid">
+
+                    <div class="aw-auth-field">
+
+                        <label asp-for="Password">
+                            Пароль
+                        </label>
+
+                        <div class="aw-auth-input-wrap">
+
+                            <span class="aw-auth-input-icon">
+
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M17 8h-1V6a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 1 1 4 0v2h-4V6Zm7 13H7v-9h10v9Z" />
+                                </svg>
+
+                            </span>
+
+                            <input asp-for="Password"
+                                   autocomplete="new-password"
+                                   placeholder="Минимум 6 символов" />
+
+                        </div>
+
+                        <span asp-validation-for="Password"
+                              class="aw-field-error">
+                        </span>
+
+                    </div>
+
+
+                    <div class="aw-auth-field">
+
+                        <label asp-for="ConfirmPassword">
+                            Повторите пароль
+                        </label>
+
+                        <div class="aw-auth-input-wrap">
+
+                            <span class="aw-auth-input-icon">
+
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M17 8h-1V6a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 1 1 4 0v2h-4V6Zm7 13H7v-9h10v9Z" />
+                                </svg>
+
+                            </span>
+
+                            <input asp-for="ConfirmPassword"
+                                   autocomplete="new-password"
+                                   placeholder="Ещё раз" />
+
+                        </div>
+
+                        <span asp-validation-for="ConfirmPassword"
+                              class="aw-field-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ПОДСКАЗКА -->
+
+                <div class="aw-password-hint">
+
+                    <span class="aw-password-hint-icon">
+                        i
+                    </span>
+
+                    <span>
+                        Используй пароль длиной минимум 6 символов.
+                    </span>
+
+                </div>
+
+
+                <!-- РЕГИСТРАЦИЯ -->
+
+                <button type="submit"
+                        class="aw-auth-submit">
+
+                    <span>
+                        Создать аккаунт
+                    </span>
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="m13 5-1.4 1.4 4.6 4.6H4v2h12.2l-4.6 4.6L13 19l7-7-7-7Z" />
+                    </svg>
+
+                </button>
+
+
+                <div class="aw-auth-divider">
+
+                    <span></span>
+
+                    <p>
+                        уже зарегистрирован?
+                    </p>
+
+                    <span></span>
+
+                </div>
+
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="aw-auth-secondary">
+
+                    Войти в существующий аккаунт
+
+                </a>
+
+            </form>
+
+
+            <div class="aw-auth-bottom-text">
+
+                <span>
+                    Уже есть аккаунт?
+                </span>
+
+                <a asp-controller="Account"
+                   asp-action="Login">
+
+                    Войти
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

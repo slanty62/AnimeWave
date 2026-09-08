@@ -1,0 +1,76 @@
+# ==========================================
+# AnimeWave .gitignore
+# ==========================================
+
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+
+# Build
+bin/
+obj/
+Debug/
+Release/
+
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+
+# VS Code
+.vscode/
+
+
+# Logs
+*.log
+logs/
+
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+
+# Local configuration / secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+
+# User secrets
+secrets.json
+
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+
+
+# NuGet packages
+packages/
+*.nupkg
+
+
+# Temporary files
+*.tmp
+*.temp

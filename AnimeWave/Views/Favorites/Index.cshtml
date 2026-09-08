@@ -1,0 +1,440 @@
+﻿@model IEnumerable<AnimeWave.Models.Favorite>
+
+@{
+    ViewData["Title"] = "Избранное";
+
+    var favorites = Model.ToList();
+
+    int totalFavorites = favorites.Count;
+
+    decimal averageRating =
+        favorites.Any()
+            ? favorites.Average(f => f.Anime.Rating)
+            : 0;
+}
+
+<section class="aw-favorites-page">
+
+    <div class="aw-favorites-container">
+
+        <!-- =========================================
+             HEADER
+             ========================================= -->
+
+        <div class="aw-favorites-header">
+
+            <div class="aw-favorites-heading">
+
+                <span class="aw-favorites-eyebrow">
+                    MY ANIMEWAVE
+                </span>
+
+                <h1>
+                    Моё
+                    <span>избранное</span>
+                </h1>
+
+                <p>
+                    Твоя персональная коллекция аниме,
+                    которые ты сохранил для просмотра.
+                </p>
+
+            </div>
+
+
+            @if (favorites.Any())
+            {
+                <div class="aw-favorites-stat">
+
+                    <div>
+
+                        <span>
+                            В коллекции
+                        </span>
+
+                        <strong>
+                            @totalFavorites
+                        </strong>
+
+                        <small>
+                            аниме
+                        </small>
+
+                    </div>
+
+
+                    <div class="aw-favorites-stat-divider"></div>
+
+
+                    <div>
+
+                        <span>
+                            Средний рейтинг
+                        </span>
+
+                        <strong class="aw-favorites-rating-value">
+                            ★ @averageRating.ToString("0.0")
+                        </strong>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- =========================================
+             ПУСТОЕ ИЗБРАННОЕ
+             ========================================= -->
+        @if (!favorites.Any())
+        {
+            <div class="aw-favorites-empty">
+
+                <div class="aw-favorites-empty-glow"></div>
+
+
+                <div class="aw-favorites-empty-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="
+                        M12 21.35
+                        10.55 20.03
+                        C5.4 15.36
+                        2 12.28
+                        2 8.5
+                        C2 5.42
+                        4.42 3
+                        7.5 3
+                        C9.24 3
+                        10.91 3.81
+                        12 5.09
+                        C13.09 3.81
+                        14.76 3
+                        16.5 3
+                        C19.58 3
+                        22 5.42
+                        22 8.5
+                        C22 12.28
+                        18.6 15.36
+                        13.45 20.03
+                        L12 21.35Z" />
+
+                    </svg>
+
+                </div>
+
+
+                <span class="aw-favorites-empty-label">
+                    YOUR COLLECTION
+                </span>
+
+
+                <h2>
+                    Здесь пока пусто
+                </h2>
+
+
+                <p>
+                    Добавляй понравившиеся аниме
+                    в избранное, чтобы быстро
+                    находить их позже.
+                </p>
+
+
+                <a asp-controller="Anime"
+                   asp-action="Index"
+                   class="aw-favorites-catalog-button">
+
+                    <span>
+                        Перейти в каталог
+                    </span>
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="
+                        M13 5
+                        11.6 6.4
+                        16.2 11
+                        H4
+                        V13
+                        H16.2
+                        L11.6 17.6
+                        13 19
+                        20 12
+                        L13 5Z" />
+
+                    </svg>
+
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <!-- =====================================
+                 ЕСЛИ В ИЗБРАННОМ ЕСТЬ АНИМЕ
+                 ===================================== -->
+
+            <div class="aw-favorites-toolbar">
+
+                <div>
+
+                    <h2>
+                        Сохранённые аниме
+                    </h2>
+
+                    <span>
+                        @totalFavorites
+                        @(totalFavorites == 1
+                            ? "тайтл"
+                            : "тайтлов")
+                    </span>
+
+                </div>
+
+
+                <a asp-controller="Anime"
+                   asp-action="Index"
+                   class="aw-favorites-add-more">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="
+                        M11 5
+                        H13
+                        V11
+                        H19
+                        V13
+                        H13
+                        V19
+                        H11
+                        V13
+                        H5
+                        V11
+                        H11
+                        V5Z" />
+
+                    </svg>
+
+                    <span>
+                        Добавить ещё
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- =====================================
+                 GRID ИЗБРАННЫХ АНИМЕ
+                 ===================================== -->
+
+            <div class="aw-favorites-grid">
+
+                @foreach (var favorite in favorites)
+                {
+                    var anime = favorite.Anime;
+
+                    <article class="aw-favorite-card">
+
+                        <!-- ===========================
+                             ПОСТЕР
+                             =========================== -->
+
+                        <div class="aw-favorite-poster-wrap">
+
+                            <a asp-controller="Anime"
+                               asp-action="Details"
+                               asp-route-id="@anime.Id"
+                               class="aw-favorite-poster">
+
+                                <img src="@anime.PosterUrl"
+                                     alt="@anime.Title"
+                                     loading="lazy"
+                                     onerror="this.src='/images/no-poster.jpg'" />
+
+
+                                <div class="aw-favorite-overlay"></div>
+
+
+                                <!-- PLAY -->
+
+                                <div class="aw-favorite-play">
+
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="
+                                        M8 5
+                                        V19
+                                        L19 12
+                                        L8 5Z" />
+
+                                    </svg>
+
+                                </div>
+
+
+                                <!-- РЕЙТИНГ -->
+
+                                <div class="aw-favorite-rating">
+
+                                    <span>
+                                        ★
+                                    </span>
+
+                                    @anime.Rating
+
+                                </div>
+
+
+                                <!-- СТАТУС -->
+                                @if (!string.IsNullOrWhiteSpace(anime.Status))
+                                {
+                                    <div class="aw-favorite-status">
+                                        @anime.Status
+                                    </div>
+                                }
+
+                            </a>
+
+
+                            <!-- ===========================
+                                 УДАЛИТЬ ИЗ ИЗБРАННОГО
+                                 =========================== -->
+
+                            <form asp-controller="Favorites"
+                                  asp-action="Remove"
+                                  method="post"
+                                  class="aw-favorite-remove-form">
+
+                                <input type="hidden"
+                                       name="animeId"
+                                       value="@anime.Id" />
+
+
+                                <button type="submit"
+                                        class="aw-favorite-remove"
+                                        title="Удалить из избранного"
+                                        aria-label="Удалить @anime.Title из избранного">
+
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="
+                                        M12 21.35
+                                        10.55 20.03
+                                        C5.4 15.36
+                                        2 12.28
+                                        2 8.5
+                                        C2 5.42
+                                        4.42 3
+                                        7.5 3
+                                        C9.24 3
+                                        10.91 3.81
+                                        12 5.09
+                                        C13.09 3.81
+                                        14.76 3
+                                        16.5 3
+                                        C19.58 3
+                                        22 5.42
+                                        22 8.5
+                                        C22 12.28
+                                        18.6 15.36
+                                        13.45 20.03
+                                        L12 21.35Z" />
+
+                                    </svg>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                        <!-- ===========================
+                             ИНФОРМАЦИЯ
+                             =========================== -->
+
+                        <div class="aw-favorite-info">
+
+                            <a asp-controller="Anime"
+                               asp-action="Details"
+                               asp-route-id="@anime.Id"
+                               class="aw-favorite-title">
+
+                                @anime.Title
+
+                            </a>
+
+
+                            @if (!string.IsNullOrWhiteSpace(
+                                anime.OriginalTitle))
+                            {
+                                <div class="aw-favorite-original">
+
+                                    @anime.OriginalTitle
+
+                                </div>
+                            }
+
+
+                            <!-- META -->
+
+                            <div class="aw-favorite-meta">
+
+                                <span>
+                                    @anime.ReleaseYear
+                                </span>
+
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    anime.AgeRating))
+                                {
+                                    <span class="aw-favorite-age">
+
+                                        @anime.AgeRating
+
+                                    </span>
+                                }
+
+
+                                <span>
+                                    @anime.EpisodesCount серий
+                                </span>
+
+                            </div>
+
+
+                            <!-- ЖАНРЫ -->
+
+                            <div class="aw-favorite-genres">
+
+                                @foreach (
+                                    var item
+                                    in anime.AnimeGenres.Take(3))
+                                {
+                                    <span>
+                                        @item.Genre.Name
+                                    </span>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</section>

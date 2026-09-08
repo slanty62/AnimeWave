@@ -1,0 +1,38 @@
+﻿@model AnimeWave.Models.Anime
+
+<section class="admin-form-page">
+
+    <div class="admin-form-card">
+
+        <h1>
+            Удалить аниме?
+        </h1>
+
+        <p>
+            @Model.Title
+        </p>
+
+        <form method="post">
+
+            <input type="hidden"
+                   asp-for="Id" />
+
+            <button type="submit"
+                    class="danger-button">
+
+                Удалить
+
+            </button>
+
+            <a asp-action="Index"
+               class="list-button">
+
+                Отмена
+
+            </a>
+
+        </form>
+
+    </div>
+
+</section>

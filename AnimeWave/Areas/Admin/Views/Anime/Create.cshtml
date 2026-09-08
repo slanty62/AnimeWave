@@ -1,0 +1,672 @@
+﻿@model AnimeWave.ViewModels.AnimeFormViewModel
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Добавить аниме";
+}
+
+<section class="aw-create-page">
+
+    <div class="aw-create-container">
+
+
+        <div class="aw-create-header">
+
+            <a href="/Admin/Anime"
+               class="aw-create-back">
+
+                ← Назад к аниме
+
+            </a>
+
+
+            <span class="aw-create-eyebrow">
+                ANIME MANAGEMENT
+            </span>
+
+
+            <h1>
+                Добавить
+                <span>аниме</span>
+            </h1>
+
+
+            <p>
+                Добавление нового тайтла в каталог AnimeWave.
+            </p>
+
+        </div>
+
+
+
+        <form asp-area="Admin"
+              asp-controller="Anime"
+              asp-action="Create"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+
+            <div asp-validation-summary="All"
+                 class="aw-create-validation">
+            </div>
+
+
+
+            <div class="aw-create-layout">
+
+
+                <!-- LEFT -->
+
+                <div class="aw-create-left">
+
+
+                    <!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
+
+                    <div class="aw-create-card">
+
+                        <div class="aw-create-card-header">
+
+                            <div class="aw-create-card-number">
+                                01
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Основная информация
+                                </h2>
+
+                                <p>
+                                    Название и основные данные аниме.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-create-grid">
+
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="Title">
+                                    Название *
+                                </label>
+
+                                <input asp-for="Title"
+                                       id="animeTitle"
+                                       placeholder="Сага о Винланде" />
+
+                                <span asp-validation-for="Title"
+                                      class="aw-create-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="OriginalTitle">
+                                    Оригинальное название
+                                </label>
+
+                                <input asp-for="OriginalTitle"
+                                       id="animeOriginalTitle"
+                                       placeholder="Vinland Saga" />
+
+                            </div>
+
+
+
+                            <div class="aw-create-field">
+
+                                <label asp-for="ReleaseYear">
+                                    Год выхода
+                                </label>
+
+                                <input asp-for="ReleaseYear"
+                                       id="animeYear"
+                                       type="number" />
+
+                            </div>
+
+
+
+                            <div class="aw-create-field">
+
+                                <label asp-for="Rating">
+                                    Рейтинг
+                                </label>
+
+                                <input asp-for="Rating"
+                                       id="animeRating"
+                                       type="number"
+                                       min="0"
+                                       max="10"
+                                       step="0.1" />
+
+                            </div>
+
+
+
+                            <div class="aw-create-field">
+
+                                <label asp-for="AgeRating">
+                                    Возраст
+                                </label>
+
+                                <input asp-for="AgeRating"
+                                       id="animeAge"
+                                       placeholder="16+" />
+
+                            </div>
+
+
+
+                            <div class="aw-create-field">
+
+                                <label asp-for="EpisodesCount">
+                                    Количество серий
+                                </label>
+
+                                <input asp-for="EpisodesCount"
+                                       id="animeEpisodes"
+                                       type="number"
+                                       min="0" />
+
+                            </div>
+
+
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="Status">
+                                    Статус
+                                </label>
+
+                                <select asp-for="Status"
+                                        id="animeStatus">
+
+                                    <option value="Выходит">
+                                        Выходит
+                                    </option>
+
+                                    <option value="Завершён">
+                                        Завершён
+                                    </option>
+
+                                    <option value="Анонс">
+                                        Анонс
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="Description">
+                                    Описание
+                                </label>
+
+                                <textarea asp-for="Description"
+                                          rows="7"
+                                          placeholder="Описание аниме..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ЖАНРЫ -->
+
+                    <div class="aw-create-card">
+
+                        <div class="aw-create-card-header">
+
+                            <div class="aw-create-card-number">
+                                02
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Жанры
+                                </h2>
+
+                                <p>
+                                    Выбери один или несколько жанров.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="aw-create-genres">
+
+                            @foreach (var genre in Model.Genres)
+                            {
+                                int genreId =
+                                    int.Parse(genre.Value);
+
+                                <label class="aw-create-genre">
+
+                                    <input type="checkbox"
+                                           name="SelectedGenreIds"
+                                           value="@genre.Value"
+                                    @(Model.SelectedGenreIds.Contains(genreId)
+                                        ? "checked"
+                                        : "") />
+
+                                    <span>
+                                        @genre.Text
+                                    </span>
+
+                                </label>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ИЗОБРАЖЕНИЯ -->
+
+                    <div class="aw-create-card">
+
+                        <div class="aw-create-card-header">
+
+                            <div class="aw-create-card-number">
+                                03
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Изображения
+                                </h2>
+
+                                <p>
+                                    Постер и баннер аниме.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-create-grid">
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="PosterUrl">
+                                    Путь к постеру
+                                </label>
+
+                                <input asp-for="PosterUrl"
+                                       id="posterUrl"
+                                       placeholder="/images/posters/vinland-saga.jpg" />
+
+                                <small>
+                                    Рекомендуемый размер:
+                                    720 × 1080 px.
+                                </small>
+
+                            </div>
+
+
+
+                            <div class="aw-create-field aw-create-full">
+
+                                <label asp-for="BannerUrl">
+                                    Путь к баннеру
+                                </label>
+
+                                <input asp-for="BannerUrl"
+                                       id="bannerUrl"
+                                       placeholder="/images/banners/vinland-saga-banner.jpg" />
+
+                                <small>
+                                    Рекомендуемый размер:
+                                    1600 × 900 px.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="aw-create-actions">
+
+                        <button type="submit"
+                                class="aw-create-submit">
+
+                            + Добавить аниме
+
+                        </button>
+
+
+                        <a href="/Admin/Anime"
+                           class="aw-create-cancel">
+
+                            Отмена
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PREVIEW -->
+
+                <aside class="aw-create-preview">
+
+                    <div class="aw-create-preview-sticky">
+
+                        <span class="aw-create-preview-label">
+                            LIVE PREVIEW
+                        </span>
+
+
+
+                        <div class="aw-create-preview-poster">
+
+                            <div id="posterPlaceholder"
+                                 class="aw-create-preview-placeholder">
+
+                                POSTER
+
+                            </div>
+
+
+                            <img id="posterPreview"
+                                 src="@Model.PosterUrl"
+                                 alt="Постер"
+                                 style="@(string.IsNullOrWhiteSpace(Model.PosterUrl)
+                                                                ? "display:none;"
+                                                                : "")" />
+
+                        </div>
+
+
+
+                        <div class="aw-create-preview-info">
+
+                            <span id="previewStatus">
+                                @Model.Status
+                            </span>
+
+
+                            <h3 id="previewTitle">
+
+                                @(string.IsNullOrWhiteSpace(Model.Title)
+                                    ? "Название аниме"
+                                    : Model.Title)
+
+                            </h3>
+
+
+                            <p id="previewOriginal">
+
+                                @(string.IsNullOrWhiteSpace(Model.OriginalTitle)
+                                    ? "Original title"
+                                    : Model.OriginalTitle)
+
+                            </p>
+
+
+                            <div class="aw-create-preview-meta">
+
+                                <span id="previewRating">
+                                    ★ @Model.Rating
+                                </span>
+
+                                <span id="previewYear">
+                                    @Model.ReleaseYear
+                                </span>
+
+                                <span id="previewAge">
+                                    @Model.AgeRating
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-create-preview-banner">
+
+                            <span>
+                                BANNER
+                            </span>
+
+                            <img id="bannerPreview"
+                                 src="@Model.BannerUrl"
+                                 alt="Баннер"
+                                 style="@(string.IsNullOrWhiteSpace(Model.BannerUrl)
+                                                                ? "display:none;"
+                                                                : "")" />
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const title =
+                document.getElementById("animeTitle");
+
+            const original =
+                document.getElementById("animeOriginalTitle");
+
+            const year =
+                document.getElementById("animeYear");
+
+            const rating =
+                document.getElementById("animeRating");
+
+            const age =
+                document.getElementById("animeAge");
+
+            const status =
+                document.getElementById("animeStatus");
+
+            const posterUrl =
+                document.getElementById("posterUrl");
+
+            const bannerUrl =
+                document.getElementById("bannerUrl");
+
+
+            if (title) {
+                title.addEventListener("input", function() {
+
+                    document.getElementById("previewTitle")
+                        .textContent =
+                        title.value.trim()
+                        || "Название аниме";
+
+                });
+            }
+
+
+            if (original) {
+                original.addEventListener("input", function() {
+
+                    document.getElementById("previewOriginal")
+                        .textContent =
+                        original.value.trim()
+                        || "Original title";
+
+                });
+            }
+
+
+            if (year) {
+                year.addEventListener("input", function() {
+
+                    document.getElementById("previewYear")
+                        .textContent =
+                        year.value || "—";
+
+                });
+            }
+
+
+            if (rating) {
+                rating.addEventListener("input", function() {
+
+                    document.getElementById("previewRating")
+                        .textContent =
+                        "★ " + (rating.value || "0");
+
+                });
+            }
+
+
+            if (age) {
+                age.addEventListener("input", function() {
+
+                    document.getElementById("previewAge")
+                        .textContent =
+                        age.value || "—";
+
+                });
+            }
+
+
+            if (status) {
+                status.addEventListener("change", function() {
+
+                    document.getElementById("previewStatus")
+                        .textContent =
+                        status.value;
+
+                });
+            }
+
+
+            const posterPreview =
+                document.getElementById("posterPreview");
+
+            const posterPlaceholder =
+                document.getElementById("posterPlaceholder");
+
+
+            if (posterUrl && posterPreview) {
+
+                posterUrl.addEventListener("input", function() {
+
+                    const path =
+                        posterUrl.value.trim();
+
+                    if (!path) {
+
+                        posterPreview.style.display =
+                            "none";
+
+                        posterPlaceholder.style.display =
+                            "flex";
+
+                        return;
+                    }
+
+                    posterPreview.src =
+                        path + "?v=" + Date.now();
+
+                    posterPreview.style.display =
+                        "block";
+
+                    posterPlaceholder.style.display =
+                        "none";
+                });
+
+
+                posterPreview.addEventListener(
+                    "error",
+                    function() {
+
+                        posterPreview.style.display =
+                            "none";
+
+                        posterPlaceholder.style.display =
+                            "flex";
+                    }
+                );
+            }
+
+
+            const bannerPreview =
+                document.getElementById("bannerPreview");
+
+
+            if (bannerUrl && bannerPreview) {
+
+                bannerUrl.addEventListener("input", function() {
+
+                    const path =
+                        bannerUrl.value.trim();
+
+                    if (!path) {
+
+                        bannerPreview.style.display =
+                            "none";
+
+                        return;
+                    }
+
+                    bannerPreview.src =
+                        path + "?v=" + Date.now();
+
+                    bannerPreview.style.display =
+                        "block";
+                });
+
+
+                bannerPreview.addEventListener(
+                    "error",
+                    function() {
+
+                        bannerPreview.style.display =
+                            "none";
+                    }
+                );
+            }
+
+        });
+    </script>
+}

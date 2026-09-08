@@ -1,0 +1,68 @@
+﻿@model AnimeWave.Models.Episode
+
+@{
+    ViewData["Title"] =
+        $"{Model.Anime.Title} — серия {Model.EpisodeNumber}";
+}
+
+<div class="watch-page">
+
+    <div class="watch-top">
+
+        <a asp-controller="Anime"
+           asp-action="Details"
+           asp-route-id="@Model.AnimeId"
+           class="back-link">
+
+            ← Назад к аниме
+
+        </a>
+
+        <div>
+            @Model.Anime.Title
+        </div>
+
+    </div>
+
+    <div class="fake-player">
+
+        @if (!string.IsNullOrWhiteSpace(Model.ThumbnailUrl))
+        {
+            <img src="@Model.ThumbnailUrl"
+                 alt="@Model.Title" />
+        }
+
+        <div class="player-dark"></div>
+
+        <div class="big-play">
+            ▶
+        </div>
+
+        <div class="player-message">
+            Демонстрационный режим
+        </div>
+
+    </div>
+
+    <div class="watch-info">
+
+        <span>
+            Серия @Model.EpisodeNumber
+        </span>
+
+        <h1>
+            @Model.Title
+        </h1>
+
+        <p>
+            @Model.Description
+        </p>
+
+        <div class="watch-meta">
+            Продолжительность:
+            @Model.DurationMinutes мин.
+        </div>
+
+    </div>
+
+</div>

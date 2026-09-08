@@ -1,0 +1,1121 @@
+﻿<div class="aw-search-overlay"
+     id="awSmartSearch"
+     aria-hidden="true">
+
+    <div class="aw-search-backdrop"
+         data-search-close>
+    </div>
+
+
+    <div class="aw-search-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-label="Поиск аниме">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="aw-search-header">
+
+            <div>
+
+                <span class="aw-search-eyebrow">
+                    ANIMEWAVE SEARCH
+                </span>
+
+                <h2>
+                    Найти аниме
+                </h2>
+
+            </div>
+
+
+            <button type="button"
+                    class="aw-search-close"
+                    data-search-close
+                    aria-label="Закрыть">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             INPUT
+             ===================================================== -->
+
+        <div class="aw-search-input-wrap">
+
+            <div class="aw-search-input-icon">
+
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <path d="M10.5 4a6.5 6.5 0 1 0 3.98 11.64L19.84 21 21 19.84l-5.36-5.36A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+
+                </svg>
+
+            </div>
+
+
+            <input type="text"
+                   id="awSearchInput"
+                   class="aw-search-input"
+                   placeholder="Название аниме..."
+                   autocomplete="off"
+                   spellcheck="false" />
+
+
+            <div class="aw-search-shortcut">
+                ESC
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             BODY
+             ===================================================== -->
+
+        <div class="aw-search-body"
+             id="awSearchBody">
+
+
+            <!-- START -->
+
+            <div class="aw-search-state"
+                 id="awSearchStart">
+
+                <div class="aw-search-state-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                        <path d="M10.5 4a6.5 6.5 0 1 0 3.98 11.64L19.84 21 21 19.84l-5.36-5.36A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+
+                    </svg>
+
+                </div>
+
+
+                <h3>
+                    Что хочешь посмотреть?
+                </h3>
+
+
+                <p>
+                    Начни вводить название аниме.
+                </p>
+
+            </div>
+
+
+
+            <!-- LOADING -->
+
+            <div class="aw-search-state aw-search-hidden"
+                 id="awSearchLoading">
+
+                <div class="aw-search-loader">
+                </div>
+
+                <h3>
+                    Ищем...
+                </h3>
+
+            </div>
+
+
+
+            <!-- EMPTY -->
+
+            <div class="aw-search-state aw-search-hidden"
+                 id="awSearchEmpty">
+
+                <div class="aw-search-state-icon">
+                    ?
+                </div>
+
+
+                <h3>
+                    Ничего не найдено
+                </h3>
+
+
+                <p>
+                    Попробуй изменить запрос.
+                </p>
+
+            </div>
+
+
+
+            <!-- RESULTS -->
+
+            <div class="aw-search-results aw-search-hidden"
+                 id="awSearchResults">
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             FOOTER
+             ===================================================== -->
+
+        <div class="aw-search-footer">
+
+            <div>
+
+                <span class="aw-search-key">
+                    ↑
+                </span>
+
+                <span class="aw-search-key">
+                    ↓
+                </span>
+
+                Навигация
+
+            </div>
+
+
+            <div>
+
+                <span class="aw-search-key">
+                    ENTER
+                </span>
+
+                Открыть
+
+            </div>
+
+
+            <div>
+
+                <span class="aw-search-key">
+                    ESC
+                </span>
+
+                Закрыть
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const overlay =
+                document.getElementById(
+                    "awSmartSearch"
+                );
+
+            const openButton =
+                document.getElementById(
+                    "awSmartSearchButton"
+                );
+
+            const input =
+                document.getElementById(
+                    "awSearchInput"
+                );
+
+            const results =
+                document.getElementById(
+                    "awSearchResults"
+                );
+
+            const startState =
+                document.getElementById(
+                    "awSearchStart"
+                );
+
+            const loadingState =
+                document.getElementById(
+                    "awSearchLoading"
+                );
+
+            const emptyState =
+                document.getElementById(
+                    "awSearchEmpty"
+                );
+
+
+            if (
+                !overlay
+                ||
+                !input
+                ||
+                !results
+            ) {
+                return;
+            }
+
+
+            let debounceTimer = null;
+
+            let abortController = null;
+
+            let currentItems = [];
+
+            let selectedIndex = -1;
+
+
+
+            // =====================================================
+            // OPEN
+            // =====================================================
+
+            function openSearch() {
+
+                overlay.classList.add(
+                    "is-open"
+                );
+
+                overlay.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
+
+                document.body.classList.add(
+                    "aw-search-open"
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        input.focus();
+
+                    },
+                    100
+                );
+            }
+
+
+
+            // =====================================================
+            // CLOSE
+            // =====================================================
+
+            function closeSearch() {
+
+                overlay.classList.remove(
+                    "is-open"
+                );
+
+                overlay.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+
+                document.body.classList.remove(
+                    "aw-search-open"
+                );
+
+
+                input.value = "";
+
+                currentItems = [];
+
+                selectedIndex = -1;
+
+
+                if (abortController) {
+                    abortController.abort();
+                }
+
+
+                resetSearch();
+            }
+
+
+
+            // =====================================================
+            // RESET
+            // =====================================================
+
+            function resetSearch() {
+
+                hideAllStates();
+
+                startState.classList.remove(
+                    "aw-search-hidden"
+                );
+            }
+
+
+
+            function hideAllStates() {
+
+                startState.classList.add(
+                    "aw-search-hidden"
+                );
+
+                loadingState.classList.add(
+                    "aw-search-hidden"
+                );
+
+                emptyState.classList.add(
+                    "aw-search-hidden"
+                );
+
+                results.classList.add(
+                    "aw-search-hidden"
+                );
+            }
+
+
+
+            // =====================================================
+            // LOADING
+            // =====================================================
+
+            function showLoading() {
+
+                hideAllStates();
+
+                loadingState.classList.remove(
+                    "aw-search-hidden"
+                );
+            }
+
+
+
+            // =====================================================
+            // EMPTY
+            // =====================================================
+
+            function showEmpty() {
+
+                hideAllStates();
+
+                emptyState.classList.remove(
+                    "aw-search-hidden"
+                );
+            }
+
+
+
+            // =====================================================
+            // RESULTS
+            // =====================================================
+
+            function renderResults(items) {
+
+                currentItems = items;
+
+                selectedIndex = -1;
+
+                results.innerHTML = "";
+
+
+                if (!items.length) {
+
+                    showEmpty();
+
+                    return;
+                }
+
+
+                hideAllStates();
+
+                results.classList.remove(
+                    "aw-search-hidden"
+                );
+
+
+                items.forEach(
+                    function (anime, index) {
+
+                        const link =
+                            document.createElement(
+                                "a"
+                            );
+
+
+                        link.href =
+                            "/Anime/Details/"
+                            + anime.id;
+
+
+                        link.className =
+                            "aw-search-result";
+
+
+                        link.dataset.index =
+                            index;
+
+
+
+                        // POSTER
+
+                        const poster =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        poster.className =
+                            "aw-search-result-poster";
+
+
+                        if (anime.posterUrl) {
+
+                            const image =
+                                document.createElement(
+                                    "img"
+                                );
+
+
+                            image.src =
+                                anime.posterUrl;
+
+
+                            image.alt =
+                                anime.title;
+
+
+                            image.loading =
+                                "lazy";
+
+
+                            image.addEventListener(
+                                "error",
+                                function () {
+
+                                    image.remove();
+
+                                    poster.classList.add(
+                                        "is-empty"
+                                    );
+
+                                    poster.textContent =
+                                        "A";
+
+                                }
+                            );
+
+
+                            poster.appendChild(
+                                image
+                            );
+
+                        }
+                        else {
+
+                            poster.classList.add(
+                                "is-empty"
+                            );
+
+                            poster.textContent =
+                                "A";
+
+                        }
+
+
+
+                        // INFO
+
+                        const info =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        info.className =
+                            "aw-search-result-info";
+
+
+
+                        const title =
+                            document.createElement(
+                                "h3"
+                            );
+
+
+                        title.textContent =
+                            anime.title;
+
+
+
+                        const original =
+                            document.createElement(
+                                "p"
+                            );
+
+
+                        original.textContent =
+                            anime.originalTitle
+                            || "AnimeWave";
+
+
+
+                        const meta =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        meta.className =
+                            "aw-search-result-meta";
+
+
+
+                        const rating =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        rating.className =
+                            "aw-search-result-rating";
+
+
+                        const ratingValue =
+                            Number(
+                                anime.rating
+                            );
+
+
+                        rating.textContent =
+                            "★ "
+                            +
+                            (
+                                Number.isFinite(
+                                    ratingValue
+                                )
+                                    ? ratingValue
+                                        .toFixed(1)
+                                    : anime.rating
+                            );
+
+
+
+                        const year =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        year.textContent =
+                            anime.releaseYear;
+
+
+
+                        meta.appendChild(
+                            rating
+                        );
+
+
+                        meta.appendChild(
+                            year
+                        );
+
+
+                        if (anime.ageRating) {
+
+                            const age =
+                                document.createElement(
+                                    "span"
+                                );
+
+
+                            age.className =
+                                "aw-search-result-age";
+
+
+                            age.textContent =
+                                anime.ageRating;
+
+
+                            meta.appendChild(
+                                age
+                            );
+                        }
+
+
+
+                        info.appendChild(
+                            title
+                        );
+
+
+                        info.appendChild(
+                            original
+                        );
+
+
+                        info.appendChild(
+                            meta
+                        );
+
+
+
+                        // ARROW
+
+                        const arrow =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        arrow.className =
+                            "aw-search-result-arrow";
+
+
+                        arrow.textContent =
+                            "→";
+
+
+
+                        link.appendChild(
+                            poster
+                        );
+
+
+                        link.appendChild(
+                            info
+                        );
+
+
+                        link.appendChild(
+                            arrow
+                        );
+
+
+                        link.addEventListener(
+                            "mouseenter",
+                            function () {
+
+                                selectItem(
+                                    index
+                                );
+
+                            }
+                        );
+
+
+                        results.appendChild(
+                            link
+                        );
+
+                    }
+                );
+            }
+
+
+
+            // =====================================================
+            // SELECT ITEM
+            // =====================================================
+
+            function selectItem(index) {
+
+                const links =
+                    results.querySelectorAll(
+                        ".aw-search-result"
+                    );
+
+
+                links.forEach(
+                    function (link) {
+
+                        link.classList.remove(
+                            "is-selected"
+                        );
+
+                    }
+                );
+
+
+                if (
+                    index < 0
+                    ||
+                    index >= links.length
+                ) {
+                    selectedIndex = -1;
+
+                    return;
+                }
+
+
+                selectedIndex = index;
+
+
+                links[selectedIndex]
+                    .classList.add(
+                        "is-selected"
+                    );
+
+
+                links[selectedIndex]
+                    .scrollIntoView(
+                        {
+                            block:
+                                "nearest"
+                        }
+                    );
+            }
+
+
+
+            // =====================================================
+            // SEARCH
+            // =====================================================
+
+            async function searchAnime(query) {
+
+                const trimmed =
+                    query.trim();
+
+
+                if (trimmed.length < 2) {
+
+                    currentItems = [];
+
+                    selectedIndex = -1;
+
+                    resetSearch();
+
+                    return;
+                }
+
+
+                if (abortController) {
+                    abortController.abort();
+                }
+
+
+                abortController =
+                    new AbortController();
+
+
+                showLoading();
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/Search/Suggest?q="
+                            +
+                            encodeURIComponent(
+                                trimmed
+                            ),
+                            {
+                                signal:
+                                    abortController.signal,
+
+                                headers:
+                                    {
+                                        "X-Requested-With":
+                                            "XMLHttpRequest"
+                                    }
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Search request failed."
+                        );
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    renderResults(
+                        data
+                    );
+
+                }
+                catch (error) {
+
+                    if (
+                        error.name ===
+                        "AbortError"
+                    ) {
+                        return;
+                    }
+
+
+                    console.error(
+                        error
+                    );
+
+
+                    showEmpty();
+                }
+            }
+
+
+
+            // =====================================================
+            // INPUT
+            // =====================================================
+
+            input.addEventListener(
+                "input",
+                function () {
+
+                    clearTimeout(
+                        debounceTimer
+                    );
+
+
+                    const value =
+                        input.value;
+
+
+                    if (
+                        value.trim().length
+                        < 2
+                    ) {
+
+                        resetSearch();
+
+                        return;
+                    }
+
+
+                    debounceTimer =
+                        setTimeout(
+                            function () {
+
+                                searchAnime(
+                                    value
+                                );
+
+                            },
+                            220
+                        );
+
+                }
+            );
+
+
+
+            // =====================================================
+            // OPEN BUTTON
+            // =====================================================
+
+            if (openButton) {
+
+                openButton.addEventListener(
+                    "click",
+                    openSearch
+                );
+
+            }
+
+
+
+            // =====================================================
+            // CLOSE BUTTONS
+            // =====================================================
+
+            overlay
+                .querySelectorAll(
+                    "[data-search-close]"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            closeSearch
+                        );
+
+                    }
+                );
+
+
+
+            // =====================================================
+            // KEYBOARD
+            // =====================================================
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    // CTRL + K
+
+                    if (
+                        (
+                            event.ctrlKey
+                            ||
+                            event.metaKey
+                        )
+                        &&
+                        event.key
+                            .toLowerCase()
+                            === "k"
+                    ) {
+
+                        event.preventDefault();
+
+                        if (
+                            overlay.classList
+                                .contains(
+                                    "is-open"
+                                )
+                        ) {
+
+                            closeSearch();
+
+                        }
+                        else {
+
+                            openSearch();
+
+                        }
+
+                        return;
+                    }
+
+
+
+                    if (
+                        !overlay.classList
+                            .contains(
+                                "is-open"
+                            )
+                    ) {
+                        return;
+                    }
+
+
+
+                    // ESC
+
+                    if (
+                        event.key ===
+                        "Escape"
+                    ) {
+
+                        event.preventDefault();
+
+                        closeSearch();
+
+                        return;
+                    }
+
+
+
+                    if (
+                        !currentItems.length
+                    ) {
+                        return;
+                    }
+
+
+
+                    // DOWN
+
+                    if (
+                        event.key ===
+                        "ArrowDown"
+                    ) {
+
+                        event.preventDefault();
+
+
+                        let next =
+                            selectedIndex + 1;
+
+
+                        if (
+                            next >=
+                            currentItems.length
+                        ) {
+                            next = 0;
+                        }
+
+
+                        selectItem(
+                            next
+                        );
+
+                    }
+
+
+
+                    // UP
+
+                    if (
+                        event.key ===
+                        "ArrowUp"
+                    ) {
+
+                        event.preventDefault();
+
+
+                        let previous =
+                            selectedIndex - 1;
+
+
+                        if (previous < 0) {
+
+                            previous =
+                                currentItems.length
+                                - 1;
+
+                        }
+
+
+                        selectItem(
+                            previous
+                        );
+
+                    }
+
+
+
+                    // ENTER
+
+                    if (
+                        event.key ===
+                        "Enter"
+                        &&
+                        selectedIndex >= 0
+                    ) {
+
+                        event.preventDefault();
+
+
+                        window.location.href =
+                            "/Anime/Details/"
+                            +
+                            currentItems[
+                                selectedIndex
+                            ].id;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+</script>

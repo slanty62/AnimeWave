@@ -1,0 +1,957 @@
+﻿@{
+    var pageTitle =
+        ViewData["Title"]?.ToString()
+        ?? "AnimeWave";
+
+    var isAuthenticated =
+        User.Identity?.IsAuthenticated == true;
+
+    var userName =
+        User.Identity?.Name ?? "A";
+
+    var userInitial =
+        !string.IsNullOrWhiteSpace(userName)
+            ? userName.Substring(0, 1).ToUpper()
+            : "A";
+}
+
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+
+    <title>
+        @pageTitle - AnimeWave
+    </title>
+
+
+    <meta name="description"
+          content="AnimeWave — каталог аниме, избранное и персональные подборки." />
+
+
+    <!-- =========================================
+         CSS
+         ========================================= -->
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+</head>
+
+
+<body class="aw-body">
+
+
+    <!-- =========================================================
+         NAVBAR
+         ========================================================= -->
+
+    <header class="aw-navbar">
+
+        <div class="aw-navbar-container">
+
+
+            <!-- LOGO -->
+
+            <a asp-area=""
+               asp-controller="Home"
+               asp-action="Index"
+               class="aw-logo">
+
+                <span class="aw-logo-icon">
+                    A
+                </span>
+
+                <span class="aw-logo-text">
+                    AnimeWave
+                </span>
+
+            </a>
+
+
+
+            <!-- MAIN NAVIGATION -->
+
+            <nav class="aw-main-nav">
+
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index"
+                   class="aw-nav-link">
+
+                    Главная
+
+                </a>
+
+
+                <a asp-area=""
+                   asp-controller="Anime"
+                   asp-action="Index"
+                   class="aw-nav-link">
+
+                    Каталог
+
+                </a>
+
+
+                @if (isAuthenticated)
+                {
+                    <a asp-area=""
+                       asp-controller="Favorites"
+                       asp-action="Index"
+                       class="aw-nav-link">
+
+                        Избранное
+
+                    </a>
+                }
+
+            </nav>
+
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="aw-navbar-right">
+
+
+                <!-- SEARCH -->
+
+                <button type="button"
+                        class="aw-navbar-search"
+                        id="awSmartSearchButton"
+                        title="Поиск аниме"
+                        aria-label="Открыть поиск">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M10.5 4a6.5 6.5 0 1 0 3.98 11.64L19.84 21 21 19.84l-5.36-5.36A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+
+                    </svg>
+
+                </button>
+
+
+                @if (isAuthenticated)
+                {
+                    <!-- FAVORITES -->
+
+                    <a asp-area=""
+                       asp-controller="Favorites"
+                       asp-action="Index"
+                       class="aw-navbar-favorites">
+
+                        Избранное
+
+                    </a>
+
+
+
+                    <!-- ADMIN -->
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-area="Admin"
+                           asp-controller="Anime"
+                           asp-action="Index"
+                           class="aw-navbar-admin">
+
+                            Админка
+
+                        </a>
+                    }
+
+
+
+                    <!-- USER AVATAR -->
+
+                    <a asp-area=""
+                       asp-controller="Profile"
+                       asp-action="Index"
+                       class="aw-navbar-user"
+                       title="Мой профиль">
+
+                        @userInitial
+
+                    </a>
+
+
+
+                    <!-- LOGOUT -->
+
+                    <form asp-area=""
+                          asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="aw-navbar-logout-form"
+                          data-no-loading>
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="aw-navbar-logout">
+
+                            Выйти
+
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <!-- LOGIN -->
+
+                    <a asp-area=""
+                       asp-controller="Account"
+                       asp-action="Login"
+                       class="aw-navbar-login">
+
+                        Войти
+
+                    </a>
+
+
+                    <!-- REGISTER -->
+
+                    <a asp-area=""
+                       asp-controller="Account"
+                       asp-action="Register"
+                       class="aw-navbar-register">
+
+                        Регистрация
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================================
+         TOAST: SUCCESS
+         ========================================================= -->
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="aw-toast aw-toast-success"
+             data-aw-toast>
+
+            <div class="aw-toast-icon">
+                ✓
+            </div>
+
+
+            <div class="aw-toast-content">
+
+                <span class="aw-toast-label">
+                    Успешно
+                </span>
+
+                <strong>
+                    @TempData["SuccessMessage"]
+                </strong>
+
+            </div>
+
+
+            <button type="button"
+                    class="aw-toast-close"
+                    data-aw-toast-close
+                    aria-label="Закрыть">
+
+                ×
+
+            </button>
+
+
+            <div class="aw-toast-progress">
+            </div>
+
+        </div>
+    }
+
+
+
+    <!-- =========================================================
+         TOAST: ERROR
+         ========================================================= -->
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="aw-toast aw-toast-error"
+             data-aw-toast>
+
+            <div class="aw-toast-icon">
+                !
+            </div>
+
+
+            <div class="aw-toast-content">
+
+                <span class="aw-toast-label">
+                    Ошибка
+                </span>
+
+                <strong>
+                    @TempData["ErrorMessage"]
+                </strong>
+
+            </div>
+
+
+            <button type="button"
+                    class="aw-toast-close"
+                    data-aw-toast-close
+                    aria-label="Закрыть">
+
+                ×
+
+            </button>
+
+
+            <div class="aw-toast-progress">
+            </div>
+
+        </div>
+    }
+
+
+
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
+    <main class="aw-page-enter">
+
+        @RenderBody()
+
+    </main>
+
+
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+
+    <footer class="aw-footer">
+
+        <div class="aw-footer-container">
+
+
+            <div class="aw-footer-brand">
+
+                <div class="aw-footer-logo">
+
+                    <span>
+                        A
+                    </span>
+
+                    AnimeWave
+
+                </div>
+
+
+                <p>
+                    Твой мир аниме.
+                </p>
+
+            </div>
+
+
+
+            <div class="aw-footer-links">
+
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    Главная
+
+                </a>
+
+
+                <a asp-area=""
+                   asp-controller="Anime"
+                   asp-action="Index">
+
+                    Каталог
+
+                </a>
+
+
+                @if (isAuthenticated)
+                {
+                    <a asp-area=""
+                       asp-controller="Favorites"
+                       asp-action="Index">
+
+                        Избранное
+
+                    </a>
+                }
+
+            </div>
+
+
+
+            <div class="aw-footer-copy">
+
+                © @DateTime.Now.Year AnimeWave
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =========================================================
+         GLOBAL JAVASCRIPT
+         ========================================================= -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+
+                /* =================================================
+                   TOAST NOTIFICATIONS
+                   ================================================= */
+
+                const toasts =
+                    document.querySelectorAll(
+                        "[data-aw-toast]"
+                    );
+
+
+                toasts.forEach(
+                    function (toast, index) {
+
+                        const closeButton =
+                            toast.querySelector(
+                                "[data-aw-toast-close]"
+                            );
+
+
+                        /* SHOW */
+
+                        setTimeout(
+                            function () {
+
+                                toast.classList.add(
+                                    "aw-toast-show"
+                                );
+
+                            },
+                            100 + (index * 120)
+                        );
+
+
+                        /* HIDE */
+
+                        function hideToast() {
+
+                            if (
+                                toast.classList.contains(
+                                    "aw-toast-hide"
+                                )
+                            ) {
+                                return;
+                            }
+
+
+                            toast.classList.remove(
+                                "aw-toast-show"
+                            );
+
+
+                            toast.classList.add(
+                                "aw-toast-hide"
+                            );
+
+
+                            setTimeout(
+                                function () {
+
+                                    toast.remove();
+
+                                },
+                                450
+                            );
+                        }
+
+
+                        /* CLOSE BUTTON */
+
+                        if (closeButton) {
+
+                            closeButton.addEventListener(
+                                "click",
+                                hideToast
+                            );
+
+                        }
+
+
+                        /* AUTO CLOSE */
+
+                        setTimeout(
+                            hideToast,
+                            4300 + (index * 300)
+                        );
+
+                    }
+                );
+
+
+
+                /* =================================================
+                   CARD REVEAL
+                   Плавное появление карточек
+                   ================================================= */
+
+                const revealSelectors = [
+
+                    ".aw-home-card",
+
+                    ".aw-anime-card",
+
+                    ".anime-card",
+
+                    ".aw-favorite-card",
+
+                    ".aw-admin-row",
+
+                    ".aw-episode-admin-card"
+
+                ];
+
+
+                const cards =
+                    document.querySelectorAll(
+                        revealSelectors.join(",")
+                    );
+
+
+                if (
+                    "IntersectionObserver"
+                    in window
+                ) {
+
+                    const observer =
+                        new IntersectionObserver(
+                            function (entries) {
+
+                                entries.forEach(
+                                    function (entry) {
+
+                                        if (
+                                            !entry.isIntersecting
+                                        ) {
+                                            return;
+                                        }
+
+
+                                        const card =
+                                            entry.target;
+
+
+                                        const delay =
+                                            Number(
+                                                card.dataset
+                                                    .awRevealDelay
+                                                || 0
+                                            );
+
+
+                                        setTimeout(
+                                            function () {
+
+                                                card.classList.add(
+                                                    "aw-card-visible"
+                                                );
+
+                                            },
+                                            delay
+                                        );
+
+
+                                        observer.unobserve(
+                                            card
+                                        );
+
+                                    }
+                                );
+
+                            },
+                            {
+                                threshold: 0.06
+                            }
+                        );
+
+
+                    cards.forEach(
+                        function (card, index) {
+
+                            card.classList.add(
+                                "aw-card-reveal"
+                            );
+
+
+                            card.dataset.awRevealDelay =
+                                Math.min(
+                                    (index % 10) * 45,
+                                    300
+                                );
+
+
+                            observer.observe(
+                                card
+                            );
+
+                        }
+                    );
+
+                }
+                else {
+
+                    cards.forEach(
+                        function (card) {
+
+                            card.classList.add(
+                                "aw-card-visible"
+                            );
+
+                        }
+                    );
+
+                }
+
+
+
+                /* =================================================
+                   FORM BUTTON LOADING
+                   ================================================= */
+
+                const forms =
+                    document.querySelectorAll(
+                        "form:not([data-no-loading])"
+                    );
+
+
+                forms.forEach(
+                    function (form) {
+
+                        form.addEventListener(
+                            "submit",
+                            function () {
+
+
+                                /* Если HTML5 validation не прошла,
+                                   loading не показываем */
+
+                                if (
+                                    !form.checkValidity()
+                                ) {
+                                    return;
+                                }
+
+
+                                const submitButton =
+                                    form.querySelector(
+                                        "button[type='submit']"
+                                    );
+
+
+                                if (!submitButton) {
+                                    return;
+                                }
+
+
+                                /* Не запускаем повторно */
+
+                                if (
+                                    submitButton.classList
+                                        .contains(
+                                            "aw-button-loading"
+                                        )
+                                ) {
+                                    return;
+                                }
+
+
+                                submitButton.classList.add(
+                                    "aw-button-loading"
+                                );
+
+
+                                submitButton.dataset
+                                    .originalHtml =
+                                    submitButton.innerHTML;
+
+
+                                setTimeout(
+                                    function () {
+
+                                        submitButton.innerHTML =
+                                            '<span class="aw-button-spinner"></span> Сохранение...';
+
+                                    },
+                                    80
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                /* =================================================
+                   IMAGE FADE-IN
+                   ================================================= */
+
+                const images =
+                    document.querySelectorAll(
+                        "img"
+                    );
+
+
+                images.forEach(
+                    function (image) {
+
+                        if (
+                            image.complete
+                            &&
+                            image.naturalWidth > 0
+                        ) {
+
+                            image.classList.add(
+                                "aw-image-loaded"
+                            );
+
+                            return;
+                        }
+
+
+                        image.addEventListener(
+                            "load",
+                            function () {
+
+                                image.classList.add(
+                                    "aw-image-loaded"
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                /* =================================================
+                   SKELETON LOADING
+                   ================================================= */
+
+                const gridSelectors = [
+
+                    ".aw-home-grid",
+
+                    ".aw-catalog-grid",
+
+                    ".aw-anime-grid",
+
+                    ".aw-favorites-grid"
+
+                ];
+
+
+                const grids =
+                    document.querySelectorAll(
+                        gridSelectors.join(",")
+                    );
+
+
+                grids.forEach(
+                    function (grid) {
+
+                        const realCards =
+                            Array.from(
+                                grid.children
+                            );
+
+
+                        if (
+                            realCards.length === 0
+                        ) {
+                            return;
+                        }
+
+
+                        const parent =
+                            grid.parentElement;
+
+
+                        if (!parent) {
+                            return;
+                        }
+
+
+                        const skeleton =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        skeleton.className =
+                            "aw-skeleton-layer";
+
+
+                        const count =
+                            Math.min(
+                                realCards.length,
+                                8
+                            );
+
+
+                        for (
+                            let i = 0;
+                            i < count;
+                            i++
+                        ) {
+
+                            const skeletonCard =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            skeletonCard.className =
+                                "aw-skeleton-card";
+
+
+                            skeletonCard.innerHTML = `
+                                <div class="aw-skeleton-poster"></div>
+
+                                <div class="aw-skeleton-line aw-skeleton-title"></div>
+
+                                <div class="aw-skeleton-line aw-skeleton-small"></div>
+                            `;
+
+
+                            skeleton.appendChild(
+                                skeletonCard
+                            );
+
+                        }
+
+
+                        parent.classList.add(
+                            "aw-skeleton-host"
+                        );
+
+
+                        parent.insertBefore(
+                            skeleton,
+                            grid
+                        );
+
+
+                        grid.classList.add(
+                            "aw-grid-loading"
+                        );
+
+
+                        function finishSkeleton() {
+
+                            setTimeout(
+                                function () {
+
+                                    skeleton.classList.add(
+                                        "aw-skeleton-hide"
+                                    );
+
+
+                                    grid.classList.remove(
+                                        "aw-grid-loading"
+                                    );
+
+
+                                    setTimeout(
+                                        function () {
+
+                                            skeleton.remove();
+
+                                        },
+                                        420
+                                    );
+
+                                },
+                                180
+                            );
+
+                        }
+
+
+                        if (
+                            document.readyState ===
+                            "complete"
+                        ) {
+
+                            finishSkeleton();
+
+                        }
+                        else {
+
+                            window.addEventListener(
+                                "load",
+                                finishSkeleton,
+                                {
+                                    once: true
+                                }
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+
+    <!-- =========================================================
+     PAGE-SPECIFIC SCRIPTS
+     Скрипты отдельных страниц
+     ========================================================= -->
+    @await Html.PartialAsync("_SmartSearch")
+
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
+
+</body>
+
+</html>

@@ -1,0 +1,330 @@
+﻿@model AnimeWave.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Профиль";
+}
+
+
+<section class="aw-profile-page">
+
+    <div class="aw-profile-container">
+
+
+        <!-- =====================================================
+             PROFILE HERO
+             ===================================================== -->
+
+        <div class="aw-profile-hero">
+
+
+            <div class="aw-profile-glow">
+            </div>
+
+
+            <div class="aw-profile-user">
+
+
+                <!-- AVATAR -->
+
+                <div class="aw-profile-avatar">
+
+                    <span>
+                        @Model.Initial
+                    </span>
+
+                    <i>
+                    </i>
+
+                </div>
+
+
+
+                <!-- USER -->
+
+                <div class="aw-profile-user-info">
+
+                    <span class="aw-profile-eyebrow">
+                        ANIMEWAVE PROFILE
+                    </span>
+
+
+                    <h1>
+                        @Model.UserName
+                    </h1>
+
+
+                    <p>
+                        @Model.Email
+                    </p>
+
+
+                    <div class="aw-profile-member">
+
+                        <span>
+                            Участник AnimeWave
+                        </span>
+
+                        <strong>
+                            с @Model.CreatedAt.ToLocalTime()
+                            .ToString("dd.MM.yyyy")
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DECOR -->
+
+            <div class="aw-profile-decoration">
+                AW
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             STATS
+             ===================================================== -->
+
+        <div class="aw-profile-stats">
+
+
+            <a asp-controller="Favorites"
+               asp-action="Index"
+               class="aw-profile-stat">
+
+                <span class="aw-profile-stat-label">
+                    ИЗБРАННОЕ
+                </span>
+
+
+                <strong>
+                    @Model.FavoritesCount
+                </strong>
+
+
+                <small>
+                    сохранённых аниме
+                </small>
+
+            </a>
+
+
+
+            <div class="aw-profile-stat">
+
+                <span class="aw-profile-stat-label">
+                    ПРОСМОТРЕНО
+                </span>
+
+
+                <strong>
+                    @Model.ViewedCount
+                </strong>
+
+
+                <small>
+                    открытых тайтлов
+                </small>
+
+            </div>
+
+
+
+            <div class="aw-profile-stat">
+
+                <span class="aw-profile-stat-label">
+                    СТАТУС
+                </span>
+
+
+                <strong class="aw-profile-status">
+                    ACTIVE
+                </strong>
+
+
+                <small>
+                    аккаунт AnimeWave
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             RECENT
+             ===================================================== -->
+
+        <section class="aw-profile-recent">
+
+
+            <div class="aw-profile-section-head">
+
+                <div>
+
+                    <span>
+                        WATCH HISTORY
+                    </span>
+
+
+                    <h2>
+                        Недавно смотрели
+                    </h2>
+
+                </div>
+
+
+                <a asp-controller="Anime"
+                   asp-action="Index">
+
+                    Перейти в каталог →
+
+                </a>
+
+            </div>
+
+
+
+            @if (Model.RecentAnime.Any())
+            {
+                <div class="aw-profile-recent-grid">
+
+                    @foreach (var anime in Model.RecentAnime)
+                    {
+                        <a asp-controller="Anime"
+                           asp-action="Details"
+                           asp-route-id="@anime.Id"
+                           class="aw-profile-anime-card">
+
+
+                            <div class="aw-profile-poster">
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    anime.PosterUrl))
+                                {
+                                    <img src="@anime.PosterUrl"
+                                         alt="@anime.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div class="aw-profile-no-poster">
+
+                                        ANIMEWAVE
+
+                                    </div>
+                                }
+
+
+                                <span class="aw-profile-rating">
+
+                                    ★ @anime.Rating.ToString("0.0")
+
+                                </span>
+
+
+                                <div class="aw-profile-card-hover">
+
+                                    <div>
+                                        ▶
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="aw-profile-card-info">
+
+                                <h3>
+                                    @anime.Title
+                                </h3>
+
+
+                                <div class="aw-profile-card-meta">
+
+                                    <span>
+                                        @anime.ReleaseYear
+                                    </span>
+
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        anime.AgeRating))
+                                    {
+                                        <i></i>
+
+                                        <span>
+                                            @anime.AgeRating
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                <small>
+
+                                    Просмотрено
+                                    @anime.ViewedAt
+                                    .ToLocalTime()
+                                    .ToString("dd.MM • HH:mm")
+
+                                </small>
+
+                            </div>
+
+                        </a>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <!-- =============================================
+                     EMPTY HISTORY
+                     ============================================= -->
+
+                <div class="aw-profile-empty">
+
+                    <div class="aw-profile-empty-icon">
+                        ▶
+                    </div>
+
+
+                    <span>
+                        WATCH HISTORY
+                    </span>
+
+
+                    <h3>
+                        История пока пустая
+                    </h3>
+
+
+                    <p>
+                        Открой любое аниме из каталога,
+                        и оно появится здесь.
+                    </p>
+
+
+                    <a asp-controller="Anime"
+                       asp-action="Index">
+
+                        Открыть каталог
+
+                    </a>
+
+                </div>
+            }
+
+        </section>
+
+    </div>
+
+</section>

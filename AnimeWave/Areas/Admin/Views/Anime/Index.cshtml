@@ -1,0 +1,626 @@
+﻿@model IEnumerable<AnimeWave.Models.Anime>
+
+@{
+    ViewData["Title"] = "Админ-панель";
+
+    var animeList =
+        Model?.ToList()
+        ?? new List<AnimeWave.Models.Anime>();
+
+    var totalAnime =
+        animeList.Count;
+
+    var completedCount =
+        animeList.Count(a =>
+            a.Status == "Завершён");
+
+    var ongoingCount =
+        animeList.Count(a =>
+            a.Status == "Выходит");
+
+    var averageRating =
+        animeList.Any()
+            ? animeList.Average(a => a.Rating)
+            : 0;
+}
+
+
+<section class="aw-admin-page">
+
+    <div class="aw-admin-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="aw-admin-header">
+
+            <div class="aw-admin-header-text">
+
+                <span class="aw-admin-eyebrow">
+                    ANIMEWAVE CONTROL CENTER
+                </span>
+
+                <h1>
+                    Управление
+                    <span>аниме</span>
+                </h1>
+
+                <p>
+                    Добавляй, редактируй и управляй
+                    каталогом AnimeWave.
+                </p>
+
+            </div>
+
+
+            <a asp-area="Admin"
+               asp-controller="Anime"
+               asp-action="Create"
+               class="aw-admin-create">
+
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z" />
+
+                </svg>
+
+                <span>
+                    Добавить аниме
+                </span>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             STATISTICS
+             ===================================================== -->
+
+        <div class="aw-admin-stats">
+
+
+            <!-- TOTAL -->
+
+            <div class="aw-admin-stat-card">
+
+                <div class="aw-admin-stat-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M4 4h16v16H4V4Zm2 2v12h12V6H6Zm2 2h8v2H8V8Zm0 4h8v4H8v-4Z" />
+
+                    </svg>
+
+                </div>
+
+
+                <div class="aw-admin-stat-info">
+
+                    <span>
+                        Всего аниме
+                    </span>
+
+                    <strong>
+                        @totalAnime
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- COMPLETED -->
+
+            <div class="aw-admin-stat-card">
+
+                <div class="aw-admin-stat-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="m9 16.2-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5L9 16.2Z" />
+
+                    </svg>
+
+                </div>
+
+
+                <div class="aw-admin-stat-info">
+
+                    <span>
+                        Завершено
+                    </span>
+
+                    <strong>
+                        @completedCount
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ONGOING -->
+
+            <div class="aw-admin-stat-card">
+
+                <div class="aw-admin-stat-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         aria-hidden="true">
+
+                        <path d="M8 5v14l11-7L8 5Z" />
+
+                    </svg>
+
+                </div>
+
+
+                <div class="aw-admin-stat-info">
+
+                    <span>
+                        Выходит
+                    </span>
+
+                    <strong>
+                        @ongoingCount
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RATING -->
+
+            <div class="aw-admin-stat-card">
+
+                <div class="aw-admin-stat-icon aw-admin-star">
+                    ★
+                </div>
+
+
+                <div class="aw-admin-stat-info">
+
+                    <span>
+                        Средний рейтинг
+                    </span>
+
+                    <strong>
+                        @averageRating.ToString("0.0")
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             CATALOG HEADER
+             ===================================================== -->
+
+        <div class="aw-admin-content-header">
+
+            <div>
+
+                <h2>
+                    Каталог
+                </h2>
+
+                <span>
+                    @totalAnime записей
+                </span>
+
+            </div>
+
+
+            <a asp-area=""
+               asp-controller="Anime"
+               asp-action="Index"
+               class="aw-admin-view-site">
+
+                Открыть каталог
+
+                <svg viewBox="0 0 24 24"
+                     aria-hidden="true">
+
+                    <path d="M14 5v2h3.59l-8.3 8.29 1.42 1.42L19 8.41V12h2V5h-7Z" />
+
+                </svg>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             EMPTY STATE
+             ===================================================== -->
+        @if (!animeList.Any())
+        {
+            <div class="aw-admin-empty">
+
+                <div class="aw-admin-empty-icon">
+                    A
+                </div>
+
+
+                <h2>
+                    Каталог пока пуст
+                </h2>
+
+
+                <p>
+                    Добавь первое аниме в AnimeWave.
+                </p>
+
+
+                <a asp-area="Admin"
+                   asp-controller="Anime"
+                   asp-action="Create">
+
+                    Добавить аниме
+
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <!-- =================================================
+                 TABLE
+                 ================================================= -->
+
+            <div class="aw-admin-table-wrap">
+
+                <table class="aw-admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="aw-id-column">
+                                ID
+                            </th>
+
+                            <th>
+                                Аниме
+                            </th>
+
+                            <th>
+                                Год
+                            </th>
+
+                            <th>
+                                Рейтинг
+                            </th>
+
+                            <th>
+                                Статус
+                            </th>
+
+                            <th>
+                                Серии
+                            </th>
+
+                            <th class="aw-actions-column">
+                                Действия
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var anime in animeList)
+                        {
+                            <tr>
+
+
+                                <!-- =====================================
+                                     ID
+                                     ===================================== -->
+
+                                <td class="aw-admin-id">
+
+                                    #@anime.Id
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     ANIME
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="aw-admin-anime-info">
+
+
+                                        <!-- POSTER -->
+
+                                        <a asp-area=""
+                                           asp-controller="Anime"
+                                           asp-action="Details"
+                                           asp-route-id="@anime.Id"
+                                           class="aw-admin-poster">
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                anime.PosterUrl))
+                                            {
+                                                <img src="@anime.PosterUrl"
+                                                     alt="@anime.Title"
+                                                     loading="lazy"
+                                                     onerror="this.style.display='none';" />
+                                            }
+                                            else
+                                            {
+                                                <span>
+                                                    A
+                                                </span>
+                                            }
+
+                                        </a>
+
+
+
+                                        <!-- TEXT -->
+
+                                        <div class="aw-admin-anime-text">
+
+                                            <a asp-area=""
+                                               asp-controller="Anime"
+                                               asp-action="Details"
+                                               asp-route-id="@anime.Id"
+                                               class="aw-admin-anime-title">
+
+                                                @anime.Title
+
+                                            </a>
+
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                anime.OriginalTitle))
+                                            {
+                                                <span>
+                                                    @anime.OriginalTitle
+                                                </span>
+                                            }
+
+
+                                            @if (
+                                                anime.AnimeGenres != null
+                                                &&
+                                                anime.AnimeGenres.Any()
+                                            )
+                                            {
+                                                <div class="aw-admin-mini-genres">
+
+                                                    @foreach (
+                                                        var animeGenre
+                                                        in anime.AnimeGenres
+                                                            .Where(ag =>
+                                                                ag.Genre != null)
+                                                            .Take(2)
+                                                    )
+                                                    {
+                                                        <span>
+                                                            @animeGenre.Genre.Name
+                                                        </span>
+                                                    }
+
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     YEAR
+                                     ===================================== -->
+
+                                <td>
+
+                                    <span class="aw-admin-year">
+                                        @anime.ReleaseYear
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     RATING
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="aw-admin-rating">
+
+                                        <span>
+                                            ★
+                                        </span>
+
+                                        @anime.Rating.ToString("0.0")
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     STATUS
+                                     ===================================== -->
+
+                                <td>
+
+                                    @{
+                                        string statusClass =
+                                            anime.Status switch
+                                            {
+                                                "Выходит"
+                                                    => "is-ongoing",
+
+                                                "Завершён"
+                                                    => "is-completed",
+
+                                                "Анонс"
+                                                    => "is-announced",
+
+                                                "Анонсирован"
+                                                    => "is-announced",
+
+                                                _
+                                                    => "is-default"
+                                            };
+                                    }
+
+
+                                    <span class="aw-admin-status @statusClass">
+
+                                        <i></i>
+
+                                        @(string.IsNullOrWhiteSpace(anime.Status)
+                                            ? "Не указан"
+                                            : anime.Status)
+
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     EPISODES COUNT
+                                     Это просто количество серий аниме.
+                                     Управление сериями мы убрали.
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="aw-admin-episodes-count">
+
+                                        <strong>
+                                            @anime.EpisodesCount
+                                        </strong>
+
+                                        <span>
+                                            серий
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- =====================================
+                                     ACTIONS
+                                     ===================================== -->
+
+                                <td>
+
+                                    <div class="aw-admin-row-actions">
+
+
+                                        <!-- EDIT -->
+
+                                        <a asp-area="Admin"
+                                           asp-controller="Anime"
+                                           asp-action="Edit"
+                                           asp-route-id="@anime.Id"
+                                           class="aw-admin-action-button"
+                                           title="Редактировать">
+
+                                            <svg viewBox="0 0 24 24"
+                                                 aria-hidden="true">
+
+                                                <path d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75L4 17.25ZM20.71 6.04a1 1 0 0 0 0-1.41l-1.34-1.34a1 1 0 0 0-1.41 0l-1.05 1.05 2.75 2.75 1.05-1.05Z" />
+
+                                            </svg>
+
+                                            <span>
+                                                Изменить
+                                            </span>
+
+                                        </a>
+
+
+
+                                        <!-- =================================
+                                             DELETE
+                                             ВАЖНО:
+                                             теперь это FORM POST,
+                                             а не обычная ссылка GET.
+                                             ================================= -->
+
+                                        <form asp-area="Admin"
+                                              asp-controller="Anime"
+                                              asp-action="Delete"
+                                              asp-route-id="@anime.Id"
+                                              method="post"
+                                              data-no-loading
+                                              style="margin: 0;"
+                                              onsubmit="return confirm('Удалить это аниме? Действие нельзя отменить.');">
+
+                                            @Html.AntiForgeryToken()
+
+
+                                            <button type="submit"
+                                                    class="aw-admin-action-button aw-admin-action-delete"
+                                                    title="Удалить">
+
+                                                <svg viewBox="0 0 24 24"
+                                                     aria-hidden="true">
+
+                                                    <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Zm3-9h2v8H9v-8Zm4 0h2v8h-2v-8Zm2.5-6-1-1h-5l-1 1H5v2h14V4h-3.5Z" />
+
+                                                </svg>
+
+                                                <span>
+                                                    Удалить
+                                                </span>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</section>

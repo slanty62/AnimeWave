@@ -1,0 +1,271 @@
+﻿@model AnimeWave.Models.Anime
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<section class="anime-details-page">
+
+    <div class="anime-details-glow"></div>
+
+    <div class="anime-details-container">
+
+        <!-- ПОСТЕР -->
+        <div class="details-poster-only">
+
+            <img src="@Model.PosterUrl"
+                 alt="@Model.Title"
+                 onerror="this.src='/images/no-poster.jpg'" />
+
+        </div>
+
+
+        <!-- ИНФОРМАЦИЯ -->
+        <div class="details-main-info">
+
+            <span class="hero-label">
+                ANIMEWAVE
+            </span>
+
+
+            <h1>
+                @Model.Title
+            </h1>
+
+
+            @if (!string.IsNullOrWhiteSpace(Model.OriginalTitle))
+            {
+                <div class="original-title">
+                    @Model.OriginalTitle
+                </div>
+            }
+
+
+            <!-- ГОД / РЕЙТИНГ / ВОЗРАСТ -->
+            <div class="details-meta">
+
+                <span class="rating">
+                    ★ @Model.Rating
+                </span>
+
+                <span>
+                    @Model.ReleaseYear
+                </span>
+
+                @if (!string.IsNullOrWhiteSpace(Model.AgeRating))
+                {
+                    <span class="age">
+                        @Model.AgeRating
+                    </span>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.Status))
+                {
+                    <span>
+                        @Model.Status
+                    </span>
+                }
+
+                <span>
+                    @Model.EpisodesCount серий
+                </span>
+
+            </div>
+
+
+            <!-- ЖАНРЫ -->
+            <div class="hero-genres">
+
+                @foreach (var item in Model.AnimeGenres)
+                {
+                    <span>
+                        @item.Genre.Name
+                    </span>
+                }
+
+            </div>
+
+
+            <!-- ОПИСАНИЕ -->
+            <p class="details-description">
+                @Model.Description
+            </p>
+
+
+            <!-- КНОПКИ -->
+            <div class="hero-actions">
+
+                @if (Model.Episodes.Any())
+                {
+                    var firstEpisode =
+                        Model.Episodes
+                            .OrderBy(e => e.EpisodeNumber)
+                            .First();
+
+                    <a asp-controller="Anime"
+                       asp-action="Watch"
+                       asp-route-animeId="@Model.Id"
+                       asp-route-episodeId="@firstEpisode.Id"
+                       class="watch-button">
+
+                        <span>
+                            ▶
+                        </span>
+
+                        Смотреть
+
+                    </a>
+                }
+                else
+                {
+                    <button class="watch-button"
+                            disabled>
+
+                        ▶ Смотреть
+
+                    </button>
+                }
+
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Favorites"
+                          asp-action="Toggle"
+                          method="post">
+
+                        <input type="hidden"
+                               name="animeId"
+                               value="@Model.Id" />
+
+                        <button class="list-button"
+                                type="submit">
+
+                            @if ((bool)ViewBag.IsFavorite)
+                            {
+                                <text>
+                                    ✓ В избранном
+                                </text>
+                            }
+                            else
+                            {
+                                <text>
+                                    ＋ В избранное
+                                </text>
+                            }
+
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account"
+                       asp-action="Login"
+                       class="list-button">
+
+                        ＋ В избранное
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     СЕРИИ
+     ============================== -->
+
+<section class="episodes-section">
+
+    <div class="section-heading">
+
+        <h2>
+            Серии
+        </h2>
+
+        <span class="episodes-count">
+            @Model.Episodes.Count серий
+        </span>
+
+    </div>
+
+
+    @if (!Model.Episodes.Any())
+    {
+        <div class="empty-block">
+
+            <h3>
+                Серии пока не добавлены
+            </h3>
+
+            <p>
+                В AnimeWave пока нет доступных серий этого аниме.
+            </p>
+
+        </div>
+    }
+
+
+    <div class="episode-list">
+
+        @foreach (var episode in Model.Episodes)
+        {
+            <a asp-controller="Anime"
+               asp-action="Watch"
+               asp-route-animeId="@Model.Id"
+               asp-route-episodeId="@episode.Id"
+               class="episode-card">
+
+                <div class="episode-image">
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        episode.ThumbnailUrl))
+                    {
+                        <img src="@episode.ThumbnailUrl"
+                             alt="Серия @episode.EpisodeNumber" />
+                    }
+
+                    <div class="episode-play">
+                        ▶
+                    </div>
+
+                </div>
+
+
+                <div class="episode-info">
+
+                    <div class="episode-number">
+                        СЕРИЯ @episode.EpisodeNumber
+                    </div>
+
+                    <h3>
+                        @episode.Title
+                    </h3>
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        episode.Description))
+                    {
+                        <p>
+                            @episode.Description
+                        </p>
+                    }
+
+                    <span>
+                        @episode.DurationMinutes мин.
+                    </span>
+
+                </div>
+
+            </a>
+        }
+
+    </div>
+
+</section>

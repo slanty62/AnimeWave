@@ -1,0 +1,862 @@
+﻿@model AnimeWave.ViewModels.EpisodeFormViewModel
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+    ViewData["Title"] = "Добавить серию";
+
+    var anime =
+        ViewBag.Anime as AnimeWave.Models.Anime;
+}
+
+
+<section class="ep-create-page">
+
+    <div class="ep-create-container">
+
+
+        <!-- =========================================
+             HEADER
+             ========================================= -->
+
+        <div class="ep-create-header">
+
+            <a href="@Url.Action(
+                                       "Index",
+                                       "Episodes",
+                                       new
+                                       {
+                                           area = "Admin",
+                                           animeId = Model.AnimeId
+                                       })"
+               class="ep-create-back">
+
+                ← Назад к сериям
+
+            </a>
+
+
+            <span class="ep-create-eyebrow">
+                ANIMEWAVE EPISODE MANAGER
+            </span>
+
+
+            <h1>
+                Добавить
+                <span>серию</span>
+            </h1>
+
+
+            @if (anime != null)
+            {
+                <p>
+                    Добавление демонстрационного эпизода для
+                    <strong>@anime.Title</strong>.
+                </p>
+            }
+            else
+            {
+                <p>
+                    Добавление нового демонстрационного эпизода.
+                </p>
+            }
+
+        </div>
+
+
+
+        <!-- =========================================
+             FORM
+             ========================================= -->
+
+        <form action="@Url.Action(
+                                      "Create",
+                                      "Episodes",
+                                      new
+                                      {
+                                          area = "Admin"
+                                      })"
+              method="post"
+              class="ep-create-form">
+
+            @Html.AntiForgeryToken()
+
+
+            <!-- ОБЯЗАТЕЛЬНО:
+                 передаёт ID аниме в POST -->
+
+            <input asp-for="AnimeId"
+                   type="hidden" />
+
+
+            <!-- =====================================
+                 ОБЩИЕ ОШИБКИ
+                 ===================================== -->
+
+            <div asp-validation-summary="All"
+                 class="ep-create-validation">
+            </div>
+
+
+            <div class="ep-create-layout">
+
+
+                <!-- =================================
+                     LEFT SIDE
+                     ================================= -->
+
+                <div class="ep-create-left">
+
+
+                    <!-- =============================
+                         01. ОСНОВНАЯ ИНФОРМАЦИЯ
+                         ============================= -->
+
+                    <div class="ep-create-card">
+
+                        <div class="ep-create-card-header">
+
+                            <div>
+                                <span>
+                                    01
+                                </span>
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Основная информация
+                                </h2>
+
+                                <p>
+                                    Номер, название и описание серии.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ep-create-grid">
+
+
+                            <!-- НОМЕР СЕРИИ -->
+
+                            <div class="ep-create-field">
+
+                                <label asp-for="EpisodeNumber">
+
+                                    Номер серии
+                                    <b>*</b>
+
+                                </label>
+
+
+                                <input asp-for="EpisodeNumber"
+                                       type="number"
+                                       min="1"
+                                       step="1"
+                                       placeholder="1" />
+
+
+                                <span asp-validation-for="EpisodeNumber"
+                                      class="ep-create-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- ДЛИТЕЛЬНОСТЬ -->
+
+                            <div class="ep-create-field">
+
+                                <label asp-for="DurationMinutes">
+                                    Продолжительность
+                                </label>
+
+
+                                <div class="ep-duration-wrap">
+
+                                    <input asp-for="DurationMinutes"
+                                           type="number"
+                                           min="1"
+                                           step="1"
+                                           placeholder="24" />
+
+                                    <span>
+                                        мин.
+                                    </span>
+
+                                </div>
+
+
+                                <span asp-validation-for="DurationMinutes"
+                                      class="ep-create-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- НАЗВАНИЕ -->
+
+                            <div class="ep-create-field ep-create-full">
+
+                                <label asp-for="Title">
+
+                                    Название серии
+                                    <b>*</b>
+
+                                </label>
+
+
+                                <input asp-for="Title"
+                                       maxlength="200"
+                                       autocomplete="off"
+                                       placeholder="Например: К тебе, спустя 2000 лет" />
+
+
+                                <span asp-validation-for="Title"
+                                      class="ep-create-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- ОПИСАНИЕ -->
+
+                            <div class="ep-create-field ep-create-full">
+
+                                <label asp-for="Description">
+                                    Описание
+                                </label>
+
+
+                                <textarea asp-for="Description"
+                                          rows="6"
+                                          maxlength="1000"
+                                          placeholder="Краткое описание событий серии..."></textarea>
+
+
+                                <small>
+                                    До 1000 символов. Для демонстрации
+                                    достаточно 1–3 предложений.
+                                </small>
+
+
+                                <span asp-validation-for="Description"
+                                      class="ep-create-error">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =============================
+                         02. ПРЕВЬЮ
+                         ============================= -->
+
+                    <div class="ep-create-card">
+
+                        <div class="ep-create-card-header">
+
+                            <div>
+                                <span>
+                                    02
+                                </span>
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Превью серии
+                                </h2>
+
+                                <p>
+                                    Эта картинка будет имитировать видео.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ep-create-field">
+
+                            <label asp-for="ThumbnailUrl">
+                                Путь к изображению
+                            </label>
+
+
+                            <input asp-for="ThumbnailUrl"
+                                   maxlength="500"
+                                   autocomplete="off"
+                                   placeholder="/images/episodes/aot-01.jpg" />
+
+
+                            <small>
+                                Рекомендуемый размер: 1280 × 720 px.
+                                Формат: JPG.
+                            </small>
+
+
+                            <span asp-validation-for="ThumbnailUrl"
+                                  class="ep-create-error">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =============================
+                         03. ДОПОЛНИТЕЛЬНО
+                         ============================= -->
+
+                    <div class="ep-create-card">
+
+                        <div class="ep-create-card-header">
+
+                            <div>
+                                <span>
+                                    03
+                                </span>
+                            </div>
+
+
+                            <div>
+
+                                <h2>
+                                    Дополнительно
+                                </h2>
+
+                                <p>
+                                    При желании укажи дату выхода.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="ep-create-field ep-date-field">
+
+                            <label asp-for="ReleaseDate">
+                                Дата выхода
+                            </label>
+
+
+                            <input asp-for="ReleaseDate"
+                                   asp-format="{0:yyyy-MM-dd}"
+                                   type="date" />
+
+
+                            <span asp-validation-for="ReleaseDate"
+                                  class="ep-create-error">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =============================
+                         BUTTONS
+                         ============================= -->
+
+                    <div class="ep-create-actions">
+
+                        <button type="submit"
+                                class="ep-create-submit">
+
+                            + Добавить серию
+
+                        </button>
+
+
+                        <a href="@Url.Action(
+                                                               "Index",
+                                                               "Episodes",
+                                                               new
+                                                               {
+                                                                   area = "Admin",
+                                                                   animeId = Model.AnimeId
+                                                               })"
+                           class="ep-create-cancel">
+
+                            Отмена
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================
+                     RIGHT PREVIEW
+                     ================================= -->
+
+                <aside class="ep-create-preview">
+
+                    <div class="ep-create-preview-sticky">
+
+
+                        <div class="ep-preview-label">
+
+                            <i></i>
+
+                            LIVE PREVIEW
+
+                        </div>
+
+
+
+                        <!-- =========================
+                             FAKE PLAYER
+                             ========================= -->
+
+                        <div class="ep-preview-player">
+
+
+                            <!-- PLACEHOLDER -->
+
+                            <div id="previewPlaceholder"
+                                 class="ep-preview-placeholder @(string.IsNullOrWhiteSpace(Model.ThumbnailUrl) ? "" : "ep-hidden")">
+
+                                <span class="ep-preview-placeholder-icon">
+                                    ▶
+                                </span>
+
+                                <p>
+                                    Превью серии
+                                </p>
+
+                            </div>
+
+
+
+                            <!-- IMAGE -->
+
+                            <img id="previewImage"
+                                 src="@Model.ThumbnailUrl"
+                                 alt="Предпросмотр серии"
+                                 class="@(string.IsNullOrWhiteSpace(Model.ThumbnailUrl) ? "ep-hidden" : "")" />
+
+
+
+                            <!-- DARK OVERLAY -->
+
+                            <div class="ep-preview-overlay">
+                            </div>
+
+
+
+                            <!-- PLAY -->
+
+                            <div class="ep-preview-play">
+                                ▶
+                            </div>
+
+
+
+                            <!-- DEMO LABEL -->
+
+                            <div class="ep-preview-demo">
+                                DEMO
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =========================
+                             PREVIEW INFO
+                             ========================= -->
+
+                        <div class="ep-preview-info">
+
+
+                            @if (anime != null)
+                            {
+                                <div class="ep-preview-anime">
+
+                                    @anime.Title
+
+                                </div>
+                            }
+
+
+                            <span id="previewEpisodeNumber"
+                                  class="ep-preview-number">
+
+                                СЕРИЯ @(Model.EpisodeNumber > 0
+                                                                    ? Model.EpisodeNumber
+                                                                    : 1)
+
+                            </span>
+
+
+                            <h3 id="previewTitle">
+
+                                @(string.IsNullOrWhiteSpace(Model.Title)
+                                    ? "Название серии"
+                                    : Model.Title)
+
+                            </h3>
+
+
+                            <p id="previewDescription">
+
+                                @(string.IsNullOrWhiteSpace(Model.Description)
+                                    ? "Здесь появится описание серии."
+                                    : Model.Description)
+
+                            </p>
+
+
+                            <div class="ep-preview-meta">
+
+                                <span>
+                                    ◷
+                                </span>
+
+                                <span id="previewDuration">
+
+                                    @(Model.DurationMinutes > 0
+                                        ? Model.DurationMinutes
+                                        : 24)
+                                    мин.
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =========================
+                             HELP
+                             ========================= -->
+
+                        <div class="ep-preview-help">
+
+                            <strong>
+                                Где хранить картинку?
+                            </strong>
+
+
+                            <p>
+
+                                Помести её в:
+
+                                <code>
+                                    wwwroot/images/episodes
+                                </code>
+
+                            </p>
+
+
+                            <p>
+
+                                В форме укажи:
+
+                                <code>
+                                    /images/episodes/aot-01.jpg
+                                </code>
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+@section Scripts
+{
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                // =====================================
+                // INPUTS
+                // =====================================
+
+                const numberInput =
+                    document.getElementById(
+                        "EpisodeNumber"
+                    );
+
+                const titleInput =
+                    document.getElementById(
+                        "Title"
+                    );
+
+                const descriptionInput =
+                    document.getElementById(
+                        "Description"
+                    );
+
+                const durationInput =
+                    document.getElementById(
+                        "DurationMinutes"
+                    );
+
+                const thumbnailInput =
+                    document.getElementById(
+                        "ThumbnailUrl"
+                    );
+
+
+                // =====================================
+                // PREVIEW
+                // =====================================
+
+                const numberPreview =
+                    document.getElementById(
+                        "previewEpisodeNumber"
+                    );
+
+                const titlePreview =
+                    document.getElementById(
+                        "previewTitle"
+                    );
+
+                const descriptionPreview =
+                    document.getElementById(
+                        "previewDescription"
+                    );
+
+                const durationPreview =
+                    document.getElementById(
+                        "previewDuration"
+                    );
+
+                const previewImage =
+                    document.getElementById(
+                        "previewImage"
+                    );
+
+                const placeholder =
+                    document.getElementById(
+                        "previewPlaceholder"
+                    );
+
+
+
+                // =====================================
+                // NUMBER
+                // =====================================
+
+                if (numberInput && numberPreview) {
+                    numberInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const value =
+                                numberInput.value.trim();
+
+                            numberPreview.textContent =
+                                "СЕРИЯ "
+                                + (value || "1");
+
+                        }
+                    );
+                }
+
+
+
+                // =====================================
+                // TITLE
+                // =====================================
+
+                if (titleInput && titlePreview) {
+                    titleInput.addEventListener(
+                        "input",
+                        function() {
+
+                            titlePreview.textContent =
+                                titleInput.value.trim()
+                                || "Название серии";
+
+                        }
+                    );
+                }
+
+
+
+                // =====================================
+                // DESCRIPTION
+                // =====================================
+
+                if (
+                    descriptionInput
+                    &&
+                    descriptionPreview
+                ) {
+                    descriptionInput.addEventListener(
+                        "input",
+                        function() {
+
+                            descriptionPreview.textContent =
+                                descriptionInput.value.trim()
+                                || "Здесь появится описание серии.";
+
+                        }
+                    );
+                }
+
+
+
+                // =====================================
+                // DURATION
+                // =====================================
+
+                if (
+                    durationInput
+                    &&
+                    durationPreview
+                ) {
+                    durationInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const value =
+                                durationInput.value.trim();
+
+                            durationPreview.textContent =
+                                (value || "24")
+                                + " мин.";
+
+                        }
+                    );
+                }
+
+
+
+                // =====================================
+                // IMAGE
+                // =====================================
+
+                function showPlaceholder() {
+                    if (previewImage) {
+                        previewImage.classList.add(
+                            "ep-hidden"
+                        );
+                    }
+
+                    if (placeholder) {
+                        placeholder.classList.remove(
+                            "ep-hidden"
+                        );
+                    }
+                }
+
+
+                function showImage() {
+                    if (previewImage) {
+                        previewImage.classList.remove(
+                            "ep-hidden"
+                        );
+                    }
+
+                    if (placeholder) {
+                        placeholder.classList.add(
+                            "ep-hidden"
+                        );
+                    }
+                }
+
+
+                function updatePreviewImage() {
+                    if (
+                        !thumbnailInput
+                        ||
+                        !previewImage
+                    ) {
+                        return;
+                    }
+
+
+                    const path =
+                        thumbnailInput.value.trim();
+
+
+                    if (!path) {
+                        showPlaceholder();
+
+                        return;
+                    }
+
+
+                    previewImage.src =
+                        path
+                        + "?v="
+                        + Date.now();
+
+
+                    showImage();
+                }
+
+
+
+                if (thumbnailInput) {
+                    thumbnailInput.addEventListener(
+                        "input",
+                        updatePreviewImage
+                    );
+                }
+
+
+
+                if (previewImage) {
+                    previewImage.addEventListener(
+                        "error",
+                        function() {
+
+                            showPlaceholder();
+
+                        }
+                    );
+
+
+                    previewImage.addEventListener(
+                        "load",
+                        function() {
+
+                            showImage();
+
+                        }
+                    );
+                }
+
+            }
+        );
+
+    </script>
+}
