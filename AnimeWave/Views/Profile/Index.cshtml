@@ -26,14 +26,13 @@
 
                 <!-- AVATAR -->
 
-                <div class="aw-profile-avatar">
+                <div class="aw-profile-avatar aw-avatar-@Model.AvatarStyle">
 
                     <span>
-                        @Model.Initial
+                        @Model.AvatarSymbol
                     </span>
 
-                    <i>
-                    </i>
+                    <i></i>
 
                 </div>
 
@@ -56,6 +55,14 @@
                     <p>
                         @Model.Email
                     </p>
+
+                    <a asp-controller="Profile"
+                       asp-action="Edit"
+                       class="aw-profile-edit-link">
+
+                        ✦ Редактировать профиль
+
+                    </a>
 
 
                     <div class="aw-profile-member">

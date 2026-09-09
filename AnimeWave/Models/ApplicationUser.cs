@@ -8,12 +8,17 @@ namespace AnimeWave.Models
         [MaxLength(100)]
         public string? DisplayName { get; set; }
 
+
+        [MaxLength(30)]
+        public string AvatarStyle { get; set; }
+            = "violet";
+
+
         public DateTime CreatedAt { get; set; }
             = DateTime.UtcNow;
 
-        public ICollection<ViewingHistory>
-            ViewingHistories
-        { get; set; }
+
+        public ICollection<ViewingHistory> ViewingHistories { get; set; }
             = new List<ViewingHistory>();
     }
 }

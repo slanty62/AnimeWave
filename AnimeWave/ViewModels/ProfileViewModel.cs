@@ -11,17 +11,23 @@
         public string Initial { get; set; }
             = "A";
 
+        public string AvatarStyle { get; set; }
+            = "violet";
+
+        public string AvatarSymbol { get; set; }
+            = "月";
+
         public DateTime CreatedAt { get; set; }
 
         public int FavoritesCount { get; set; }
 
         public int ViewedCount { get; set; }
 
-        public List<ProfileRecentAnimeViewModel> RecentAnime
-        {
-            get;
-            set;
-        } = new();
+
+        public List<ProfileRecentAnimeViewModel>
+            RecentAnime
+        { get; set; }
+            = new();
     }
 
 

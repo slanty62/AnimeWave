@@ -1,0 +1,496 @@
+﻿@model AnimeWave.ViewModels.ProfileEditViewModel
+
+@{
+    ViewData["Title"] = "Редактирование профиля";
+
+    var currentAvatar =
+        Model.AvatarOptions
+            .FirstOrDefault(
+                a => a.Id == Model.AvatarStyle
+            );
+
+    var currentSymbol =
+        currentAvatar?.Symbol
+        ?? "月";
+}
+
+
+<section class="aw-profile-edit-page">
+
+    <div class="aw-profile-edit-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <div class="aw-profile-edit-header">
+
+            <a asp-controller="Profile"
+               asp-action="Index"
+               class="aw-profile-edit-back">
+
+                ← Назад в профиль
+
+            </a>
+
+
+            <span>
+                ACCOUNT SETTINGS
+            </span>
+
+
+            <h1>
+                Настройки
+                <strong>профиля</strong>
+            </h1>
+
+
+            <p>
+                Измени имя, аватар, email
+                или пароль аккаунта AnimeWave.
+            </p>
+
+        </div>
+
+
+
+        <form asp-controller="Profile"
+              asp-action="Edit"
+              method="post"
+              class="aw-profile-edit-form">
+
+            @Html.AntiForgeryToken()
+
+
+            <div asp-validation-summary="ModelOnly"
+                 class="aw-profile-edit-validation">
+            </div>
+
+
+
+            <div class="aw-profile-edit-layout">
+
+
+                <!-- =================================================
+                     LEFT
+                     ================================================= -->
+
+                <div class="aw-profile-edit-main">
+
+
+                    <!-- =============================================
+                         AVATAR
+                         ============================================= -->
+
+                    <section class="aw-profile-edit-card">
+
+                        <div class="aw-profile-edit-card-head">
+
+                            <span>
+                                01
+                            </span>
+
+
+                            <div>
+
+                                <h2>
+                                    Аватар
+                                </h2>
+
+
+                                <p>
+                                    Выбери стиль своего профиля.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-profile-avatar-options">
+
+                            @foreach (
+                                var avatar
+                                in Model.AvatarOptions
+                            )
+                            {
+                                <label class="aw-profile-avatar-option">
+
+                                    <input type="radio"
+                                           asp-for="AvatarStyle"
+                                           value="@avatar.Id"
+                                           data-avatar-symbol="@avatar.Symbol" />
+
+
+                                    <span class="aw-profile-avatar-choice aw-avatar-@avatar.Id">
+
+                                        <strong>
+                                            @avatar.Symbol
+                                        </strong>
+
+                                    </span>
+
+
+                                    <small>
+                                        @avatar.Name
+                                    </small>
+
+                                </label>
+                            }
+
+                        </div>
+
+
+                        <span asp-validation-for="AvatarStyle"
+                              class="aw-profile-edit-error">
+                        </span>
+
+                    </section>
+
+
+
+                    <!-- =============================================
+                         ACCOUNT
+                         ============================================= -->
+
+                    <section class="aw-profile-edit-card">
+
+                        <div class="aw-profile-edit-card-head">
+
+                            <span>
+                                02
+                            </span>
+
+
+                            <div>
+
+                                <h2>
+                                    Основная информация
+                                </h2>
+
+
+                                <p>
+                                    Имя и email аккаунта.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-profile-edit-fields">
+
+
+                            <div class="aw-profile-edit-field">
+
+                                <label asp-for="DisplayName">
+                                    Отображаемое имя
+                                </label>
+
+
+                                <input asp-for="DisplayName"
+                                       placeholder="Ваше имя" />
+
+
+                                <span asp-validation-for="DisplayName"
+                                      class="aw-profile-edit-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="aw-profile-edit-field">
+
+                                <label asp-for="Email">
+                                    Email
+                                </label>
+
+
+                                <input asp-for="Email"
+                                       type="email"
+                                       placeholder="name@example.com" />
+
+
+                                <small>
+                                    Для изменения email потребуется текущий пароль.
+                                </small>
+
+
+                                <span asp-validation-for="Email"
+                                      class="aw-profile-edit-error">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- =============================================
+                         PASSWORD
+                         ============================================= -->
+
+                    <section class="aw-profile-edit-card">
+
+                        <div class="aw-profile-edit-card-head">
+
+                            <span>
+                                03
+                            </span>
+
+
+                            <div>
+
+                                <h2>
+                                    Безопасность
+                                </h2>
+
+
+                                <p>
+                                    Пароль можно оставить без изменений.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="aw-profile-edit-fields">
+
+
+                            <div class="aw-profile-edit-field">
+
+                                <label asp-for="CurrentPassword">
+                                    Текущий пароль
+                                </label>
+
+
+                                <input asp-for="CurrentPassword"
+                                       type="password"
+                                       autocomplete="current-password"
+                                       placeholder="••••••••" />
+
+
+                                <span asp-validation-for="CurrentPassword"
+                                      class="aw-profile-edit-error">
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="aw-profile-edit-two">
+
+
+                                <div class="aw-profile-edit-field">
+
+                                    <label asp-for="NewPassword">
+                                        Новый пароль
+                                    </label>
+
+
+                                    <input asp-for="NewPassword"
+                                           type="password"
+                                           autocomplete="new-password"
+                                           placeholder="Минимум 6 символов" />
+
+
+                                    <span asp-validation-for="NewPassword"
+                                          class="aw-profile-edit-error">
+                                    </span>
+
+                                </div>
+
+
+
+                                <div class="aw-profile-edit-field">
+
+                                    <label asp-for="ConfirmNewPassword">
+                                        Повторите пароль
+                                    </label>
+
+
+                                    <input asp-for="ConfirmNewPassword"
+                                           type="password"
+                                           autocomplete="new-password"
+                                           placeholder="Повторите пароль" />
+
+
+                                    <span asp-validation-for="ConfirmNewPassword"
+                                          class="aw-profile-edit-error">
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- =============================================
+                         ACTIONS
+                         ============================================= -->
+
+                    <div class="aw-profile-edit-actions">
+
+                        <button type="submit"
+                                class="aw-profile-edit-save">
+
+                            Сохранить изменения
+
+                        </button>
+
+
+                        <a asp-controller="Profile"
+                           asp-action="Index">
+
+                            Отмена
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PREVIEW
+                     ================================================= -->
+
+                <aside class="aw-profile-edit-preview">
+
+                    <div class="aw-profile-edit-preview-sticky">
+
+                        <span class="aw-profile-preview-label">
+                            PROFILE PREVIEW
+                        </span>
+
+
+                        <div id="profileAvatarPreview"
+                             class="aw-profile-preview-avatar aw-avatar-@Model.AvatarStyle">
+
+                            <span id="profileAvatarSymbol">
+                                @currentSymbol
+                            </span>
+
+                        </div>
+
+
+                        <h3 id="profileNamePreview">
+                            @Model.DisplayName
+                        </h3>
+
+
+                        <p>
+                            @Model.Email
+                        </p>
+
+
+                        <div class="aw-profile-preview-status">
+
+                            <i></i>
+
+                            ACTIVE MEMBER
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <script>
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const avatarPreview =
+                    document.getElementById(
+                        "profileAvatarPreview"
+                    );
+
+                const avatarSymbol =
+                    document.getElementById(
+                        "profileAvatarSymbol"
+                    );
+
+                const nameInput =
+                    document.getElementById(
+                        "DisplayName"
+                    );
+
+                const namePreview =
+                    document.getElementById(
+                        "profileNamePreview"
+                    );
+
+
+                const avatarInputs =
+                    document.querySelectorAll(
+                        "input[name='AvatarStyle']"
+                    );
+
+
+                avatarInputs.forEach(
+                    function (input) {
+
+                        input.addEventListener(
+                            "change",
+                            function () {
+
+                                avatarPreview.className =
+                                    "aw-profile-preview-avatar aw-avatar-"
+                                    + input.value;
+
+
+                                avatarSymbol.textContent =
+                                    input.dataset.avatarSymbol;
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                if (nameInput) {
+
+                    nameInput.addEventListener(
+                        "input",
+                        function () {
+
+                            namePreview.textContent =
+                                nameInput.value.trim()
+                                ||
+                                "AnimeWave User";
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+    </script>
+}
