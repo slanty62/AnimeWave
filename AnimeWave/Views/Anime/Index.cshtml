@@ -1,141 +1,194 @@
 ﻿@model IEnumerable<AnimeWave.Models.Anime>
 
+@using AnimeWave.Models
+@using System.Globalization
+
 @{
     ViewData["Title"] = "Каталог";
 
+    var animeList =
+        Model?.ToList()
+        ?? new List<Anime>();
+
+
     var genres =
-        ViewBag.Genres
-        as List<AnimeWave.Models.Genre>;
+        ViewBag.Genres as IEnumerable<Genre>
+        ?? Enumerable.Empty<Genre>();
+
 
     string currentSearch =
-        ViewBag.Search?.ToString() ?? "";
+        ViewBag.Search?.ToString()
+        ?? string.Empty;
 
-    int? currentGenre =
-        ViewBag.GenreId as int?;
-
-    decimal? currentRating =
-        ViewBag.MinRating as decimal?;
 
     string currentSort =
-        ViewBag.Sort?.ToString() ?? "rating";
+        ViewBag.Sort?.ToString()
+        ?? "rating";
+
+
+    int currentPage =
+        Convert.ToInt32(
+            ViewBag.CurrentPage ?? 1
+        );
+
+
+    int totalPages =
+        Convert.ToInt32(
+            ViewBag.TotalPages ?? 1
+        );
+
+
+    int pageSize =
+        Convert.ToInt32(
+            ViewBag.PageSize ?? 12
+        );
+
+
+    int totalItems =
+        Convert.ToInt32(
+            ViewBag.TotalItems ?? 0
+        );
+
+
+    int? currentGenreId = null;
+
+    if (ViewBag.GenreId != null)
+    {
+        currentGenreId =
+            Convert.ToInt32(
+                ViewBag.GenreId
+            );
+    }
+
+
+    decimal? currentMinRating = null;
+
+    if (ViewBag.MinRating != null)
+    {
+        currentMinRating =
+            Convert.ToDecimal(
+                ViewBag.MinRating
+            );
+    }
+
+
+    string? minRatingRoute =
+        currentMinRating.HasValue
+            ? currentMinRating.Value.ToString(
+                CultureInfo.InvariantCulture
+            )
+            : null;
+
+
+    bool hasFilters =
+        !string.IsNullOrWhiteSpace(currentSearch)
+        ||
+        currentGenreId.HasValue
+        ||
+        currentMinRating.HasValue
+        ||
+        currentSort != "rating";
 }
 
 
-<section class="aw-catalog">
+<section class="aw-catalog-page">
 
-    <!-- =========================================
-         ЗАГОЛОВОК
-         ========================================= -->
-
-    <div class="aw-catalog-top">
-
-        <div class="aw-catalog-title-block">
-
-            <span class="aw-eyebrow">
-                ANIMEWAVE LIBRARY
-            </span>
-
-            <h1>
-                Каталог
-                <span>аниме</span>
-            </h1>
-
-            <p>
-                Исследуй коллекцию AnimeWave,
-                находи новые истории и сохраняй
-                любимые тайтлы.
-            </p>
-
-        </div>
-
-        <div class="aw-catalog-stat">
-
-            <span>
-                Найдено
-            </span>
-
-            <strong>
-                @Model.Count()
-            </strong>
-
-            <small>
-                тайтлов
-            </small>
-
-        </div>
-
-    </div>
+    <div class="aw-catalog-container">
 
 
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
 
-    <!-- =========================================
-         ФИЛЬТРЫ
-         ========================================= -->
+        <header class="aw-catalog-header">
 
-    <form method="get"
-          asp-controller="Anime"
-          asp-action="Index"
-          class="aw-filter-panel">
+            <div>
+
+                <span class="aw-catalog-eyebrow">
+                    EXPLORE ANIMEWAVE
+                </span>
 
 
-        <!-- ПОИСК -->
+                <h1>
+                    Каталог
+                    <strong>аниме</strong>
+                </h1>
 
-        <div class="aw-search-field">
 
-            <div class="aw-search-icon">
-
-                <svg viewBox="0 0 24 24"
-                     aria-hidden="true">
-
-                    <path d="M11 4a7 7 0 1 0 0 14
-                    7 7 0 0 0 0-14Zm-9 7
-                    a9 9 0 1 1 16.03 5.62
-                    l4.17 4.17-1.41 1.41
-                    -4.17-4.17A9 9 0 0 1 2 11Z" />
-
-                </svg>
+                <p>
+                    Найди следующий тайтл для просмотра.
+                </p>
 
             </div>
 
-            <input type="text"
-                   name="search"
-                   value="@currentSearch"
-                   placeholder="Название аниме..." />
-
-            @if (!string.IsNullOrWhiteSpace(currentSearch))
-            {
-                <a asp-controller="Anime"
-                   asp-action="Index"
-                   class="aw-search-clear"
-                   title="Очистить поиск">
-
-                    ×
-
-                </a>
-            }
-
-        </div>
+        </header>
 
 
-        <!-- ЖАНР -->
 
-        <div class="aw-select-wrap">
+        <!-- =====================================================
+             FILTERS
+             ===================================================== -->
 
-            <label>
-                Жанр
-            </label>
+        <form asp-controller="Anime"
+              asp-action="Index"
+              method="get"
+              class="aw-catalog-filters"
+              data-no-loading>
 
-            <select name="genreId">
 
-                <option value="">
-                    Все жанры
-                </option>
+            <!-- SEARCH -->
 
-                @if (genres != null)
-                {
-                    foreach (var genre in genres)
+            <div class="aw-catalog-search">
+
+                <span class="aw-catalog-search-icon">
+                    ⌕
+                </span>
+
+
+                <input type="text"
+                       name="search"
+                       value="@currentSearch"
+                       placeholder="Поиск по названию..."
+                       autocomplete="off" />
+
+            </div>
+
+
+
+            <!-- GENRE -->
+
+            <div class="aw-catalog-filter-field">
+
+                <label for="catalogGenre">
+                    Жанр
+                </label>
+
+
+                <select id="catalogGenre"
+                        name="genreId">
+
+                    @if (!currentGenreId.HasValue)
                     {
-                        if (currentGenre == genre.Id)
+                        <option value=""
+                                selected>
+                            Все жанры
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="">
+                            Все жанры
+                        </option>
+                    }
+
+
+                    @foreach (var genre in genres)
+                    {
+                        if (
+                            currentGenreId.HasValue
+                            &&
+                            currentGenreId.Value == genre.Id
+                        )
                         {
                             <option value="@genre.Id"
                                     selected>
@@ -149,365 +202,553 @@
                             </option>
                         }
                     }
-                }
 
-            </select>
+                </select>
 
-        </div>
-
-
-        <!-- РЕЙТИНГ -->
-
-        <div class="aw-select-wrap">
-
-            <label>
-                Рейтинг от
-            </label>
-
-            <select name="minRating">
-
-                <option value="">
-                    Любой
-                </option>
-
-                @if (currentRating == 9)
-                {
-                    <option value="9"
-                            selected>
-                        ★ 9.0
-                    </option>
-                }
-                else
-                {
-                    <option value="9">
-                        ★ 9.0
-                    </option>
-                }
-
-
-                @if (currentRating == 8)
-                {
-                    <option value="8"
-                            selected>
-                        ★ 8.0
-                    </option>
-                }
-                else
-                {
-                    <option value="8">
-                        ★ 8.0
-                    </option>
-                }
-
-
-                @if (currentRating == 7)
-                {
-                    <option value="7"
-                            selected>
-                        ★ 7.0
-                    </option>
-                }
-                else
-                {
-                    <option value="7">
-                        ★ 7.0
-                    </option>
-                }
-
-
-                @if (currentRating == 6)
-                {
-                    <option value="6"
-                            selected>
-                        ★ 6.0
-                    </option>
-                }
-                else
-                {
-                    <option value="6">
-                        ★ 6.0
-                    </option>
-                }
-
-            </select>
-
-        </div>
-
-
-        <!-- СОРТИРОВКА -->
-
-        <div class="aw-select-wrap">
-
-            <label>
-                Сортировка
-            </label>
-
-            <select name="sort">
-
-                @if (currentSort == "rating")
-                {
-                    <option value="rating"
-                            selected>
-                        По рейтингу
-                    </option>
-                }
-                else
-                {
-                    <option value="rating">
-                        По рейтингу
-                    </option>
-                }
-
-
-                @if (currentSort == "new")
-                {
-                    <option value="new"
-                            selected>
-                        Сначала новые
-                    </option>
-                }
-                else
-                {
-                    <option value="new">
-                        Сначала новые
-                    </option>
-                }
-
-
-                @if (currentSort == "old")
-                {
-                    <option value="old"
-                            selected>
-                        Сначала старые
-                    </option>
-                }
-                else
-                {
-                    <option value="old">
-                        Сначала старые
-                    </option>
-                }
-
-
-                @if (currentSort == "title")
-                {
-                    <option value="title"
-                            selected>
-                        По названию
-                    </option>
-                }
-                else
-                {
-                    <option value="title">
-                        По названию
-                    </option>
-                }
-
-
-                @if (currentSort == "rating-low")
-                {
-                    <option value="rating-low"
-                            selected>
-                        Рейтинг ↑
-                    </option>
-                }
-                else
-                {
-                    <option value="rating-low">
-                        Рейтинг ↑
-                    </option>
-                }
-
-            </select>
-
-        </div>
-
-
-        <!-- КНОПКА -->
-
-        <button type="submit"
-                class="aw-filter-submit">
-
-            <svg viewBox="0 0 24 24">
-
-                <path d="M11 4a7 7 0 1 0 0 14
-                7 7 0 0 0 0-14Zm-9 7
-                a9 9 0 1 1 16.03 5.62
-                l4.17 4.17-1.41 1.41
-                -4.17-4.17A9 9 0 0 1 2 11Z" />
-
-            </svg>
-
-            <span>
-                Найти
-            </span>
-
-        </button>
-
-
-        <!-- СБРОС -->
-
-        <a asp-controller="Anime"
-           asp-action="Index"
-           class="aw-filter-reset">
-
-            Сбросить
-
-        </a>
-
-    </form>
-
-
-
-    <!-- =========================================
-         АКТИВНЫЕ ФИЛЬТРЫ
-         ========================================= -->
-    @if (!string.IsNullOrWhiteSpace(currentSearch)
-             || currentGenre.HasValue
-             || currentRating.HasValue)
-    {
-        <div class="aw-active-filters">
-
-            <span class="aw-active-title">
-                Активные фильтры:
-            </span>
-
-
-            @if (!string.IsNullOrWhiteSpace(currentSearch))
-            {
-                <span class="aw-filter-chip">
-
-                    Поиск:
-                    <strong>
-                        @currentSearch
-                    </strong>
-
-                </span>
-            }
-
-
-            @if (currentGenre.HasValue && genres != null)
-            {
-                var selectedGenre =
-                    genres.FirstOrDefault(
-                        g => g.Id == currentGenre.Value
-                    );
-
-                if (selectedGenre != null)
-                {
-                    <span class="aw-filter-chip">
-
-                        @selectedGenre.Name
-
-                    </span>
-                }
-            }
-
-
-            @if (currentRating.HasValue)
-            {
-                <span class="aw-filter-chip aw-rating-chip">
-
-                    ★ от @currentRating.Value.ToString("0.0")
-
-                </span>
-            }
-
-        </div>
-    }
-
-
-
-    <!-- =========================================
-         РЕЗУЛЬТАТЫ
-         ========================================= -->
-    @if (!Model.Any())
-    {
-        <div class="aw-no-results">
-
-            <div class="aw-no-results-icon">
-                🔎
             </div>
 
-            <h2>
-                Ничего не найдено
-            </h2>
 
-            <p>
-                Попробуй изменить поисковый запрос
-                или параметры фильтрации.
-            </p>
 
-            <a asp-controller="Anime"
-               asp-action="Index">
+            <!-- RATING -->
 
-                Показать весь каталог
+            <div class="aw-catalog-filter-field">
 
-            </a>
+                <label for="catalogRating">
+                    Рейтинг
+                </label>
+
+
+                <select id="catalogRating"
+                        name="minRating">
+
+                    @if (!currentMinRating.HasValue)
+                    {
+                        <option value=""
+                                selected>
+                            Любой
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="">
+                            Любой
+                        </option>
+                    }
+
+
+                    @if (currentMinRating == 7m)
+                    {
+                        <option value="7"
+                                selected>
+                            От 7.0
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="7">
+                            От 7.0
+                        </option>
+                    }
+
+
+                    @if (currentMinRating == 8m)
+                    {
+                        <option value="8"
+                                selected>
+                            От 8.0
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="8">
+                            От 8.0
+                        </option>
+                    }
+
+
+                    @if (currentMinRating == 8.5m)
+                    {
+                        <option value="8.5"
+                                selected>
+                            От 8.5
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="8.5">
+                            От 8.5
+                        </option>
+                    }
+
+
+                    @if (currentMinRating == 9m)
+                    {
+                        <option value="9"
+                                selected>
+                            От 9.0
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="9">
+                            От 9.0
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+
+
+            <!-- SORT -->
+
+            <div class="aw-catalog-filter-field">
+
+                <label for="catalogSort">
+                    Сортировка
+                </label>
+
+
+                <select id="catalogSort"
+                        name="sort">
+
+                    @if (currentSort == "rating")
+                    {
+                        <option value="rating"
+                                selected>
+                            Высокий рейтинг
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="rating">
+                            Высокий рейтинг
+                        </option>
+                    }
+
+
+                    @if (currentSort == "rating-low")
+                    {
+                        <option value="rating-low"
+                                selected>
+                            Низкий рейтинг
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="rating-low">
+                            Низкий рейтинг
+                        </option>
+                    }
+
+
+                    @if (currentSort == "new")
+                    {
+                        <option value="new"
+                                selected>
+                            Сначала новые
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="new">
+                            Сначала новые
+                        </option>
+                    }
+
+
+                    @if (currentSort == "old")
+                    {
+                        <option value="old"
+                                selected>
+                            Сначала старые
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="old">
+                            Сначала старые
+                        </option>
+                    }
+
+
+                    @if (currentSort == "title")
+                    {
+                        <option value="title"
+                                selected>
+                            По названию
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="title">
+                            По названию
+                        </option>
+                    }
+
+                </select>
+
+            </div>
+
+
+
+            <!-- KEEP PAGE SIZE -->
+
+            <input type="hidden"
+                   name="pageSize"
+                   value="@pageSize" />
+
+
+
+            <!-- APPLY -->
+
+            <button type="submit"
+                    class="aw-catalog-filter-submit">
+
+                Применить
+
+            </button>
+
+
+
+            <!-- RESET -->
+            @if (hasFilters)
+            {
+                <a asp-controller="Anime"
+                   asp-action="Index"
+                   asp-route-pageSize="@pageSize"
+                   class="aw-catalog-filter-reset">
+
+                    Сбросить
+
+                </a>
+            }
+
+        </form>
+
+
+
+        <!-- =====================================================
+             RESULTS BAR
+             ===================================================== -->
+
+        <div class="aw-catalog-pagination-top">
+
+            <div class="aw-catalog-result-count">
+
+                Найдено:
+
+                <strong>
+                    @totalItems
+                </strong>
+
+                @if (totalItems == 1)
+                {
+                    <text>аниме</text>
+                }
+                else
+                {
+                    <text>аниме</text>
+                }
+
+            </div>
+
+
+
+            <!-- PAGE SIZE -->
+
+            <form asp-controller="Anime"
+                  asp-action="Index"
+                  method="get"
+                  class="aw-page-size-form"
+                  data-no-loading>
+
+
+                @if (!string.IsNullOrWhiteSpace(currentSearch))
+                {
+                    <input type="hidden"
+                           name="search"
+                           value="@currentSearch" />
+                }
+
+
+                @if (currentGenreId.HasValue)
+                {
+                    <input type="hidden"
+                           name="genreId"
+                           value="@currentGenreId.Value" />
+                }
+
+
+                @if (currentMinRating.HasValue)
+                {
+                    <input type="hidden"
+                           name="minRating"
+                           value="@minRatingRoute" />
+                }
+
+
+                <input type="hidden"
+                       name="sort"
+                       value="@currentSort" />
+
+
+                <label for="catalogPageSize">
+                    Показывать
+                </label>
+
+
+                <select id="catalogPageSize"
+                        name="pageSize"
+                        onchange="this.form.submit()">
+
+                    @if (pageSize == 12)
+                    {
+                        <option value="12"
+                                selected>
+                            12
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="12">
+                            12
+                        </option>
+                    }
+
+
+                    @if (pageSize == 18)
+                    {
+                        <option value="18"
+                                selected>
+                            18
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="18">
+                            18
+                        </option>
+                    }
+
+                </select>
+
+            </form>
 
         </div>
-    }
-    else
-    {
-        <div class="aw-card-grid">
-
-            @foreach (var anime in Model)
-            {
-                <article class="aw-anime-card">
 
 
-                    <!-- ПОСТЕР -->
 
+        <!-- =====================================================
+             ACTIVE FILTERS
+             ===================================================== -->
+        @if (hasFilters)
+        {
+            <div class="aw-catalog-active-filters">
+
+
+                @if (!string.IsNullOrWhiteSpace(currentSearch))
+                {
+                    <span>
+                        Поиск:
+                        <strong>
+                            @currentSearch
+                        </strong>
+                    </span>
+                }
+
+
+                @if (currentGenreId.HasValue)
+                {
+                    var selectedGenre =
+                        genres.FirstOrDefault(
+                            g =>
+                                g.Id ==
+                                currentGenreId.Value
+                        );
+
+                    if (selectedGenre != null)
+                    {
+                        <span>
+                            Жанр:
+                            <strong>
+                                @selectedGenre.Name
+                            </strong>
+                        </span>
+                    }
+                }
+
+
+                @if (currentMinRating.HasValue)
+                {
+                    <span>
+                        Рейтинг:
+                        <strong>
+                            от @currentMinRating.Value.ToString("0.0")
+                        </strong>
+                    </span>
+                }
+
+            </div>
+        }
+
+
+
+        <!-- =====================================================
+             ANIME GRID
+             ===================================================== -->
+        @if (animeList.Any())
+        {
+            <div class="aw-catalog-grid">
+
+                @foreach (var anime in animeList)
+                {
                     <a asp-controller="Anime"
                        asp-action="Details"
                        asp-route-id="@anime.Id"
-                       class="aw-poster-link">
-
-                        <div class="aw-poster">
-
-                            <img src="@anime.PosterUrl"
-                                 alt="@anime.Title"
-                                 loading="lazy"
-                                 onerror="this.src='/images/no-poster.jpg'" />
+                       class="aw-anime-card">
 
 
-                            <!-- ЗАТЕМНЕНИЕ -->
+                        <!-- POSTER -->
 
-                            <div class="aw-poster-overlay"></div>
+                        <div class="aw-anime-card-poster">
 
-
-                            <!-- PLAY -->
-
-                            <div class="aw-card-play">
-
-                                <svg viewBox="0 0 24 24">
-
-                                    <path d="M8 5v14l11-7z" />
-
-                                </svg>
-
-                            </div>
-
-
-                            <!-- РЕЙТИНГ -->
-
-                            <div class="aw-card-rating">
-
-                                <span>
-                                    ★
-                                </span>
-
-                                @anime.Rating
-
-                            </div>
-
-
-                            <!-- СТАТУС -->
-                            @if (!string.IsNullOrWhiteSpace(anime.Status))
+                            @if (!string.IsNullOrWhiteSpace(
+                                anime.PosterUrl))
                             {
-                                <div class="aw-card-status">
+                                <img src="@anime.PosterUrl"
+                                     alt="@anime.Title"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                                <div class="aw-anime-card-no-image"
+                                     style="display:none;">
+
+                                    A
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="aw-anime-card-no-image">
+
+                                    A
+
+                                </div>
+                            }
+
+
+
+                            <!-- RATING -->
+
+                            <span class="aw-anime-card-rating">
+
+                                ★ @anime.Rating.ToString("0.0")
+
+                            </span>
+
+
+
+                            <!-- STATUS -->
+                            @if (!string.IsNullOrWhiteSpace(
+                                                            anime.Status))
+                            {
+                                <span class="aw-anime-card-status">
 
                                     @anime.Status
+
+                                </span>
+                            }
+
+
+
+                            <!-- HOVER -->
+
+                            <div class="aw-anime-card-overlay">
+
+                                <div class="aw-anime-card-play">
+                                    ▶
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- INFO -->
+
+                        <div class="aw-anime-card-info">
+
+                            <h2>
+                                @anime.Title
+                            </h2>
+
+
+                            @if (!string.IsNullOrWhiteSpace(
+                                anime.OriginalTitle))
+                            {
+                                <p class="aw-anime-card-original">
+
+                                    @anime.OriginalTitle
+
+                                </p>
+                            }
+
+
+                            <div class="aw-anime-card-meta">
+
+                                <span>
+                                    @anime.ReleaseYear
+                                </span>
+
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    anime.AgeRating))
+                                {
+                                    <i></i>
+
+                                    <span>
+                                        @anime.AgeRating
+                                    </span>
+                                }
+
+
+                                <i></i>
+
+
+                                <span>
+                                    @anime.EpisodesCount серий
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- GENRES -->
+                            @if (
+                                                            anime.AnimeGenres != null
+                                                            &&
+                                                            anime.AnimeGenres.Any()
+                                                        )
+                            {
+                                <div class="aw-anime-card-genres">
+
+                                    @foreach (
+                                        var animeGenre
+                                        in anime.AnimeGenres
+                                            .Where(
+                                                ag =>
+                                                    ag.Genre != null
+                                            )
+                                            .Take(2)
+                                    )
+                                    {
+                                        <span>
+                                            @animeGenre.Genre.Name
+                                        </span>
+                                    }
 
                                 </div>
                             }
@@ -515,71 +756,850 @@
                         </div>
 
                     </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <!-- =================================================
+                 EMPTY
+                 ================================================= -->
+
+            <div class="aw-catalog-empty">
+
+                <div class="aw-catalog-empty-icon">
+                    ⌕
+                </div>
+
+
+                <span>
+                    NO RESULTS
+                </span>
+
+
+                <h2>
+                    Ничего не найдено
+                </h2>
+
+
+                <p>
+                    Попробуй изменить запрос,
+                    жанр или минимальный рейтинг.
+                </p>
+
+
+                <a asp-controller="Anime"
+                   asp-action="Index"
+                   asp-route-pageSize="@pageSize">
+
+                    Очистить фильтры
+
+                </a>
+
+            </div>
+        }
 
 
 
-                    <!-- ИНФОРМАЦИЯ -->
+        <!-- =====================================================
+             PAGINATION
+             ===================================================== -->
+        @if (animeList.Any() && totalPages > 1)
+        {
+            int startPage =
+                Math.Max(
+                    1,
+                    currentPage - 2
+                );
 
-                    <div class="aw-card-info">
 
+            int endPage =
+                Math.Min(
+                    totalPages,
+                    currentPage + 2
+                );
+
+
+            <nav class="aw-pagination"
+                 aria-label="Навигация по страницам каталога">
+
+
+                <!-- =============================================
+                     PREVIOUS
+                     ============================================= -->
+                @if (currentPage > 1)
+                {
+                    <a asp-controller="Anime"
+                       asp-action="Index"
+                       asp-route-search="@currentSearch"
+                       asp-route-genreId="@currentGenreId"
+                       asp-route-minRating="@minRatingRoute"
+                       asp-route-sort="@currentSort"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-pageSize="@pageSize"
+                       class="aw-pagination-arrow">
+
+                        ←
+
+                        <span>
+                            Назад
+                        </span>
+
+                    </a>
+                }
+                else
+                {
+                    <span class="aw-pagination-arrow is-disabled">
+
+                        ←
+
+                        <span>
+                            Назад
+                        </span>
+
+                    </span>
+                }
+
+
+
+                <!-- =============================================
+                     PAGE NUMBERS
+                     ============================================= -->
+
+                <div class="aw-pagination-pages">
+
+
+                    <!-- FIRST PAGE -->
+                    @if (startPage > 1)
+                    {
                         <a asp-controller="Anime"
-                           asp-action="Details"
-                           asp-route-id="@anime.Id"
-                           class="aw-card-title">
+                           asp-action="Index"
+                           asp-route-search="@currentSearch"
+                           asp-route-genreId="@currentGenreId"
+                           asp-route-minRating="@minRatingRoute"
+                           asp-route-sort="@currentSort"
+                           asp-route-page="1"
+                           asp-route-pageSize="@pageSize"
+                           class="aw-pagination-page">
 
-                            @anime.Title
+                            1
 
                         </a>
 
 
-                        @if (!string.IsNullOrWhiteSpace(anime.OriginalTitle))
+                        @if (startPage > 2)
                         {
-                            <div class="aw-card-original">
+                            <span class="aw-pagination-dots">
 
-                                @anime.OriginalTitle
+                                •••
 
-                            </div>
+                            </span>
+                        }
+                    }
+
+
+
+                    <!-- MIDDLE PAGES -->
+                    @for (
+                                            int pageNumber = startPage;
+                                            pageNumber <= endPage;
+                                            pageNumber++
+                                        )
+                    {
+                        if (pageNumber == currentPage)
+                        {
+                            <span class="aw-pagination-page is-active"
+                                  aria-current="page">
+
+                                @pageNumber
+
+                            </span>
+                        }
+                        else
+                        {
+                            <a asp-controller="Anime"
+                               asp-action="Index"
+                               asp-route-search="@currentSearch"
+                               asp-route-genreId="@currentGenreId"
+                               asp-route-minRating="@minRatingRoute"
+                               asp-route-sort="@currentSort"
+                               asp-route-page="@pageNumber"
+                               asp-route-pageSize="@pageSize"
+                               class="aw-pagination-page">
+
+                                @pageNumber
+
+                            </a>
+                        }
+                    }
+
+
+
+                    <!-- LAST PAGE -->
+                    @if (endPage < totalPages)
+                    {
+                        @if (endPage < totalPages - 1)
+                        {
+                            <span class="aw-pagination-dots">
+
+                                •••
+
+                            </span>
                         }
 
 
-                        <div class="aw-card-meta">
+                        <a asp-controller="Anime"
+                           asp-action="Index"
+                           asp-route-search="@currentSearch"
+                           asp-route-genreId="@currentGenreId"
+                           asp-route-minRating="@minRatingRoute"
+                           asp-route-sort="@currentSort"
+                           asp-route-page="@totalPages"
+                           asp-route-pageSize="@pageSize"
+                           class="aw-pagination-page">
 
-                            <span>
-                                @anime.ReleaseYear
-                            </span>
+                            @totalPages
 
-                            @if (!string.IsNullOrWhiteSpace(anime.AgeRating))
-                            {
-                                <span class="aw-card-age">
-                                    @anime.AgeRating
-                                </span>
-                            }
+                        </a>
+                    }
 
-                            <span>
-                                @anime.EpisodesCount серий
-                            </span>
-
-                        </div>
+                </div>
 
 
-                        <div class="aw-card-genres">
 
-                            @foreach (var genre
-                                in anime.AnimeGenres.Take(2))
-                            {
-                                <span>
-                                    @genre.Genre.Name
-                                </span>
-                            }
+                <!-- =============================================
+                     NEXT
+                     ============================================= -->
+                @if (currentPage < totalPages)
+                {
+                    <a asp-controller="Anime"
+                       asp-action="Index"
+                       asp-route-search="@currentSearch"
+                       asp-route-genreId="@currentGenreId"
+                       asp-route-minRating="@minRatingRoute"
+                       asp-route-sort="@currentSort"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-pageSize="@pageSize"
+                       class="aw-pagination-arrow">
 
-                        </div>
+                        <span>
+                            Далее
+                        </span>
 
-                    </div>
+                        →
 
-                </article>
-            }
+                    </a>
+                }
+                else
+                {
+                    <span class="aw-pagination-arrow is-disabled">
 
-        </div>
-    }
+                        <span>
+                            Далее
+                        </span>
+
+                        →
+
+                    </span>
+                }
+
+            </nav>
+
+
+
+            <!-- PAGE INFO -->
+
+            <div class="aw-pagination-info">
+
+                Страница
+
+                <strong>
+                    @currentPage
+                </strong>
+
+                из
+
+                <strong>
+                    @totalPages
+                </strong>
+
+            </div>
+        }
+
+    </div>
 
 </section>
+
+
+
+<!-- =========================================================
+     CATALOG BASE STYLES
+     Если часть таких стилей уже есть в site.css,
+     новые правила просто уточнят внешний вид.
+     ========================================================= -->
+
+<style>
+
+    .aw-catalog-page {
+        min-height: 100vh;
+        padding: 110px 25px 90px;
+        background: radial-gradient( circle at 15% 0%, rgba(139,92,246,.08), transparent 25% ), #080a0f;
+        color: #fff;
+    }
+
+
+    .aw-catalog-container {
+        width: 100%;
+        max-width: 1450px;
+        margin: 0 auto;
+    }
+
+
+
+    /* =====================================================
+           HEADER
+           ===================================================== */
+
+    .aw-catalog-header {
+        margin-bottom: 30px;
+    }
+
+
+    .aw-catalog-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: #8b5cf6;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 2.5px;
+    }
+
+
+    .aw-catalog-header h1 {
+        margin: 0 0 8px;
+        color: #fff;
+        font-size: clamp( 42px, 5vw, 64px );
+        line-height: 1;
+        letter-spacing: -2.5px;
+    }
+
+
+        .aw-catalog-header h1 strong {
+            color: #a78bfa;
+        }
+
+
+    .aw-catalog-header p {
+        margin: 0;
+        color: #626a76;
+        font-size: 11px;
+    }
+
+
+
+    /* =====================================================
+           FILTERS
+           ===================================================== */
+
+    .aw-catalog-filters {
+        display: grid;
+        grid-template-columns: minmax(230px,1.5fr) repeat(3,minmax(140px,.7fr)) auto auto;
+        align-items: end;
+        gap: 10px;
+        margin-bottom: 22px;
+        padding: 17px;
+        border: 1px solid rgba(255,255,255,.05);
+        border-radius: 15px;
+        background: rgba(15,18,25,.78);
+    }
+
+
+    .aw-catalog-search {
+        position: relative;
+    }
+
+
+    .aw-catalog-search-icon {
+        position: absolute;
+        z-index: 2;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #70627f;
+        font-size: 16px;
+    }
+
+
+    .aw-catalog-search input {
+        width: 100%;
+        height: 43px;
+        padding: 0 14px 0 40px;
+        box-sizing: border-box;
+        border: 1px solid rgba(255,255,255,.06);
+        outline: none;
+        border-radius: 9px;
+        background: rgba(255,255,255,.025);
+        color: #fff;
+        font-family: inherit;
+        font-size: 9px;
+    }
+
+
+        .aw-catalog-search input:focus {
+            border-color: rgba(139,92,246,.4);
+        }
+
+
+    .aw-catalog-filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+
+        .aw-catalog-filter-field label {
+            color: #59616d;
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+
+        .aw-catalog-filter-field select {
+            height: 43px;
+            padding: 0 12px;
+            border: 1px solid rgba(255,255,255,.06);
+            outline: none;
+            border-radius: 9px;
+            background: #10131a;
+            color: #aeb4bd;
+            font-family: inherit;
+            font-size: 8px;
+            cursor: pointer;
+        }
+
+
+            .aw-catalog-filter-field select:focus {
+                border-color: rgba(139,92,246,.4);
+            }
+
+
+    .aw-catalog-filter-submit {
+        height: 43px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 9px;
+        background: linear-gradient( 135deg, #9b5cf6, #7c3aed );
+        color: #fff;
+        font-family: inherit;
+        font-size: 8px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+
+    .aw-catalog-filter-reset {
+        height: 43px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 13px;
+        box-sizing: border-box;
+        border: 1px solid rgba(255,255,255,.05);
+        border-radius: 9px;
+        color: #717986;
+        font-size: 8px;
+        text-decoration: none;
+    }
+
+
+        .aw-catalog-filter-reset:hover {
+            color: #fff;
+        }
+
+
+
+    /* =====================================================
+           ACTIVE FILTERS
+           ===================================================== */
+
+    .aw-catalog-active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: -7px 0 20px;
+    }
+
+
+        .aw-catalog-active-filters > span {
+            padding: 6px 9px;
+            border: 1px solid rgba(139,92,246,.10);
+            border-radius: 999px;
+            background: rgba(139,92,246,.04);
+            color: #646d79;
+            font-size: 7px;
+        }
+
+
+        .aw-catalog-active-filters strong {
+            color: #a78bfa;
+        }
+
+
+
+    /* =====================================================
+           GRID
+           ===================================================== */
+
+    .aw-catalog-grid {
+        display: grid;
+        grid-template-columns: repeat( 6, minmax(0,1fr) );
+        gap: 24px 15px;
+    }
+
+
+
+    /* =====================================================
+           CARD
+           ===================================================== */
+
+    .aw-anime-card {
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+        transition: transform .3s cubic-bezier(.22,1,.36,1);
+    }
+
+
+        .aw-anime-card:hover {
+            transform: translateY(-6px);
+        }
+
+
+    .aw-anime-card-poster {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        overflow: hidden;
+        border-radius: 11px;
+        background: #11141b;
+        box-shadow: 0 10px 30px rgba(0,0,0,.14);
+    }
+
+
+        .aw-anime-card-poster img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform .5s ease, filter .3s ease;
+        }
+
+
+    .aw-anime-card:hover
+    .aw-anime-card-poster img {
+        transform: scale(1.06);
+        filter: brightness(.70);
+    }
+
+
+    .aw-anime-card-no-image {
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient( 135deg, rgba(139,92,246,.08), rgba(255,255,255,.015) );
+        color: #5c4b77;
+        font-size: 30px;
+        font-weight: 900;
+    }
+
+
+
+    /* RATING */
+
+    .aw-anime-card-rating {
+        position: absolute;
+        z-index: 5;
+        top: 8px;
+        right: 8px;
+        padding: 5px 7px;
+        border-radius: 6px;
+        background: rgba(7,9,14,.84);
+        color: #fbbf24;
+        font-size: 8px;
+        font-weight: 850;
+        backdrop-filter: blur(8px);
+    }
+
+
+
+    /* STATUS */
+
+    .aw-anime-card-status {
+        position: absolute;
+        z-index: 5;
+        left: 8px;
+        bottom: 8px;
+        padding: 5px 7px;
+        border-radius: 6px;
+        background: rgba(7,9,14,.80);
+        color: #c4b5fd;
+        font-size: 7px;
+        font-weight: 750;
+        backdrop-filter: blur(8px);
+    }
+
+
+
+    /* OVERLAY */
+
+    .aw-anime-card-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        background: rgba(8,10,15,.08);
+        transition: opacity .25s ease;
+    }
+
+
+    .aw-anime-card:hover
+    .aw-anime-card-overlay {
+        opacity: 1;
+    }
+
+
+    .aw-anime-card-play {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 3px;
+        border-radius: 50%;
+        background: #fff;
+        color: #080a0f;
+        font-size: 11px;
+        transform: scale(.85);
+        transition: transform .25s ease;
+    }
+
+
+    .aw-anime-card:hover
+    .aw-anime-card-play {
+        transform: scale(1);
+    }
+
+
+
+    /* INFO */
+
+    .aw-anime-card-info {
+        padding: 10px 2px 0;
+    }
+
+
+        .aw-anime-card-info h2 {
+            margin: 0 0 5px;
+            overflow: hidden;
+            color: #f2f3f5;
+            font-size: 11px;
+            font-weight: 750;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+
+    .aw-anime-card-original {
+        margin: 0 0 6px;
+        overflow: hidden;
+        color: #505864;
+        font-size: 7px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .aw-anime-card-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        color: #5c6470;
+        font-size: 7px;
+    }
+
+
+        .aw-anime-card-meta i {
+            width: 3px;
+            height: 3px;
+            display: block;
+            border-radius: 50%;
+            background: #3f4651;
+        }
+
+
+    .aw-anime-card-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 7px;
+    }
+
+
+        .aw-anime-card-genres span {
+            padding: 4px 6px;
+            border: 1px solid rgba(255,255,255,.04);
+            border-radius: 5px;
+            background: rgba(255,255,255,.018);
+            color: #575f6b;
+            font-size: 6px;
+        }
+
+
+
+    /* =====================================================
+           EMPTY
+           ===================================================== */
+
+    .aw-catalog-empty {
+        padding: 85px 20px;
+        border: 1px dashed rgba(255,255,255,.06);
+        border-radius: 16px;
+        background: rgba(255,255,255,.01);
+        text-align: center;
+    }
+
+
+    .aw-catalog-empty-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        border-radius: 14px;
+        background: rgba(139,92,246,.06);
+        color: #8b5cf6;
+        font-size: 22px;
+    }
+
+
+    .aw-catalog-empty > span {
+        color: #8b5cf6;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+
+    .aw-catalog-empty h2 {
+        margin: 8px 0;
+        font-size: 21px;
+    }
+
+
+    .aw-catalog-empty p {
+        margin: 0 0 18px;
+        color: #59616d;
+        font-size: 9px;
+    }
+
+
+    .aw-catalog-empty a {
+        display: inline-flex;
+        padding: 10px 15px;
+        border-radius: 8px;
+        background: #8b5cf6;
+        color: #fff;
+        font-size: 8px;
+        font-weight: 750;
+        text-decoration: none;
+    }
+
+
+
+    /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+    @@media (max-width: 1250px) {
+
+        .aw-catalog-grid {
+            grid-template-columns: repeat(5,minmax(0,1fr));
+        }
+
+
+        .aw-catalog-filters {
+            grid-template-columns: repeat(3,minmax(0,1fr));
+        }
+
+
+        .aw-catalog-search {
+            grid-column: span 2;
+        }
+    }
+
+
+    @@media (max-width: 1000px) {
+
+        .aw-catalog-grid {
+            grid-template-columns: repeat(4,minmax(0,1fr));
+        }
+    }
+
+
+    @@media (max-width: 800px) {
+
+        .aw-catalog-grid {
+            grid-template-columns: repeat(3,minmax(0,1fr));
+        }
+
+
+        .aw-catalog-filters {
+            grid-template-columns: repeat(2,minmax(0,1fr));
+        }
+
+
+        .aw-catalog-search {
+            grid-column: span 2;
+        }
+    }
+
+
+    @@media (max-width: 600px) {
+
+        .aw-catalog-page {
+            padding: 95px 14px 60px;
+        }
+
+
+        .aw-catalog-grid {
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 19px 11px;
+        }
+
+
+        .aw-catalog-filters {
+            grid-template-columns: 1fr;
+            padding: 12px;
+        }
+
+
+        .aw-catalog-search {
+            grid-column: auto;
+        }
+
+
+        .aw-catalog-filter-submit,
+        .aw-catalog-filter-reset {
+            width: 100%;
+        }
+    }
+
+</style>

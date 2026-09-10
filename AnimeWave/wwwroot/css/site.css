@@ -10477,3 +10477,237 @@ button.aw-navbar-search {
         padding: 18px;
     }
 }
+
+/* =========================================================
+   ANIMEWAVE CATALOG PAGINATION
+   ========================================================= */
+
+.aw-catalog-pagination-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 0 0 22px;
+    padding: 0 2px;
+}
+
+
+.aw-catalog-result-count {
+    color: #5f6773;
+    font-size: 10px;
+}
+
+
+    .aw-catalog-result-count strong {
+        color: #c7cbd2;
+        font-weight: 800;
+    }
+
+
+/* =========================================================
+   PAGE SIZE
+   ========================================================= */
+
+.aw-page-size-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+    .aw-page-size-form label {
+        color: #555d69;
+        font-size: 8px;
+        font-weight: 650;
+    }
+
+
+    .aw-page-size-form select {
+        height: 31px;
+        padding: 0 27px 0 10px;
+        border: 1px solid rgba(255,255,255,.06);
+        outline: none;
+        border-radius: 8px;
+        background: #10131a;
+        color: #bbbfc7;
+        font-family: inherit;
+        font-size: 8px;
+        cursor: pointer;
+    }
+
+
+        .aw-page-size-form select:focus {
+            border-color: rgba(139,92,246,.40);
+        }
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.aw-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 45px;
+}
+
+
+.aw-pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+/* NUMBER */
+
+.aw-pagination-page {
+    min-width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 10px;
+    background: rgba(255,255,255,.018);
+    color: #747c88;
+    font-size: 9px;
+    font-weight: 750;
+    text-decoration: none;
+    transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+
+a.aw-pagination-page:hover {
+    color: #fff;
+    border-color: rgba(139,92,246,.25);
+    background: rgba(139,92,246,.07);
+    transform: translateY(-2px);
+}
+
+
+/* CURRENT PAGE */
+
+.aw-pagination-page.is-active {
+    border-color: rgba(139,92,246,.46);
+    background: linear-gradient( 135deg, #9b5cf6, #7c3aed );
+    color: #fff;
+    box-shadow: 0 9px 25px rgba(139,92,246,.20);
+}
+
+
+/* ARROWS */
+
+.aw-pagination-arrow {
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 13px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 10px;
+    background: rgba(255,255,255,.018);
+    color: #777f8b;
+    font-size: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+
+a.aw-pagination-arrow:hover {
+    border-color: rgba(139,92,246,.22);
+    background: rgba(139,92,246,.06);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+
+.aw-pagination-arrow.is-disabled {
+    opacity: .25;
+    cursor: not-allowed;
+}
+
+
+/* DOTS */
+
+.aw-pagination-dots {
+    min-width: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #404752;
+    font-size: 8px;
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   PAGE INFO
+   ========================================================= */
+
+.aw-pagination-info {
+    margin-top: 14px;
+    color: #454c57;
+    font-size: 7px;
+    text-align: center;
+}
+
+
+    .aw-pagination-info strong {
+        color: #7c8490;
+    }
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .aw-catalog-pagination-top {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+
+    .aw-pagination {
+        gap: 6px;
+        margin-top: 35px;
+    }
+
+
+    .aw-pagination-pages {
+        gap: 4px;
+    }
+
+
+    .aw-pagination-page {
+        min-width: 34px;
+        height: 34px;
+        border-radius: 8px;
+    }
+
+
+    .aw-pagination-arrow {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+    }
+
+
+        .aw-pagination-arrow span {
+            display: none;
+        }
+
+
+    .aw-pagination-dots {
+        min-width: 15px;
+    }
+}

@@ -22,7 +22,7 @@ namespace AnimeWave.Controllers
 
 
         // =========================================================
-        // КАТАЛОГ
+        // КАТАЛОГ + ПОИСК + ФИЛЬТРЫ + ПАГИНАЦИЯ
         // =========================================================
 
         [HttpGet]
@@ -30,15 +30,34 @@ namespace AnimeWave.Controllers
             string? search,
             int? genreId,
             decimal? minRating,
-            string sort = "rating")
+            string sort = "rating",
+            int page = 1,
+            int pageSize = 12)
         {
-            var query = _context.Animes
+            // Разрешаем только 12 или 18 карточек
+            pageSize =
+                pageSize == 18
+                    ? 18
+                    : 12;
 
-                .Include(a => a.AnimeGenres)
 
-                .ThenInclude(ag => ag.Genre)
+            if (page < 1)
+            {
+                page = 1;
+            }
 
-                .AsQueryable();
+
+
+            var query =
+                _context.Animes
+
+                    .Include(a => a.AnimeGenres)
+
+                    .ThenInclude(ag => ag.Genre)
+
+                    .AsNoTracking()
+
+                    .AsQueryable();
 
 
 
@@ -48,64 +67,93 @@ namespace AnimeWave.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search = search.Trim();
+                search =
+                    search.Trim();
 
 
-                query = query.Where(a =>
+                query =
+                    query.Where(
+                        a =>
 
-                    EF.Functions.ILike(
-                        a.Title,
-                        $"%{search}%"
-                    )
+                            EF.Functions.ILike(
+                                a.Title,
+                                $"%{search}%"
+                            )
 
-                    ||
+                            ||
 
-                    (
-                        a.OriginalTitle != null
-
-                        &&
-
-                        EF.Functions.ILike(
-                            a.OriginalTitle,
-                            $"%{search}%"
-                        )
-                    )
-                );
+                            (
+                                a.OriginalTitle != null
+                                &&
+                                EF.Functions.ILike(
+                                    a.OriginalTitle,
+                                    $"%{search}%"
+                                )
+                            )
+                    );
             }
 
 
 
             // =====================================================
-            // ФИЛЬТР ПО ЖАНРУ
+            // ЖАНР
             // =====================================================
 
             if (genreId.HasValue)
             {
-                query = query.Where(a =>
-
-                    a.AnimeGenres.Any(
-                        ag =>
-                            ag.GenreId
-                            ==
-                            genreId.Value
-                    )
-                );
+                query =
+                    query.Where(
+                        a =>
+                            a.AnimeGenres.Any(
+                                ag =>
+                                    ag.GenreId
+                                    ==
+                                    genreId.Value
+                            )
+                    );
             }
 
 
 
             // =====================================================
-            // МИНИМАЛЬНЫЙ РЕЙТИНГ
+            // РЕЙТИНГ
             // =====================================================
 
             if (minRating.HasValue)
             {
-                query = query.Where(
-                    a =>
-                        a.Rating
-                        >=
-                        minRating.Value
-                );
+                query =
+                    query.Where(
+                        a =>
+                            a.Rating
+                            >=
+                            minRating.Value
+                    );
+            }
+
+
+
+            // =====================================================
+            // КОЛИЧЕСТВО РЕЗУЛЬТАТОВ
+            // =====================================================
+
+            int totalItems =
+                await query.CountAsync();
+
+
+            int totalPages =
+                totalItems == 0
+                    ? 1
+                    : (int)Math.Ceiling(
+                        totalItems
+                        /
+                        (double)pageSize
+                    );
+
+
+            if (page > totalPages)
+            {
+                page =
+                    totalPages;
             }
 
 
@@ -114,44 +162,86 @@ namespace AnimeWave.Controllers
             // СОРТИРОВКА
             // =====================================================
 
-            query = sort switch
-            {
-                "new" =>
-                    query.OrderByDescending(
-                        a => a.ReleaseYear
-                    ),
+            query =
+                sort switch
+                {
+                    "new" =>
+                        query.OrderByDescending(
+                            a => a.ReleaseYear
+                        )
+                        .ThenByDescending(
+                            a => a.Rating
+                        ),
 
-                "old" =>
-                    query.OrderBy(
-                        a => a.ReleaseYear
-                    ),
 
-                "title" =>
-                    query.OrderBy(
-                        a => a.Title
-                    ),
+                    "old" =>
+                        query.OrderBy(
+                            a => a.ReleaseYear
+                        )
+                        .ThenBy(
+                            a => a.Title
+                        ),
 
-                "rating-low" =>
-                    query.OrderBy(
-                        a => a.Rating
-                    ),
 
-                _ =>
-                    query.OrderByDescending(
-                        a => a.Rating
-                    )
-            };
+                    "title" =>
+                        query.OrderBy(
+                            a => a.Title
+                        ),
+
+
+                    "rating-low" =>
+                        query.OrderBy(
+                            a => a.Rating
+                        )
+                        .ThenBy(
+                            a => a.Title
+                        ),
+
+
+                    _ =>
+                        query.OrderByDescending(
+                            a => a.Rating
+                        )
+                        .ThenBy(
+                            a => a.Title
+                        )
+                };
 
 
 
             // =====================================================
-            // ДАННЫЕ ДЛЯ ФИЛЬТРОВ
+            // PAGINATION
+            // =====================================================
+
+            var animes =
+                await query
+
+                    .Skip(
+                        (page - 1)
+                        *
+                        pageSize
+                    )
+
+                    .Take(
+                        pageSize
+                    )
+
+                    .ToListAsync();
+
+
+
+            // =====================================================
+            // FILTER DATA
             // =====================================================
 
             ViewBag.Genres =
                 await _context.Genres
 
-                    .OrderBy(g => g.Name)
+                    .AsNoTracking()
+
+                    .OrderBy(
+                        g => g.Name
+                    )
 
                     .ToListAsync();
 
@@ -173,17 +263,36 @@ namespace AnimeWave.Controllers
 
 
 
-            var animes =
-                await query.ToListAsync();
+            // =====================================================
+            // PAGINATION DATA
+            // =====================================================
+
+            ViewBag.CurrentPage =
+                page;
 
 
-            return View(animes);
+            ViewBag.TotalPages =
+                totalPages;
+
+
+            ViewBag.PageSize =
+                pageSize;
+
+
+            ViewBag.TotalItems =
+                totalItems;
+
+
+
+            return View(
+                animes
+            );
         }
 
 
 
         // =========================================================
-        // СТРАНИЦА АНИМЕ
+        // DETAILS
         // =========================================================
 
         [HttpGet]
@@ -208,7 +317,6 @@ namespace AnimeWave.Controllers
                     );
 
 
-
             if (anime == null)
             {
                 return NotFound();
@@ -216,38 +324,27 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // СОРТИРУЕМ СЕРИИ
-            // =====================================================
+            anime.Episodes =
+                anime.Episodes
 
-            if (anime.Episodes != null)
-            {
-                anime.Episodes =
-                    anime.Episodes
+                    .OrderBy(
+                        e =>
+                            e.EpisodeNumber
+                    )
 
-                        .OrderBy(e =>
-                            e.EpisodeNumber)
-
-                        .ToList();
-            }
+                    .ToList();
 
 
 
-            // =====================================================
-            // ПО УМОЛЧАНИЮ НЕ В ИЗБРАННОМ
-            // =====================================================
-
-            ViewBag.IsFavorite = false;
+            ViewBag.IsFavorite =
+                false;
 
 
-
-            // =====================================================
-            // ЕСЛИ ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН
-            // =====================================================
 
             if (
                 User.Identity?.IsAuthenticated
-                == true
+                ==
+                true
             )
             {
                 string? userId =
@@ -256,17 +353,12 @@ namespace AnimeWave.Controllers
                     );
 
 
-
                 if (
                     !string.IsNullOrWhiteSpace(
                         userId
                     )
                 )
                 {
-                    // =============================================
-                    // ПРОВЕРЯЕМ ИЗБРАННОЕ
-                    // =============================================
-
                     ViewBag.IsFavorite =
                         await _context.Favorites
 
@@ -285,10 +377,6 @@ namespace AnimeWave.Controllers
 
 
 
-                    // =============================================
-                    // ИСТОРИЯ ПРОСМОТРОВ
-                    // =============================================
-
                     var history =
                         await _context.ViewingHistories
 
@@ -306,12 +394,9 @@ namespace AnimeWave.Controllers
                             );
 
 
-
-                    // Если пользователь ещё
-                    // не открывал это аниме
                     if (history == null)
                     {
-                        history =
+                        _context.ViewingHistories.Add(
                             new ViewingHistory
                             {
                                 UserId =
@@ -322,24 +407,14 @@ namespace AnimeWave.Controllers
 
                                 ViewedAt =
                                     DateTime.UtcNow
-                            };
-
-
-                        _context.ViewingHistories.Add(
-                            history
+                            }
                         );
                     }
-
-                    // Если уже открывал —
-                    // просто обновляем дату,
-                    // чтобы аниме поднялось
-                    // наверх профиля.
                     else
                     {
                         history.ViewedAt =
                             DateTime.UtcNow;
                     }
-
 
 
                     await _context
@@ -349,20 +424,15 @@ namespace AnimeWave.Controllers
 
 
 
-            return View(anime);
+            return View(
+                anime
+            );
         }
 
 
 
         // =========================================================
-        // ПРОСМОТР СЕРИИ
-        // =========================================================
-        //
-        // Систему добавления серий из админки мы убрали,
-        // но этот метод можно оставить.
-        //
-        // Если в БД уже существуют серии,
-        // старые кнопки просмотра продолжат работать.
+        // WATCH
         // =========================================================
 
         [HttpGet]
@@ -390,7 +460,6 @@ namespace AnimeWave.Controllers
                     );
 
 
-
             if (episode == null)
             {
                 return NotFound();
@@ -398,20 +467,16 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // ОБНОВЛЯЕМ ИСТОРИЮ
-            // =====================================================
-
             if (
                 User.Identity?.IsAuthenticated
-                == true
+                ==
+                true
             )
             {
                 string? userId =
                     User.FindFirstValue(
                         ClaimTypes.NameIdentifier
                     );
-
 
 
                 if (
@@ -437,10 +502,9 @@ namespace AnimeWave.Controllers
                             );
 
 
-
                     if (history == null)
                     {
-                        history =
+                        _context.ViewingHistories.Add(
                             new ViewingHistory
                             {
                                 UserId =
@@ -451,11 +515,7 @@ namespace AnimeWave.Controllers
 
                                 ViewedAt =
                                     DateTime.UtcNow
-                            };
-
-
-                        _context.ViewingHistories.Add(
-                            history
+                            }
                         );
                     }
                     else
@@ -465,7 +525,6 @@ namespace AnimeWave.Controllers
                     }
 
 
-
                     await _context
                         .SaveChangesAsync();
                 }
@@ -473,7 +532,9 @@ namespace AnimeWave.Controllers
 
 
 
-            return View(episode);
+            return View(
+                episode
+            );
         }
     }
 }
