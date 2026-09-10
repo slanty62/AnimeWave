@@ -1,271 +1,1618 @@
 ﻿@model AnimeWave.Models.Anime
 
+@using AnimeWave.Models
+
 @{
     ViewData["Title"] = Model.Title;
+
+    bool isFavorite =
+        ViewBag.IsFavorite is bool value
+        && value;
+
+
+    var similarAnime =
+        ViewBag.SimilarAnime
+            as IEnumerable<Anime>
+        ?? Enumerable.Empty<Anime>();
+
+
+    var currentGenreIds =
+        Model.AnimeGenres?
+            .Select(ag => ag.GenreId)
+            .ToHashSet()
+        ?? new HashSet<int>();
+
+
+    var genres =
+        Model.AnimeGenres?
+            .Where(ag => ag.Genre != null)
+            .Select(ag => ag.Genre)
+            .ToList()
+        ?? new List<Genre>();
+
+
+    var episodes =
+        Model.Episodes?
+            .OrderBy(e => e.EpisodeNumber)
+            .ToList()
+        ?? new List<Episode>();
 }
 
-<section class="anime-details-page">
 
-    <div class="anime-details-glow"></div>
+<section class="aw-details-page">
 
-    <div class="anime-details-container">
 
-        <!-- ПОСТЕР -->
-        <div class="details-poster-only">
+    <!-- =========================================================
+         HERO / BANNER
+         ========================================================= -->
 
-            <img src="@Model.PosterUrl"
-                 alt="@Model.Title"
-                 onerror="this.src='/images/no-poster.jpg'" />
+    <section class="aw-details-hero">
+
+
+        <!-- BACKGROUND -->
+
+        <div class="aw-details-backdrop">
+
+            @if (!string.IsNullOrWhiteSpace(Model.BannerUrl))
+            {
+                <img src="@Model.BannerUrl"
+                     alt="@Model.Title"
+                     class="aw-details-backdrop-image" />
+            }
+
+            <div class="aw-details-backdrop-dark">
+            </div>
+
+            <div class="aw-details-backdrop-gradient">
+            </div>
 
         </div>
 
 
-        <!-- ИНФОРМАЦИЯ -->
-        <div class="details-main-info">
 
-            <span class="hero-label">
-                ANIMEWAVE
-            </span>
+        <!-- CONTENT -->
+
+        <div class="aw-details-hero-container">
 
 
-            <h1>
-                @Model.Title
-            </h1>
+            <!-- =================================================
+                 POSTER
+                 ================================================= -->
+
+            <div class="aw-details-poster-wrap">
+
+                <div class="aw-details-poster">
+
+                    @if (!string.IsNullOrWhiteSpace(Model.PosterUrl))
+                    {
+                        <img src="@Model.PosterUrl"
+                             alt="@Model.Title"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                        <div class="aw-details-poster-placeholder"
+                             style="display:none;">
+
+                            A
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="aw-details-poster-placeholder">
+
+                            A
+
+                        </div>
+                    }
 
 
-            @if (!string.IsNullOrWhiteSpace(Model.OriginalTitle))
-            {
-                <div class="original-title">
-                    @Model.OriginalTitle
-                </div>
-            }
+                    <!-- RATING -->
 
-
-            <!-- ГОД / РЕЙТИНГ / ВОЗРАСТ -->
-            <div class="details-meta">
-
-                <span class="rating">
-                    ★ @Model.Rating
-                </span>
-
-                <span>
-                    @Model.ReleaseYear
-                </span>
-
-                @if (!string.IsNullOrWhiteSpace(Model.AgeRating))
-                {
-                    <span class="age">
-                        @Model.AgeRating
-                    </span>
-                }
-
-                @if (!string.IsNullOrWhiteSpace(Model.Status))
-                {
-                    <span>
-                        @Model.Status
-                    </span>
-                }
-
-                <span>
-                    @Model.EpisodesCount серий
-                </span>
-
-            </div>
-
-
-            <!-- ЖАНРЫ -->
-            <div class="hero-genres">
-
-                @foreach (var item in Model.AnimeGenres)
-                {
-                    <span>
-                        @item.Genre.Name
-                    </span>
-                }
-
-            </div>
-
-
-            <!-- ОПИСАНИЕ -->
-            <p class="details-description">
-                @Model.Description
-            </p>
-
-
-            <!-- КНОПКИ -->
-            <div class="hero-actions">
-
-                @if (Model.Episodes.Any())
-                {
-                    var firstEpisode =
-                        Model.Episodes
-                            .OrderBy(e => e.EpisodeNumber)
-                            .First();
-
-                    <a asp-controller="Anime"
-                       asp-action="Watch"
-                       asp-route-animeId="@Model.Id"
-                       asp-route-episodeId="@firstEpisode.Id"
-                       class="watch-button">
+                    <div class="aw-details-poster-rating">
 
                         <span>
-                            ▶
+                            ★
                         </span>
 
-                        Смотреть
+                        <strong>
+                            @Model.Rating.ToString("0.0")
+                        </strong>
 
-                    </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 INFO
+                 ================================================= -->
+
+            <div class="aw-details-main-info">
+
+
+                <span class="aw-details-eyebrow">
+                    ANIMEWAVE ORIGINAL
+                </span>
+
+
+
+                <!-- TITLE -->
+
+                <h1>
+                    @Model.Title
+                </h1>
+
+
+
+                @if (!string.IsNullOrWhiteSpace(
+                    Model.OriginalTitle))
+                {
+                    <h2>
+                        @Model.OriginalTitle
+                    </h2>
+                }
+
+
+
+                <!-- META -->
+
+                <div class="aw-details-meta">
+
+                    <div class="aw-details-rating">
+
+                        <span>
+                            ★
+                        </span>
+
+                        <strong>
+                            @Model.Rating.ToString("0.0")
+                        </strong>
+
+                    </div>
+
+
+                    <span class="aw-details-meta-separator">
+                    </span>
+
+
+                    <span>
+                        @Model.ReleaseYear
+                    </span>
+
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.AgeRating))
+                    {
+                        <span class="aw-details-meta-separator">
+                        </span>
+
+
+                        <span class="aw-details-age">
+
+                            @Model.AgeRating
+
+                        </span>
+                    }
+
+
+                    @if (Model.EpisodesCount > 0)
+                    {
+                        <span class="aw-details-meta-separator">
+                        </span>
+
+
+                        <span>
+
+                            @Model.EpisodesCount серий
+
+                        </span>
+                    }
+
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.Status))
+                    {
+                        <span class="aw-details-meta-separator">
+                        </span>
+
+
+                        <span class="aw-details-status">
+
+                            <i>
+                            </i>
+
+                            @Model.Status
+
+                        </span>
+                    }
+
+                </div>
+
+
+
+                <!-- GENRES -->
+                @if (genres.Any())
+                {
+                    <div class="aw-details-genres">
+
+                        @foreach (var genre in genres)
+                        {
+                            <a asp-controller="Anime"
+                               asp-action="Index"
+                               asp-route-genreId="@genre.Id">
+
+                                @genre.Name
+
+                            </a>
+                        }
+
+                    </div>
+                }
+
+
+
+                <!-- DESCRIPTION -->
+                @if (!string.IsNullOrWhiteSpace(
+                                    Model.Description))
+                {
+                    <p class="aw-details-description">
+
+                        @Model.Description
+
+                    </p>
                 }
                 else
                 {
-                    <button class="watch-button"
-                            disabled>
+                    <p class="aw-details-description">
 
-                        ▶ Смотреть
+                        Описание для этого аниме пока
+                        не добавлено.
 
-                    </button>
+                    </p>
                 }
 
 
-                @if (User.Identity?.IsAuthenticated == true)
+
+                <!-- =================================================
+                     ACTIONS
+                     ================================================= -->
+
+                <div class="aw-details-actions">
+
+
+                    <!-- WATCH -->
+                    @if (episodes.Any())
+                    {
+                        var firstEpisode =
+                            episodes.First();
+
+
+                        <a asp-controller="Anime"
+                           asp-action="Watch"
+                           asp-route-animeId="@Model.Id"
+                           asp-route-episodeId="@firstEpisode.Id"
+                           class="aw-details-watch">
+
+                            <span>
+                                ▶
+                            </span>
+
+                            Смотреть
+
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="#animeInfo"
+                           class="aw-details-watch">
+
+                            <span>
+                                ▶
+                            </span>
+
+                            Подробнее
+
+                        </a>
+                    }
+
+
+
+                    <!-- FAVORITE -->
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (isFavorite)
+                        {
+                            <form asp-controller="Favorites"
+                                  asp-action="Remove"
+                                  method="post"
+                                  class="aw-details-favorite-form"
+                                  data-no-loading>
+
+                                @Html.AntiForgeryToken()
+
+
+                                <input type="hidden"
+                                       name="animeId"
+                                       value="@Model.Id" />
+
+
+                                <button type="submit"
+                                        class="aw-details-favorite is-active">
+
+                                    <span>
+                                        ♥
+                                    </span>
+
+                                    В избранном
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Favorites"
+                                  asp-action="Add"
+                                  method="post"
+                                  class="aw-details-favorite-form"
+                                  data-no-loading>
+
+                                @Html.AntiForgeryToken()
+
+
+                                <input type="hidden"
+                                       name="animeId"
+                                       value="@Model.Id" />
+
+
+                                <button type="submit"
+                                        class="aw-details-favorite">
+
+                                    <span>
+                                        ♡
+                                    </span>
+
+                                    В избранное
+
+                                </button>
+
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           asp-route-returnUrl="@Context.Request.Path"
+                           class="aw-details-favorite">
+
+                            <span>
+                                ♡
+                            </span>
+
+                            В избранное
+
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         MAIN INFORMATION
+         ========================================================= -->
+
+    <section class="aw-details-content"
+             id="animeInfo">
+
+        <div class="aw-details-content-container">
+
+
+            <!-- =================================================
+                 ABOUT
+                 ================================================= -->
+
+            <section class="aw-details-about">
+
+                <div class="aw-details-section-heading">
+
+                    <span>
+                        ABOUT
+                    </span>
+
+
+                    <h2>
+                        Об аниме
+                    </h2>
+
+                </div>
+
+
+
+                <div class="aw-details-about-grid">
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="aw-details-about-description">
+
+                        <h3>
+                            Описание
+                        </h3>
+
+
+                        <p>
+
+                            @(string.IsNullOrWhiteSpace(Model.Description)
+                                ? "Описание для этого аниме пока не добавлено."
+                                : Model.Description)
+
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- INFORMATION -->
+
+                    <aside class="aw-details-facts">
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                Год выхода
+                            </span>
+
+                            <strong>
+                                @Model.ReleaseYear
+                            </strong>
+
+                        </div>
+
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                Рейтинг
+                            </span>
+
+                            <strong class="aw-details-fact-rating">
+
+                                ★ @Model.Rating.ToString("0.0")
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                Статус
+                            </span>
+
+                            <strong>
+
+                                @(string.IsNullOrWhiteSpace(Model.Status)
+                                    ? "Не указан"
+                                    : Model.Status)
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                Возраст
+                            </span>
+
+                            <strong>
+
+                                @(string.IsNullOrWhiteSpace(Model.AgeRating)
+                                    ? "—"
+                                    : Model.AgeRating)
+
+                            </strong>
+
+                        </div>
+
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                Серии
+                            </span>
+
+                            <strong>
+                                @Model.EpisodesCount
+                            </strong>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EPISODES
+                 Показываем только если старые серии есть в БД.
+                 ================================================= -->
+            @if (episodes.Any())
+            {
+                <section class="aw-details-episodes">
+
+                    <div class="aw-details-section-heading">
+
+                        <span>
+                            EPISODES
+                        </span>
+
+
+                        <h2>
+                            Серии
+                        </h2>
+
+                    </div>
+
+
+                    <div class="aw-details-episode-list">
+
+                        @foreach (var episode in episodes)
+                        {
+                            <a asp-controller="Anime"
+                               asp-action="Watch"
+                               asp-route-animeId="@Model.Id"
+                               asp-route-episodeId="@episode.Id"
+                               class="aw-details-episode">
+
+
+                                <div class="aw-details-episode-number">
+
+                                    @episode.EpisodeNumber
+                                </div>
+
+
+
+                                <div class="aw-details-episode-thumbnail">
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        episode.ThumbnailUrl))
+                                    {
+                                        <img src="@episode.ThumbnailUrl"
+                                             alt="@episode.Title"
+                                             loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            ▶
+                                        </span>
+                                    }
+
+
+                                    <div class="aw-details-episode-play">
+
+                                        ▶
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="aw-details-episode-info">
+
+                                    <h3>
+                                        @episode.Title
+                                    </h3>
+
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        episode.Description))
+                                    {
+                                        <p>
+
+                                            @episode.Description
+
+                                        </p>
+                                    }
+
+
+                                    <div>
+
+                                        @if (episode.DurationMinutes > 0)
+                                        {
+                                            <span>
+
+                                                @episode.DurationMinutes мин.
+
+                                            </span>
+                                        }
+
+
+                                        @if (episode.ReleaseDate.HasValue)
+                                        {
+                                            <span>
+                                                •
+                                            </span>
+
+
+                                            <span>
+
+                                                @episode.ReleaseDate.Value
+                                                .ToString("dd.MM.yyyy")
+
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="aw-details-episode-arrow">
+
+                                    →
+
+                                </div>
+
+                            </a>
+                        }
+
+                    </div>
+
+                </section>
+            }
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         SIMILAR ANIME
+         ========================================================= -->
+    @if (similarAnime.Any())
+    {
+        <section class="aw-similar-section">
+
+            <div class="aw-similar-head">
+
+                <div>
+
+                    <span class="aw-similar-eyebrow">
+                        YOU MAY ALSO LIKE
+                    </span>
+
+
+                    <h2>
+                        Похожие
+                        <strong>тайтлы</strong>
+                    </h2>
+
+
+                    <p>
+                        Подобрано по совпадающим жанрам
+                        и рейтингу.
+                    </p>
+
+                </div>
+
+
+                <a asp-controller="Anime"
+                   asp-action="Index"
+                   class="aw-similar-catalog-link">
+
+                    Весь каталог
+
+                    <span>
+                        →
+                    </span>
+
+                </a>
+
+            </div>
+
+
+
+            <div class="aw-similar-grid">
+
+                @foreach (var similar in similarAnime)
                 {
-                    <form asp-controller="Favorites"
-                          asp-action="Toggle"
-                          method="post">
+                    int matches =
+                        similar.AnimeGenres?
 
-                        <input type="hidden"
-                               name="animeId"
-                               value="@Model.Id" />
+                            .Count(
+                                ag =>
+                                    currentGenreIds.Contains(
+                                        ag.GenreId
+                                    )
+                            )
 
-                        <button class="list-button"
-                                type="submit">
+                        ?? 0;
 
-                            @if ((bool)ViewBag.IsFavorite)
+
+                    <a asp-controller="Anime"
+                       asp-action="Details"
+                       asp-route-id="@similar.Id"
+                       class="aw-similar-card">
+
+
+                        <!-- =====================================
+                             POSTER
+                             ===================================== -->
+
+                        <div class="aw-similar-poster">
+
+                            @if (!string.IsNullOrWhiteSpace(
+                                similar.PosterUrl))
                             {
-                                <text>
-                                    ✓ В избранном
-                                </text>
+                                <img src="@similar.PosterUrl"
+                                     alt="@similar.Title"
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+
+                                <div class="aw-similar-no-poster"
+                                     style="display:none;">
+
+                                    A
+
+                                </div>
                             }
                             else
                             {
-                                <text>
-                                    ＋ В избранное
-                                </text>
+                                <div class="aw-similar-no-poster">
+
+                                    A
+
+                                </div>
                             }
 
-                        </button>
 
-                    </form>
-                }
-                else
-                {
-                    <a asp-controller="Account"
-                       asp-action="Login"
-                       class="list-button">
 
-                        ＋ В избранное
+                            <!-- RATING -->
+
+                            <span class="aw-similar-rating">
+
+                                ★ @similar.Rating.ToString("0.0")
+
+                            </span>
+
+
+
+                            <!-- GENRE MATCH -->
+                            @if (matches > 0)
+                            {
+                                <span class="aw-similar-match">
+
+                                    @matches совп.
+
+                                </span>
+                            }
+
+
+
+                            <!-- OVERLAY -->
+
+                            <div class="aw-similar-overlay">
+
+                                <div class="aw-similar-play">
+
+                                    ▶
+
+                                </div>
+
+
+                                <span>
+                                    Подробнее
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =====================================
+                             INFO
+                             ===================================== -->
+
+                        <div class="aw-similar-info">
+
+                            <h3>
+                                @similar.Title
+                            </h3>
+
+
+                            @if (!string.IsNullOrWhiteSpace(
+                                similar.OriginalTitle))
+                            {
+                                <p class="aw-similar-original">
+
+                                    @similar.OriginalTitle
+
+                                </p>
+                            }
+
+
+
+                            <div class="aw-similar-meta">
+
+                                <span>
+                                    @similar.ReleaseYear
+                                </span>
+
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    similar.AgeRating))
+                                {
+                                    <i>
+                                    </i>
+
+
+                                    <span>
+                                        @similar.AgeRating
+                                    </span>
+                                }
+
+
+                                @if (similar.EpisodesCount > 0)
+                                {
+                                    <i>
+                                    </i>
+
+
+                                    <span>
+
+                                        @similar.EpisodesCount серий
+
+                                    </span>
+                                }
+
+                            </div>
+
+
+
+                            <!-- GENRES -->
+                            @if (
+                                                            similar.AnimeGenres != null
+                                                            &&
+                                                            similar.AnimeGenres.Any()
+                                                        )
+                            {
+                                <div class="aw-similar-genres">
+
+                                    @foreach (
+                                        var animeGenre
+                                        in similar.AnimeGenres
+
+                                            .Where(
+                                                ag =>
+                                                    ag.Genre != null
+                                            )
+
+                                            .Take(3)
+                                    )
+                                    {
+                                        bool isMatching =
+                                            currentGenreIds.Contains(
+                                                animeGenre.GenreId
+                                            );
+
+
+                                        <span class="@(isMatching ? "is-match" : "")">
+
+                                            @animeGenre.Genre.Name
+
+                                        </span>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
 
                     </a>
                 }
 
             </div>
 
-        </div>
-
-    </div>
+        </section>
+    }
 
 </section>
 
 
+<style>
 
-<!-- ==============================
-     СЕРИИ
-     ============================== -->
+    /* =========================================================
+           DETAILS BASE
+           ========================================================= */
 
-<section class="episodes-section">
-
-    <div class="section-heading">
-
-        <h2>
-            Серии
-        </h2>
-
-        <span class="episodes-count">
-            @Model.Episodes.Count серий
-        </span>
-
-    </div>
-
-
-    @if (!Model.Episodes.Any())
-    {
-        <div class="empty-block">
-
-            <h3>
-                Серии пока не добавлены
-            </h3>
-
-            <p>
-                В AnimeWave пока нет доступных серий этого аниме.
-            </p>
-
-        </div>
+    .aw-details-page {
+        min-height: 100vh;
+        background: #080a0f;
+        color: #fff;
     }
 
 
-    <div class="episode-list">
 
-        @foreach (var episode in Model.Episodes)
-        {
-            <a asp-controller="Anime"
-               asp-action="Watch"
-               asp-route-animeId="@Model.Id"
-               asp-route-episodeId="@episode.Id"
-               class="episode-card">
+    /* =========================================================
+           HERO
+           ========================================================= */
 
-                <div class="episode-image">
-
-                    @if (!string.IsNullOrWhiteSpace(
-                        episode.ThumbnailUrl))
-                    {
-                        <img src="@episode.ThumbnailUrl"
-                             alt="Серия @episode.EpisodeNumber" />
-                    }
-
-                    <div class="episode-play">
-                        ▶
-                    </div>
-
-                </div>
+    .aw-details-hero {
+        position: relative;
+        min-height: 680px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+        background: #080a0f;
+    }
 
 
-                <div class="episode-info">
+    .aw-details-backdrop {
+        position: absolute;
+        inset: 0;
+    }
 
-                    <div class="episode-number">
-                        СЕРИЯ @episode.EpisodeNumber
-                    </div>
 
-                    <h3>
-                        @episode.Title
-                    </h3>
+    .aw-details-backdrop-image {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+        filter: brightness(.64) saturate(.90);
+        transform: scale(1.015);
+        animation: awDetailsBackdropEnter 1.3s cubic-bezier(.22,1,.36,1) both;
+    }
 
-                    @if (!string.IsNullOrWhiteSpace(
-                        episode.Description))
-                    {
-                        <p>
-                            @episode.Description
-                        </p>
-                    }
 
-                    <span>
-                        @episode.DurationMinutes мин.
-                    </span>
+    @@keyframes awDetailsBackdropEnter {
 
-                </div>
-
-            </a>
+        from {
+            transform: scale(1.07);
+            opacity: .4;
         }
 
-    </div>
+        to {
+            transform: scale(1.015);
+            opacity: 1;
+        }
+    }
 
-</section>
+
+    .aw-details-backdrop-dark {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 90deg, rgba(5,7,11,.97) 0%, rgba(5,7,11,.78) 36%, rgba(5,7,11,.32) 70%, rgba(5,7,11,.53) 100% );
+    }
+
+
+    .aw-details-backdrop-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( 180deg, rgba(8,10,15,.2) 0%, transparent 32%, #080a0f 100% );
+    }
+
+
+    .aw-details-hero-container {
+        position: relative;
+        z-index: 5;
+        width: min( 1450px, calc(100% - 48px) );
+        margin: 0 auto;
+        padding: 150px 0 65px;
+        display: grid;
+        grid-template-columns: 245px minmax(0,760px);
+        align-items: end;
+        gap: 42px;
+    }
+
+
+
+    /* =========================================================
+           POSTER
+           ========================================================= */
+
+    .aw-details-poster {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 17px;
+        background: #12151d;
+        box-shadow: 0 30px 70px rgba(0,0,0,.46);
+    }
+
+
+        .aw-details-poster > img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+
+    .aw-details-poster-placeholder {
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient( 145deg, #171326, #0d1017 );
+        color: #8b5cf6;
+        font-size: 60px;
+        font-weight: 900;
+    }
+
+
+    .aw-details-poster-rating {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 9px;
+        border-radius: 7px;
+        background: rgba(5,7,11,.87);
+        backdrop-filter: blur(10px);
+    }
+
+
+        .aw-details-poster-rating span {
+            color: #fbbf24;
+            font-size: 10px;
+        }
+
+
+        .aw-details-poster-rating strong {
+            font-size: 10px;
+        }
+
+
+
+    /* =========================================================
+           INFO
+           ========================================================= */
+
+    .aw-details-eyebrow {
+        display: block;
+        margin-bottom: 10px;
+        color: #a78bfa;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 2.5px;
+    }
+
+
+    .aw-details-main-info h1 {
+        margin: 0 0 8px;
+        max-width: 820px;
+        color: #fff;
+        font-size: clamp( 45px, 5.5vw, 76px );
+        line-height: .95;
+        letter-spacing: -3.5px;
+        text-wrap: balance;
+    }
+
+
+    .aw-details-main-info h2 {
+        margin: 0 0 19px;
+        color: rgba(255,255,255,.42);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+
+
+    /* META */
+
+    .aw-details-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+        color: #9299a4;
+        font-size: 9px;
+        font-weight: 650;
+    }
+
+
+    .aw-details-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+
+        .aw-details-rating span {
+            color: #fbbf24;
+        }
+
+
+        .aw-details-rating strong {
+            color: #fff;
+        }
+
+
+    .aw-details-meta-separator {
+        width: 3px;
+        height: 3px;
+        display: block;
+        border-radius: 50%;
+        background: rgba(255,255,255,.24);
+    }
+
+
+    .aw-details-age {
+        padding: 3px 6px;
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 4px;
+    }
+
+
+    .aw-details-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+
+        .aw-details-status i {
+            width: 5px;
+            height: 5px;
+            display: block;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34,197,94,.5);
+        }
+
+
+
+    /* GENRES */
+
+    .aw-details-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 21px;
+    }
+
+
+        .aw-details-genres a {
+            padding: 6px 9px;
+            border: 1px solid rgba(139,92,246,.13);
+            border-radius: 6px;
+            background: rgba(139,92,246,.055);
+            color: #b6a3e6;
+            font-size: 7px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .2s ease, color .2s ease, border-color .2s ease;
+        }
+
+
+            .aw-details-genres a:hover {
+                color: #fff;
+                border-color: rgba(139,92,246,.30);
+                background: rgba(139,92,246,.13);
+            }
+
+
+
+    /* DESCRIPTION */
+
+    .aw-details-description {
+        max-width: 720px;
+        margin: 0 0 25px;
+        color: rgba(225,228,234,.68);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+
+
+    /* ACTIONS */
+
+    .aw-details-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+
+    .aw-details-watch,
+    .aw-details-favorite {
+        min-height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 17px;
+        box-sizing: border-box;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 9px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+
+    .aw-details-watch {
+        border: none;
+        background: #fff;
+        color: #080a0f;
+    }
+
+
+        .aw-details-watch:hover {
+            color: #080a0f;
+            transform: translateY(-2px);
+        }
+
+
+    .aw-details-favorite-form {
+        margin: 0;
+    }
+
+
+    .aw-details-favorite {
+        border: 1px solid rgba(255,255,255,.09);
+        background: rgba(255,255,255,.055);
+        color: #fff;
+        backdrop-filter: blur(10px);
+    }
+
+
+        .aw-details-favorite:hover {
+            border-color: rgba(139,92,246,.32);
+            background: rgba(139,92,246,.12);
+            color: #fff;
+        }
+
+
+        .aw-details-favorite.is-active {
+            border-color: rgba(139,92,246,.25);
+            background: rgba(139,92,246,.13);
+            color: #c4b5fd;
+        }
+
+
+
+    /* =========================================================
+           CONTENT
+           ========================================================= */
+
+    .aw-details-content {
+        background: #080a0f;
+    }
+
+
+    .aw-details-content-container {
+        width: min( 1450px, calc(100% - 48px) );
+        margin: 0 auto;
+    }
+
+
+    .aw-details-section-heading {
+        margin-bottom: 20px;
+    }
+
+
+        .aw-details-section-heading > span {
+            display: block;
+            margin-bottom: 5px;
+            color: #8b5cf6;
+            font-size: 7px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+
+        .aw-details-section-heading h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 24px;
+            letter-spacing: -1px;
+        }
+
+
+
+    /* ABOUT */
+
+    .aw-details-about {
+        padding: 45px 0;
+    }
+
+
+    .aw-details-about-grid {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 330px;
+        gap: 50px;
+    }
+
+
+    .aw-details-about-description h3 {
+        margin: 0 0 12px;
+        color: #f0f1f3;
+        font-size: 13px;
+    }
+
+
+    .aw-details-about-description p {
+        max-width: 800px;
+        margin: 0;
+        color: #747c87;
+        font-size: 10px;
+        line-height: 1.9;
+    }
+
+
+
+    /* FACTS */
+
+    .aw-details-facts {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 7px;
+    }
+
+
+    .aw-details-fact {
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 12px 14px;
+        box-sizing: border-box;
+        border: 1px solid rgba(255,255,255,.045);
+        border-radius: 10px;
+        background: rgba(255,255,255,.015);
+    }
+
+
+        .aw-details-fact span {
+            margin-bottom: 5px;
+            color: #4e5661;
+            font-size: 7px;
+        }
+
+
+        .aw-details-fact strong {
+            color: #d8dbe0;
+            font-size: 10px;
+        }
+
+
+    .aw-details-fact-rating {
+        color: #fbbf24 !important;
+    }
+
+
+
+    /* =========================================================
+           EPISODES
+           ========================================================= */
+
+    .aw-details-episodes {
+        padding: 20px 0 50px;
+    }
+
+
+    .aw-details-episode-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+
+    .aw-details-episode {
+        display: grid;
+        grid-template-columns: 40px 125px minmax(0,1fr) 25px;
+        align-items: center;
+        gap: 14px;
+        padding: 8px 13px;
+        border: 1px solid rgba(255,255,255,.04);
+        border-radius: 11px;
+        background: rgba(255,255,255,.012);
+        color: inherit;
+        text-decoration: none;
+        transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+
+        .aw-details-episode:hover {
+            transform: translateX(3px);
+            border-color: rgba(139,92,246,.12);
+            background: rgba(139,92,246,.035);
+        }
+
+
+    .aw-details-episode-number {
+        color: #545c67;
+        font-size: 10px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+
+    .aw-details-episode-thumbnail {
+        position: relative;
+        width: 125px;
+        aspect-ratio: 16 / 9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 7px;
+        background: #11141b;
+        color: #716183;
+        font-size: 12px;
+    }
+
+
+        .aw-details-episode-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+    .aw-details-episode-play {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: rgba(5,7,11,.45);
+        opacity: 0;
+        transition: opacity .2s ease;
+    }
+
+
+    .aw-details-episode:hover
+    .aw-details-episode-play {
+        opacity: 1;
+    }
+
+
+    .aw-details-episode-info {
+        min-width: 0;
+    }
+
+
+        .aw-details-episode-info h3 {
+            margin: 0 0 5px;
+            color: #dddfe4;
+            font-size: 10px;
+        }
+
+
+        .aw-details-episode-info p {
+            max-width: 700px;
+            margin: 0 0 6px;
+            overflow: hidden;
+            color: #515965;
+            font-size: 7px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+
+        .aw-details-episode-info > div {
+            display: flex;
+            gap: 5px;
+            color: #454c57;
+            font-size: 7px;
+        }
+
+
+    .aw-details-episode-arrow {
+        color: #4d5561;
+        font-size: 13px;
+    }
+
+
+
+    /* =========================================================
+           MOBILE
+           ========================================================= */
+
+    @@media (max-width: 900px) {
+
+        .aw-details-hero-container {
+            grid-template-columns: 190px minmax(0,1fr);
+            gap: 28px;
+        }
+
+
+        .aw-details-about-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .aw-details-hero {
+            min-height: auto;
+        }
+
+
+        .aw-details-hero-container {
+            width: calc(100% - 28px);
+            padding: 135px 0 45px;
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+
+
+        .aw-details-poster-wrap {
+            width: 150px;
+        }
+
+
+        .aw-details-main-info h1 {
+            font-size: 41px;
+            letter-spacing: -2px;
+        }
+
+
+        .aw-details-content-container {
+            width: calc(100% - 28px);
+        }
+
+
+        .aw-details-facts {
+            grid-template-columns: repeat(2,minmax(0,1fr));
+        }
+
+
+        .aw-details-episode {
+            grid-template-columns: 30px 85px minmax(0,1fr);
+            gap: 9px;
+        }
+
+
+        .aw-details-episode-thumbnail {
+            width: 85px;
+        }
+
+
+        .aw-details-episode-arrow {
+            display: none;
+        }
+
+
+        .aw-details-episode-info p {
+            display: none;
+        }
+    }
+
+</style>

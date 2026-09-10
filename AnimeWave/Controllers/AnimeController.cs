@@ -22,7 +22,8 @@ namespace AnimeWave.Controllers
 
 
         // =========================================================
-        // КАТАЛОГ + ПОИСК + ФИЛЬТРЫ + ПАГИНАЦИЯ
+        // КАТАЛОГ
+        // SEARCH + FILTERS + SORT + PAGINATION
         // =========================================================
 
         [HttpGet]
@@ -34,7 +35,6 @@ namespace AnimeWave.Controllers
             int page = 1,
             int pageSize = 12)
         {
-            // Разрешаем только 12 или 18 карточек
             pageSize =
                 pageSize == 18
                     ? 18
@@ -47,13 +47,14 @@ namespace AnimeWave.Controllers
             }
 
 
-
             var query =
                 _context.Animes
 
-                    .Include(a => a.AnimeGenres)
+                    .Include(a =>
+                        a.AnimeGenres)
 
-                    .ThenInclude(ag => ag.Genre)
+                    .ThenInclude(ag =>
+                        ag.Genre)
 
                     .AsNoTracking()
 
@@ -62,7 +63,7 @@ namespace AnimeWave.Controllers
 
 
             // =====================================================
-            // ПОИСК
+            // SEARCH
             // =====================================================
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -84,7 +85,9 @@ namespace AnimeWave.Controllers
 
                             (
                                 a.OriginalTitle != null
+
                                 &&
+
                                 EF.Functions.ILike(
                                     a.OriginalTitle,
                                     $"%{search}%"
@@ -96,7 +99,7 @@ namespace AnimeWave.Controllers
 
 
             // =====================================================
-            // ЖАНР
+            // GENRE
             // =====================================================
 
             if (genreId.HasValue)
@@ -106,8 +109,7 @@ namespace AnimeWave.Controllers
                         a =>
                             a.AnimeGenres.Any(
                                 ag =>
-                                    ag.GenreId
-                                    ==
+                                    ag.GenreId ==
                                     genreId.Value
                             )
                     );
@@ -116,7 +118,7 @@ namespace AnimeWave.Controllers
 
 
             // =====================================================
-            // РЕЙТИНГ
+            // RATING
             // =====================================================
 
             if (minRating.HasValue)
@@ -124,8 +126,7 @@ namespace AnimeWave.Controllers
                 query =
                     query.Where(
                         a =>
-                            a.Rating
-                            >=
+                            a.Rating >=
                             minRating.Value
                     );
             }
@@ -133,7 +134,7 @@ namespace AnimeWave.Controllers
 
 
             // =====================================================
-            // КОЛИЧЕСТВО РЕЗУЛЬТАТОВ
+            // TOTAL ITEMS
             // =====================================================
 
             int totalItems =
@@ -144,8 +145,7 @@ namespace AnimeWave.Controllers
                 totalItems == 0
                     ? 1
                     : (int)Math.Ceiling(
-                        totalItems
-                        /
+                        totalItems /
                         (double)pageSize
                     );
 
@@ -159,52 +159,53 @@ namespace AnimeWave.Controllers
 
 
             // =====================================================
-            // СОРТИРОВКА
+            // SORT
             // =====================================================
 
             query =
                 sort switch
                 {
                     "new" =>
-                        query.OrderByDescending(
-                            a => a.ReleaseYear
-                        )
-                        .ThenByDescending(
-                            a => a.Rating
-                        ),
-
+                        query
+                            .OrderByDescending(
+                                a => a.ReleaseYear
+                            )
+                            .ThenByDescending(
+                                a => a.Rating
+                            ),
 
                     "old" =>
-                        query.OrderBy(
-                            a => a.ReleaseYear
-                        )
-                        .ThenBy(
-                            a => a.Title
-                        ),
-
+                        query
+                            .OrderBy(
+                                a => a.ReleaseYear
+                            )
+                            .ThenBy(
+                                a => a.Title
+                            ),
 
                     "title" =>
-                        query.OrderBy(
-                            a => a.Title
-                        ),
-
+                        query
+                            .OrderBy(
+                                a => a.Title
+                            ),
 
                     "rating-low" =>
-                        query.OrderBy(
-                            a => a.Rating
-                        )
-                        .ThenBy(
-                            a => a.Title
-                        ),
-
+                        query
+                            .OrderBy(
+                                a => a.Rating
+                            )
+                            .ThenBy(
+                                a => a.Title
+                            ),
 
                     _ =>
-                        query.OrderByDescending(
-                            a => a.Rating
-                        )
-                        .ThenBy(
-                            a => a.Title
-                        )
+                        query
+                            .OrderByDescending(
+                                a => a.Rating
+                            )
+                            .ThenBy(
+                                a => a.Title
+                            )
                 };
 
 
@@ -217,8 +218,7 @@ namespace AnimeWave.Controllers
                 await query
 
                     .Skip(
-                        (page - 1)
-                        *
+                        (page - 1) *
                         pageSize
                     )
 
@@ -261,11 +261,6 @@ namespace AnimeWave.Controllers
             ViewBag.Sort =
                 sort;
 
-
-
-            // =====================================================
-            // PAGINATION DATA
-            // =====================================================
 
             ViewBag.CurrentPage =
                 page;
@@ -324,6 +319,10 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // EPISODES
+            // =====================================================
+
             anime.Episodes =
                 anime.Episodes
 
@@ -336,10 +335,18 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // FAVORITE
+            // =====================================================
+
             ViewBag.IsFavorite =
                 false;
 
 
+
+            // =====================================================
+            // USER HISTORY
+            // =====================================================
 
             if (
                 User.Identity?.IsAuthenticated
@@ -364,14 +371,12 @@ namespace AnimeWave.Controllers
 
                             .AnyAsync(
                                 f =>
-                                    f.UserId
-                                    ==
+                                    f.UserId ==
                                     userId
 
                                     &&
 
-                                    f.AnimeId
-                                    ==
+                                    f.AnimeId ==
                                     anime.Id
                             );
 
@@ -382,14 +387,12 @@ namespace AnimeWave.Controllers
 
                             .FirstOrDefaultAsync(
                                 v =>
-                                    v.UserId
-                                    ==
+                                    v.UserId ==
                                     userId
 
                                     &&
 
-                                    v.AnimeId
-                                    ==
+                                    v.AnimeId ==
                                     anime.Id
                             );
 
@@ -424,6 +427,144 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // SIMILAR ANIME
+            // =====================================================
+
+            var currentGenreIds =
+                anime.AnimeGenres
+
+                    .Select(
+                        ag => ag.GenreId
+                    )
+
+                    .Distinct()
+
+                    .ToList();
+
+
+
+            List<Anime> similarAnime;
+
+
+
+            // =====================================================
+            // ЕСЛИ ЕСТЬ ЖАНРЫ
+            // =====================================================
+
+            if (currentGenreIds.Any())
+            {
+                // Сначала получаем подходящих кандидатов.
+                // Текущее аниме исключаем.
+
+                var candidates =
+                    await _context.Animes
+
+                        .AsNoTracking()
+
+                        .Include(a =>
+                            a.AnimeGenres)
+
+                        .ThenInclude(ag =>
+                            ag.Genre)
+
+                        .Where(
+                            a =>
+                                a.Id != anime.Id
+
+                                &&
+
+                                a.AnimeGenres.Any(
+                                    ag =>
+                                        currentGenreIds.Contains(
+                                            ag.GenreId
+                                        )
+                                )
+                        )
+
+                        .Take(40)
+
+                        .ToListAsync();
+
+
+
+                // Сортируем уже в памяти:
+                //
+                // 1. Количество совпадающих жанров
+                // 2. Рейтинг
+                // 3. Год выхода
+
+                similarAnime =
+                    candidates
+
+                        .OrderByDescending(
+                            a =>
+                                a.AnimeGenres.Count(
+                                    ag =>
+                                        currentGenreIds.Contains(
+                                            ag.GenreId
+                                        )
+                                )
+                        )
+
+                        .ThenByDescending(
+                            a => a.Rating
+                        )
+
+                        .ThenByDescending(
+                            a => a.ReleaseYear
+                        )
+
+                        .Take(6)
+
+                        .ToList();
+            }
+
+            // =====================================================
+            // FALLBACK
+            //
+            // Если у тайтла вообще нет жанров —
+            // просто рекомендуем лучшие другие аниме.
+            // =====================================================
+
+            else
+            {
+                similarAnime =
+                    await _context.Animes
+
+                        .AsNoTracking()
+
+                        .Include(a =>
+                            a.AnimeGenres)
+
+                        .ThenInclude(ag =>
+                            ag.Genre)
+
+                        .Where(
+                            a =>
+                                a.Id != anime.Id
+                        )
+
+                        .OrderByDescending(
+                            a => a.Rating
+                        )
+
+                        .ThenByDescending(
+                            a => a.ReleaseYear
+                        )
+
+                        .Take(6)
+
+                        .ToListAsync();
+            }
+
+
+
+            ViewBag.SimilarAnime =
+                similarAnime;
+
+
+
             return View(
                 anime
             );
@@ -448,14 +589,12 @@ namespace AnimeWave.Controllers
 
                     .FirstOrDefaultAsync(
                         e =>
-                            e.Id
-                            ==
+                            e.Id ==
                             episodeId
 
                             &&
 
-                            e.AnimeId
-                            ==
+                            e.AnimeId ==
                             animeId
                     );
 
@@ -466,6 +605,10 @@ namespace AnimeWave.Controllers
             }
 
 
+
+            // =====================================================
+            // HISTORY
+            // =====================================================
 
             if (
                 User.Identity?.IsAuthenticated
@@ -490,14 +633,12 @@ namespace AnimeWave.Controllers
 
                             .FirstOrDefaultAsync(
                                 v =>
-                                    v.UserId
-                                    ==
+                                    v.UserId ==
                                     userId
 
                                     &&
 
-                                    v.AnimeId
-                                    ==
+                                    v.AnimeId ==
                                     animeId
                             );
 
