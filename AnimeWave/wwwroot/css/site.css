@@ -9721,3 +9721,759 @@ button.aw-navbar-search {
         border-radius: 15px;
     }
 }
+/* =========================================================
+   ANIMEWAVE ADMIN DASHBOARD
+   ========================================================= */
+
+.aw-dashboard {
+    min-height: 100vh;
+    padding: 115px 25px 90px;
+    background: radial-gradient( circle at 18% 0%, rgba(139,92,246,.105), transparent 27% ), radial-gradient( circle at 90% 20%, rgba(217,70,239,.045), transparent 23% ), #080a0f;
+    color: #fff;
+}
+
+
+.aw-dashboard-container {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.aw-dashboard-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 36px;
+}
+
+
+.aw-dashboard-eyebrow {
+    display: block;
+    margin-bottom: 9px;
+    color: #8b5cf6;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 2.6px;
+}
+
+
+.aw-dashboard-heading h1 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: clamp( 42px, 5vw, 67px );
+    line-height: .95;
+    letter-spacing: -3px;
+}
+
+
+    .aw-dashboard-heading h1 strong {
+        color: #a78bfa;
+    }
+
+
+.aw-dashboard-heading p {
+    margin: 0;
+    color: #626a76;
+    font-size: 11px;
+}
+
+
+.aw-dashboard-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+
+.aw-dashboard-primary-button,
+.aw-dashboard-secondary-button {
+    min-height: 43px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    box-sizing: border-box;
+    border-radius: 9px;
+    font-size: 9px;
+    font-weight: 750;
+    text-decoration: none;
+    transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+
+.aw-dashboard-primary-button {
+    color: #fff;
+    background: linear-gradient( 135deg, #9b5cf6, #7c3aed );
+    box-shadow: 0 10px 30px rgba(139,92,246,.17);
+}
+
+
+    .aw-dashboard-primary-button:hover {
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+
+.aw-dashboard-secondary-button {
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.025);
+    color: #838b96;
+}
+
+
+    .aw-dashboard-secondary-button:hover {
+        color: #fff;
+        background: rgba(255,255,255,.05);
+    }
+
+
+/* =========================================================
+   BIG STAT CARDS
+   ========================================================= */
+
+.aw-dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat( 5, minmax(0,1fr) );
+    gap: 11px;
+}
+
+
+.aw-dashboard-stat {
+    position: relative;
+    min-width: 0;
+    min-height: 185px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 19px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.052);
+    border-radius: 16px;
+    background: linear-gradient( 145deg, rgba(17,20,28,.94), rgba(11,14,20,.94) );
+    color: inherit;
+    text-decoration: none;
+    transition: transform .28s cubic-bezier(.22,1,.36,1), border-color .28s ease, background .28s ease;
+}
+
+
+    .aw-dashboard-stat::before {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        right: -70px;
+        top: -75px;
+        border-radius: 50%;
+        background: rgba(139,92,246,.08);
+        filter: blur(35px);
+        opacity: 0;
+        transition: opacity .3s ease;
+    }
+
+
+    .aw-dashboard-stat:hover {
+        transform: translateY(-4px);
+        border-color: rgba(139,92,246,.18);
+        background: linear-gradient( 145deg, rgba(21,23,33,.98), rgba(13,15,22,.98) );
+    }
+
+
+        .aw-dashboard-stat:hover::before {
+            opacity: 1;
+        }
+
+
+.aw-dashboard-stat-muted {
+    opacity: .63;
+}
+
+
+.aw-dashboard-stat-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.aw-dashboard-stat-icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(139,92,246,.13);
+    border-radius: 9px;
+    background: rgba(139,92,246,.075);
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+
+.aw-dashboard-stat-index {
+    color: #3d4450;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+
+.aw-dashboard-stat-value {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    color: #fff;
+    font-size: clamp( 30px, 3vw, 43px );
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+
+
+.aw-dashboard-stat-bottom {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+
+    .aw-dashboard-stat-bottom strong {
+        display: block;
+        margin-bottom: 2px;
+        color: #d9dce2;
+        font-size: 9px;
+    }
+
+
+    .aw-dashboard-stat-bottom span {
+        display: block;
+        color: #4e5662;
+        font-size: 7px;
+    }
+
+
+    .aw-dashboard-stat-bottom i {
+        color: #66587e;
+        font-size: 14px;
+        font-style: normal;
+    }
+
+
+/* =========================================================
+   SMALL OVERVIEW
+   ========================================================= */
+
+.aw-dashboard-overview {
+    display: grid;
+    grid-template-columns: repeat( 3, minmax(0,1fr) );
+    gap: 10px;
+    margin-top: 11px;
+}
+
+
+.aw-dashboard-overview-item {
+    padding: 17px 19px;
+    border: 1px solid rgba(255,255,255,.04);
+    border-radius: 12px;
+    background: rgba(255,255,255,.012);
+}
+
+
+    .aw-dashboard-overview-item > span {
+        display: block;
+        margin-bottom: 7px;
+        color: #494f5b;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+
+    .aw-dashboard-overview-item strong {
+        display: block;
+        color: #fff;
+        font-size: 20px;
+        line-height: 1;
+    }
+
+
+    .aw-dashboard-overview-item small {
+        display: block;
+        margin-top: 7px;
+        color: #505864;
+        font-size: 7px;
+    }
+
+
+.aw-dashboard-rating-value {
+    color: #fbbf24 !important;
+}
+
+
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
+
+.aw-dashboard-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0,1.35fr) minmax(330px,.65fr);
+    gap: 14px;
+    margin-top: 35px;
+}
+
+
+/* =========================================================
+   PANEL
+   ========================================================= */
+
+.aw-dashboard-panel {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,.052);
+    border-radius: 17px;
+    background: rgba(14,17,24,.83);
+    backdrop-filter: blur(15px);
+}
+
+
+.aw-dashboard-panel-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+
+    .aw-dashboard-panel-head > div > span {
+        display: block;
+        margin-bottom: 5px;
+        color: #8b5cf6;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 1.7px;
+    }
+
+
+    .aw-dashboard-panel-head h2 {
+        margin: 0;
+        color: #fff;
+        font-size: 19px;
+        letter-spacing: -.6px;
+    }
+
+
+    .aw-dashboard-panel-head small {
+        color: #444b57;
+        font-size: 7px;
+        font-weight: 800;
+    }
+
+
+    .aw-dashboard-panel-head > a {
+        color: #6d7581;
+        font-size: 8px;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+
+        .aw-dashboard-panel-head > a:hover {
+            color: #fff;
+        }
+
+
+.aw-dashboard-panel-empty {
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #505763;
+    font-size: 9px;
+    text-align: center;
+}
+
+
+/* =========================================================
+   GENRE CHART
+   ========================================================= */
+
+.aw-dashboard-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+.aw-dashboard-chart-row {
+    min-width: 0;
+}
+
+
+.aw-dashboard-chart-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 7px;
+}
+
+
+    .aw-dashboard-chart-label span {
+        color: #9ba1ab;
+        font-size: 9px;
+        font-weight: 650;
+    }
+
+
+    .aw-dashboard-chart-label strong {
+        color: #656d79;
+        font-size: 8px;
+    }
+
+
+.aw-dashboard-chart-track {
+    position: relative;
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255,255,255,.027);
+}
+
+
+.aw-dashboard-chart-bar {
+    position: relative;
+    height: 100%;
+    min-width: 4px;
+    border-radius: inherit;
+    background: linear-gradient( 90deg, #6d28d9, #8b5cf6, #c026d3 );
+    box-shadow: 0 0 20px rgba(139,92,246,.20);
+    transform-origin: left;
+    animation: awDashboardBar .9s cubic-bezier(.22,1,.36,1) both;
+}
+
+
+    .aw-dashboard-chart-bar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 25px;
+        height: 100%;
+        background: rgba(255,255,255,.20);
+        filter: blur(8px);
+    }
+
+
+@keyframes awDashboardBar {
+
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+
+/* =========================================================
+   USERS
+   ========================================================= */
+
+.aw-dashboard-users {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.aw-dashboard-user {
+    display: grid;
+    grid-template-columns: 38px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 4px;
+    border-bottom: 1px solid rgba(255,255,255,.035);
+}
+
+
+    .aw-dashboard-user:last-child {
+        border-bottom: none;
+    }
+
+
+.aw-dashboard-user-avatar {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+
+.aw-dashboard-user-info {
+    min-width: 0;
+}
+
+
+    .aw-dashboard-user-info strong {
+        display: block;
+        margin-bottom: 3px;
+        overflow: hidden;
+        color: #d9dce1;
+        font-size: 9px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+    .aw-dashboard-user-info span {
+        display: block;
+        overflow: hidden;
+        color: #4d5561;
+        font-size: 7px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+.aw-dashboard-user time {
+    color: #414854;
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   RECENT ANIME
+   ========================================================= */
+
+.aw-dashboard-recent-anime {
+    margin-top: 14px;
+}
+
+
+.aw-dashboard-anime-grid {
+    display: grid;
+    grid-template-columns: repeat( 6, minmax(0,1fr) );
+    gap: 12px;
+}
+
+
+.aw-dashboard-anime {
+    min-width: 0;
+}
+
+
+.aw-dashboard-anime-poster {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #11141b;
+    text-decoration: none;
+}
+
+
+    .aw-dashboard-anime-poster img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        transition: transform .45s ease, filter .3s ease;
+    }
+
+
+.aw-dashboard-anime:hover
+.aw-dashboard-anime-poster img {
+    transform: scale(1.055);
+    filter: brightness(.72);
+}
+
+
+.aw-dashboard-anime-poster > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5b4b77;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+
+.aw-dashboard-anime-poster > span {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    padding: 4px 6px;
+    border-radius: 5px;
+    background: rgba(6,8,12,.82);
+    color: #fbbf24;
+    font-size: 7px;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
+}
+
+
+.aw-dashboard-anime-info {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 7px;
+    padding: 9px 2px 0;
+}
+
+
+    .aw-dashboard-anime-info > div {
+        min-width: 0;
+    }
+
+
+    .aw-dashboard-anime-info h3 {
+        margin: 0 0 4px;
+        overflow: hidden;
+        color: #dfe2e7;
+        font-size: 9px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .aw-dashboard-anime-info p {
+        margin: 0;
+        overflow: hidden;
+        color: #515966;
+        font-size: 7px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .aw-dashboard-anime-info > a {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,.045);
+        border-radius: 6px;
+        background: rgba(255,255,255,.02);
+        color: #686f7b;
+        font-size: 10px;
+        text-decoration: none;
+        transition: background .2s ease, color .2s ease;
+    }
+
+
+        .aw-dashboard-anime-info > a:hover {
+            background: rgba(139,92,246,.08);
+            color: #a78bfa;
+        }
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    .aw-dashboard-stats {
+        grid-template-columns: repeat(3,minmax(0,1fr));
+    }
+
+
+    .aw-dashboard-anime-grid {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    .aw-dashboard-main-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .aw-dashboard-stats {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+
+    .aw-dashboard-anime-grid {
+        grid-template-columns: repeat(3,minmax(0,1fr));
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .aw-dashboard {
+        padding: 95px 14px 60px;
+    }
+
+
+    .aw-dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .aw-dashboard-header-actions {
+        width: 100%;
+    }
+
+
+    .aw-dashboard-primary-button,
+    .aw-dashboard-secondary-button {
+        flex: 1;
+    }
+
+
+    .aw-dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .aw-dashboard-stat {
+        min-height: 160px;
+        padding: 15px;
+    }
+
+
+    .aw-dashboard-overview {
+        grid-template-columns: 1fr;
+    }
+
+
+    .aw-dashboard-anime-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+
+    .aw-dashboard-panel {
+        padding: 18px;
+    }
+}

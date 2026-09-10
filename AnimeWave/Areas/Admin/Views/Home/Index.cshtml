@@ -1,0 +1,680 @@
+﻿@model AnimeWave.ViewModels.AdminDashboardViewModel
+
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+
+<section class="aw-dashboard">
+
+    <div class="aw-dashboard-container">
+
+
+        <!-- =====================================================
+             HEADER
+             ===================================================== -->
+
+        <header class="aw-dashboard-header">
+
+            <div class="aw-dashboard-heading">
+
+                <span class="aw-dashboard-eyebrow">
+                    ANIMEWAVE CONTROL CENTER
+                </span>
+
+
+                <h1>
+                    Admin
+                    <strong>Dashboard</strong>
+                </h1>
+
+
+                <p>
+                    Общая статистика и состояние AnimeWave.
+                </p>
+
+            </div>
+
+
+            <div class="aw-dashboard-header-actions">
+
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index"
+                   class="aw-dashboard-secondary-button">
+
+                    ← На сайт
+
+                </a>
+
+
+                <a href="/Admin/Anime"
+                   class="aw-dashboard-primary-button">
+
+                    Управление аниме →
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================================
+             MAIN STATISTICS
+             ===================================================== -->
+
+        <div class="aw-dashboard-stats">
+
+
+            <!-- ANIME -->
+
+            <a asp-area="Admin"
+               asp-controller="Anime"
+               asp-action="Index"
+               class="aw-dashboard-stat">
+
+                <div class="aw-dashboard-stat-top">
+
+                    <span class="aw-dashboard-stat-icon">
+                        A
+                    </span>
+
+
+                    <span class="aw-dashboard-stat-index">
+                        01
+                    </span>
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-value">
+
+                    @Model.AnimeCount
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-bottom">
+
+                    <div>
+
+                        <strong>
+                            Аниме
+                        </strong>
+
+
+                        <span>
+                            в каталоге
+                        </span>
+
+                    </div>
+
+
+                    <i>
+                        →
+                    </i>
+
+                </div>
+
+            </a>
+
+
+
+            <!-- USERS -->
+
+            <div class="aw-dashboard-stat">
+
+                <div class="aw-dashboard-stat-top">
+
+                    <span class="aw-dashboard-stat-icon">
+                        U
+                    </span>
+
+
+                    <span class="aw-dashboard-stat-index">
+                        02
+                    </span>
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-value">
+
+                    @Model.UsersCount
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-bottom">
+
+                    <div>
+
+                        <strong>
+                            Пользователи
+                        </strong>
+
+
+                        <span>
+                            аккаунтов
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FAVORITES -->
+
+            <div class="aw-dashboard-stat">
+
+                <div class="aw-dashboard-stat-top">
+
+                    <span class="aw-dashboard-stat-icon">
+                        ♥
+                    </span>
+
+
+                    <span class="aw-dashboard-stat-index">
+                        03
+                    </span>
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-value">
+
+                    @Model.FavoritesCount
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-bottom">
+
+                    <div>
+
+                        <strong>
+                            Избранное
+                        </strong>
+
+
+                        <span>
+                            сохранений
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- VIEWS -->
+
+            <div class="aw-dashboard-stat">
+
+                <div class="aw-dashboard-stat-top">
+
+                    <span class="aw-dashboard-stat-icon">
+                        ◉
+                    </span>
+
+
+                    <span class="aw-dashboard-stat-index">
+                        04
+                    </span>
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-value">
+
+                    @Model.ViewsCount
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-bottom">
+
+                    <div>
+
+                        <strong>
+                            Просмотры
+                        </strong>
+
+
+                        <span>
+                            записей истории
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REVIEWS -->
+
+            <div class="aw-dashboard-stat aw-dashboard-stat-muted">
+
+                <div class="aw-dashboard-stat-top">
+
+                    <span class="aw-dashboard-stat-icon">
+                        ★
+                    </span>
+
+
+                    <span class="aw-dashboard-stat-index">
+                        05
+                    </span>
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-value">
+
+                    @Model.ReviewsCount
+
+                </div>
+
+
+                <div class="aw-dashboard-stat-bottom">
+
+                    <div>
+
+                        <strong>
+                            Отзывы
+                        </strong>
+
+
+                        <span>
+                            модуль скоро
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             MINI OVERVIEW
+             ===================================================== -->
+
+        <div class="aw-dashboard-overview">
+
+
+            <div class="aw-dashboard-overview-item">
+
+                <span>
+                    COMPLETED
+                </span>
+
+
+                <strong>
+                    @Model.CompletedAnimeCount
+                </strong>
+
+
+                <small>
+                    завершённых тайтлов
+                </small>
+
+            </div>
+
+
+
+            <div class="aw-dashboard-overview-item">
+
+                <span>
+                    ONGOING
+                </span>
+
+
+                <strong>
+                    @Model.OngoingAnimeCount
+                </strong>
+
+
+                <small>
+                    сейчас выходят
+                </small>
+
+            </div>
+
+
+
+            <div class="aw-dashboard-overview-item">
+
+                <span>
+                    AVG. RATING
+                </span>
+
+
+                <strong class="aw-dashboard-rating-value">
+
+                    ★ @Model.AverageRating.ToString("0.0")
+
+                </strong>
+
+
+                <small>
+                    средний рейтинг
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             MAIN GRID
+             ===================================================== -->
+
+        <div class="aw-dashboard-main-grid">
+
+
+            <!-- =================================================
+                 GENRE CHART
+                 ================================================= -->
+
+            <section class="aw-dashboard-panel aw-dashboard-chart-panel">
+
+                <div class="aw-dashboard-panel-head">
+
+                    <div>
+
+                        <span>
+                            ANALYTICS
+                        </span>
+
+
+                        <h2>
+                            Аниме по жанрам
+                        </h2>
+
+                    </div>
+
+
+                    <small>
+                        TOP @Model.GenreStats.Count
+                    </small>
+
+                </div>
+
+
+                @if (Model.GenreStats.Any())
+                {
+                    <div class="aw-dashboard-chart">
+
+                        @foreach (var genre in Model.GenreStats)
+                        {
+                            <div class="aw-dashboard-chart-row">
+
+                                <div class="aw-dashboard-chart-label">
+
+                                    <span>
+                                        @genre.Name
+                                    </span>
+
+
+                                    <strong>
+                                        @genre.Count
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="aw-dashboard-chart-track">
+
+                                    <div class="aw-dashboard-chart-bar"
+                                         style="width: @genre.Percentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="aw-dashboard-panel-empty">
+
+                        Пока недостаточно данных
+                        для диаграммы.
+
+                    </div>
+                }
+
+            </section>
+
+
+
+            <!-- =================================================
+                 RECENT USERS
+                 ================================================= -->
+
+            <section class="aw-dashboard-panel">
+
+                <div class="aw-dashboard-panel-head">
+
+                    <div>
+
+                        <span>
+                            COMMUNITY
+                        </span>
+
+
+                        <h2>
+                            Новые пользователи
+                        </h2>
+
+                    </div>
+
+
+                    <small>
+                        @Model.UsersCount TOTAL
+                    </small>
+
+                </div>
+
+
+                @if (Model.RecentUsers.Any())
+                {
+                    <div class="aw-dashboard-users">
+
+                        @foreach (var user in Model.RecentUsers)
+                        {
+                            <div class="aw-dashboard-user">
+
+                                <div class="aw-dashboard-user-avatar aw-avatar-@user.AvatarStyle">
+
+                                    @user.AvatarSymbol
+
+                                </div>
+
+
+                                <div class="aw-dashboard-user-info">
+
+                                    <strong>
+                                        @user.DisplayName
+                                    </strong>
+
+
+                                    <span>
+                                        @user.Email
+                                    </span>
+
+                                </div>
+
+
+                                <time>
+
+                                    @user.CreatedAt
+                                    .ToLocalTime()
+                                    .ToString("dd.MM.yy")
+
+                                </time>
+
+                            </div>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    <div class="aw-dashboard-panel-empty">
+
+                        Пользователей пока нет.
+
+                    </div>
+                }
+
+            </section>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             RECENT ANIME
+             ===================================================== -->
+
+        <section class="aw-dashboard-panel aw-dashboard-recent-anime">
+
+            <div class="aw-dashboard-panel-head">
+
+                <div>
+
+                    <span>
+                        CATALOG
+                    </span>
+
+
+                    <h2>
+                        Последние добавленные
+                    </h2>
+
+                </div>
+
+
+                <a href="/Admin/Anime">
+
+                    Весь каталог →
+
+                </a>
+
+            </div>
+
+
+            @if (Model.RecentAnime.Any())
+            {
+                <div class="aw-dashboard-anime-grid">
+
+                    @foreach (var anime in Model.RecentAnime)
+                    {
+                        <article class="aw-dashboard-anime">
+
+
+                            <a asp-area=""
+                               asp-controller="Anime"
+                               asp-action="Details"
+                               asp-route-id="@anime.Id"
+                               class="aw-dashboard-anime-poster">
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    anime.PosterUrl))
+                                {
+                                    <img src="@anime.PosterUrl"
+                                         alt="@anime.Title"
+                                         loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div>
+                                        A
+                                    </div>
+                                }
+
+
+                                <span>
+
+                                    ★ @anime.Rating.ToString("0.0")
+
+                                </span>
+
+                            </a>
+
+
+
+                            <div class="aw-dashboard-anime-info">
+
+                                <div>
+
+                                    <h3>
+                                        @anime.Title
+                                    </h3>
+
+
+                                    <p>
+
+                                        @anime.ReleaseYear
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            anime.Status))
+                                        {
+                                            <text>
+                                                • @anime.Status
+                                            </text>
+                                        }
+
+                                    </p>
+
+                                </div>
+
+
+
+                                <a href="/Admin/Anime/Edit/@anime.Id"
+                                   title="Редактировать">
+
+                                    ✎
+
+                                </a>
+
+                            </div>
+
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="aw-dashboard-panel-empty">
+
+                    В каталоге пока нет аниме.
+
+                </div>
+            }
+
+        </section>
+
+    </div>
+
+</section>
