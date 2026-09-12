@@ -21,10 +21,35 @@ namespace AnimeWave.ViewModels
             = string.Empty;
 
 
+        // =========================================================
+        // AVATAR
+        // =========================================================
+
         [Required]
         public string AvatarStyle { get; set; }
             = "violet";
 
+
+        public List<ProfileAvatarOptionViewModel> AvatarOptions { get; set; }
+            = new();
+
+
+        // =========================================================
+        // INTERFACE THEME
+        // =========================================================
+
+        [Required]
+        public string ThemeStyle { get; set; }
+            = "violet";
+
+
+        public List<ProfileThemeOptionViewModel> ThemeOptions { get; set; }
+            = new();
+
+
+        // =========================================================
+        // PASSWORD
+        // =========================================================
 
         [DataType(DataType.Password)]
         [Display(Name = "Текущий пароль")]
@@ -47,13 +72,8 @@ namespace AnimeWave.ViewModels
         )]
         [Display(Name = "Повторите новый пароль")]
         public string? ConfirmNewPassword { get; set; }
-
-
-        public List<ProfileAvatarOptionViewModel>
-            AvatarOptions
-        { get; set; }
-            = new();
     }
+
 
 
     public class ProfileAvatarOptionViewModel
@@ -65,6 +85,20 @@ namespace AnimeWave.ViewModels
             = string.Empty;
 
         public string Symbol { get; set; }
+            = string.Empty;
+    }
+
+
+
+    public class ProfileThemeOptionViewModel
+    {
+        public string Id { get; set; }
+            = string.Empty;
+
+        public string Name { get; set; }
+            = string.Empty;
+
+        public string Description { get; set; }
             = string.Empty;
     }
 }

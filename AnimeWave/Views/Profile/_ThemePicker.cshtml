@@ -1,0 +1,139 @@
+﻿@model AnimeWave.ViewModels.ProfileEditViewModel
+
+
+<section class="aw-theme-picker">
+
+    <div class="aw-theme-picker-head">
+
+        <div>
+
+            <span>
+                INTERFACE
+            </span>
+
+
+            <h2>
+                Тема AnimeWave
+            </h2>
+
+
+            <p>
+                Выбери цвет акцентов интерфейса.
+                Тёмный стиль останется неизменным.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="aw-theme-options">
+
+        @foreach (var theme in Model.ThemeOptions)
+        {
+            string inputId =
+                $"theme-{theme.Id}";
+
+
+            <label class="aw-theme-option aw-theme-option-@theme.Id"
+                   for="@inputId">
+
+                <input type="radio"
+                       asp-for="ThemeStyle"
+                       value="@theme.Id"
+                       id="@inputId" />
+
+
+                <span class="aw-theme-option-preview">
+
+                    <i></i>
+                    <i></i>
+                    <i></i>
+
+                    <b></b>
+
+                </span>
+
+
+                <span class="aw-theme-option-info">
+
+                    <strong>
+                        @theme.Name
+                    </strong>
+
+                    <small>
+                        @theme.Description
+                    </small>
+
+                </span>
+
+
+                <span class="aw-theme-option-check">
+
+                    ✓
+
+                </span>
+
+            </label>
+        }
+
+    </div>
+
+</section>
+
+
+<script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            const radios =
+                document.querySelectorAll(
+                    'input[name="ThemeStyle"]'
+                );
+
+            const themeClasses = [
+                "aw-theme-violet",
+                "aw-theme-sakura",
+                "aw-theme-cyber",
+                "aw-theme-ocean",
+                "aw-theme-crimson"
+            ];
+
+
+            function previewTheme(theme) {
+
+                document.body.classList.remove(
+                    ...themeClasses
+                );
+
+                document.body.classList.add(
+                    "aw-theme-" + theme
+                );
+
+            }
+
+
+            radios.forEach(
+                function(radio) {
+
+                    radio.addEventListener(
+                        "change",
+                        function() {
+
+                            if (radio.checked) {
+                                previewTheme(
+                                    radio.value
+                                );
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+</script>

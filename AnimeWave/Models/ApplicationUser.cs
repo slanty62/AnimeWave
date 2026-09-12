@@ -14,6 +14,15 @@ namespace AnimeWave.Models
             = "violet";
 
 
+        // =========================================================
+        // INTERFACE THEME
+        // =========================================================
+
+        [MaxLength(30)]
+        public string ThemeStyle { get; set; }
+            = "violet";
+
+
         public DateTime CreatedAt { get; set; }
             = DateTime.UtcNow;
 

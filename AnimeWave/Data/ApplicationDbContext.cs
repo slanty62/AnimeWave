@@ -9,7 +9,7 @@ namespace AnimeWave.Data
         : IdentityDbContext<ApplicationUser>
     {
         // =========================================================
-        // КОНСТРУКТОР
+        // CONSTRUCTOR
         // =========================================================
 
         public ApplicationDbContext(
@@ -17,6 +17,7 @@ namespace AnimeWave.Data
             : base(options)
         {
         }
+
 
 
         // =========================================================
@@ -55,8 +56,9 @@ namespace AnimeWave.Data
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
-            // Очень важно для ASP.NET Core Identity
+            // Обязательно вызываем Identity configuration
             base.OnModelCreating(builder);
+
 
 
             // =====================================================
@@ -65,41 +67,62 @@ namespace AnimeWave.Data
 
             builder.Entity<Anime>(entity =>
             {
-                entity.HasKey(a => a.Id);
+                entity.HasKey(
+                    a => a.Id
+                );
 
 
-                entity.Property(a => a.Title)
-                    .IsRequired()
-                    .HasMaxLength(200);
+                entity.Property(
+                    a => a.Title
+                )
+                .IsRequired()
+                .HasMaxLength(200);
 
 
-                entity.Property(a => a.OriginalTitle)
-                    .HasMaxLength(200);
+                entity.Property(
+                    a => a.OriginalTitle
+                )
+                .HasMaxLength(200);
 
 
-                entity.Property(a => a.Description)
-                    .HasMaxLength(3000);
+                entity.Property(
+                    a => a.Description
+                )
+                .HasMaxLength(3000);
 
 
-                entity.Property(a => a.AgeRating)
-                    .HasMaxLength(20);
+                entity.Property(
+                    a => a.AgeRating
+                )
+                .HasMaxLength(20);
 
 
-                entity.Property(a => a.Status)
-                    .HasMaxLength(50);
+                entity.Property(
+                    a => a.Status
+                )
+                .HasMaxLength(50);
 
 
-                entity.Property(a => a.PosterUrl)
-                    .HasMaxLength(500);
+                entity.Property(
+                    a => a.PosterUrl
+                )
+                .HasMaxLength(500);
 
 
-                entity.Property(a => a.BannerUrl)
-                    .HasMaxLength(500);
+                entity.Property(
+                    a => a.BannerUrl
+                )
+                .HasMaxLength(500);
 
 
                 // Например: 9.1
-                entity.Property(a => a.Rating)
-                    .HasPrecision(3, 1);
+                entity.Property(
+                    a => a.Rating
+                )
+                .HasPrecision(
+                    3,
+                    1
+                );
             });
 
 
@@ -110,17 +133,23 @@ namespace AnimeWave.Data
 
             builder.Entity<Genre>(entity =>
             {
-                entity.HasKey(g => g.Id);
+                entity.HasKey(
+                    g => g.Id
+                );
 
 
-                entity.Property(g => g.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
+                entity.Property(
+                    g => g.Name
+                )
+                .IsRequired()
+                .HasMaxLength(100);
 
 
-                // Не даём создать два одинаковых жанра
-                entity.HasIndex(g => g.Name)
-                    .IsUnique();
+                // Запрещаем одинаковые названия жанров
+                entity.HasIndex(
+                    g => g.Name
+                )
+                .IsUnique();
             });
 
 
@@ -133,26 +162,44 @@ namespace AnimeWave.Data
 
             builder.Entity<AnimeGenre>(entity =>
             {
-                // Составной ключ
-                entity.HasKey(ag => new
-                {
-                    ag.AnimeId,
-                    ag.GenreId
-                });
+                // Составной первичный ключ
+                entity.HasKey(
+                    ag => new
+                    {
+                        ag.AnimeId,
+                        ag.GenreId
+                    }
+                );
 
 
                 // AnimeGenre -> Anime
-                entity.HasOne(ag => ag.Anime)
-                    .WithMany(a => a.AnimeGenres)
-                    .HasForeignKey(ag => ag.AnimeId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(
+                    ag => ag.Anime
+                )
+                .WithMany(
+                    a => a.AnimeGenres
+                )
+                .HasForeignKey(
+                    ag => ag.AnimeId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
                 // AnimeGenre -> Genre
-                entity.HasOne(ag => ag.Genre)
-                    .WithMany(g => g.AnimeGenres)
-                    .HasForeignKey(ag => ag.GenreId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(
+                    ag => ag.Genre
+                )
+                .WithMany(
+                    g => g.AnimeGenres
+                )
+                .HasForeignKey(
+                    ag => ag.GenreId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
             });
 
 
@@ -163,38 +210,57 @@ namespace AnimeWave.Data
 
             builder.Entity<Episode>(entity =>
             {
-                entity.HasKey(e => e.Id);
+                entity.HasKey(
+                    e => e.Id
+                );
 
 
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasMaxLength(200);
+                entity.Property(
+                    e => e.Title
+                )
+                .IsRequired()
+                .HasMaxLength(200);
 
 
-                entity.Property(e => e.Description)
-                    .HasMaxLength(1000);
+                entity.Property(
+                    e => e.Description
+                )
+                .HasMaxLength(1000);
 
 
-                entity.Property(e => e.ThumbnailUrl)
-                    .HasMaxLength(500);
+                entity.Property(
+                    e => e.ThumbnailUrl
+                )
+                .HasMaxLength(500);
 
 
                 // Episode -> Anime
-                entity.HasOne(e => e.Anime)
-                    .WithMany(a => a.Episodes)
-                    .HasForeignKey(e => e.AnimeId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(
+                    e => e.Anime
+                )
+                .WithMany(
+                    a => a.Episodes
+                )
+                .HasForeignKey(
+                    e => e.AnimeId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
-                // У одного Anime не должно быть
+                // У одного Anime не может быть
                 // двух серий с одинаковым номером
-                entity.HasIndex(e => new
-                {
-                    e.AnimeId,
-                    e.EpisodeNumber
-                })
+                entity.HasIndex(
+                    e => new
+                    {
+                        e.AnimeId,
+                        e.EpisodeNumber
+                    }
+                )
                 .IsUnique();
             });
+
 
 
             // =====================================================
@@ -203,39 +269,61 @@ namespace AnimeWave.Data
 
             builder.Entity<Favorite>(entity =>
             {
-                entity.HasKey(f => f.Id);
+                entity.HasKey(
+                    f => f.Id
+                );
 
 
                 // Favorite -> ApplicationUser
-                // ВАЖНО: используем именно f.User
-                entity.HasOne(f => f.User)
-                    .WithMany()
-                    .HasForeignKey(f => f.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                //
+                // ВАЖНО:
+                // используем именно f.User,
+                // чтобы EF не создавал UserId1
+                entity.HasOne(
+                    f => f.User
+                )
+                .WithMany()
+                .HasForeignKey(
+                    f => f.UserId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
                 // Favorite -> Anime
-                entity.HasOne(f => f.Anime)
-                    .WithMany()
-                    .HasForeignKey(f => f.AnimeId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(
+                    f => f.Anime
+                )
+                .WithMany()
+                .HasForeignKey(
+                    f => f.AnimeId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
-                // Одно аниме нельзя добавить
-                // в избранное два раза
-                entity.HasIndex(f => new
-                {
-                    f.UserId,
-                    f.AnimeId
-                })
+                // Один пользователь не может
+                // добавить одно Anime в избранное дважды
+                entity.HasIndex(
+                    f => new
+                    {
+                        f.UserId,
+                        f.AnimeId
+                    }
+                )
                 .IsUnique();
 
 
-                entity.Property(f => f.CreatedAt)
-                    .HasDefaultValueSql(
-                        "CURRENT_TIMESTAMP"
-                    );
+                entity.Property(
+                    f => f.CreatedAt
+                )
+                .HasDefaultValueSql(
+                    "CURRENT_TIMESTAMP"
+                );
             });
+
 
 
             // =====================================================
@@ -244,11 +332,55 @@ namespace AnimeWave.Data
 
             builder.Entity<ApplicationUser>(entity =>
             {
-                // Дата создания аккаунта
-                entity.Property(u => u.CreatedAt)
-                    .HasDefaultValueSql(
-                        "CURRENT_TIMESTAMP"
-                    );
+                // -------------------------------------------------
+                // DISPLAY NAME
+                // -------------------------------------------------
+
+                entity.Property(
+                    u => u.DisplayName
+                )
+                .HasMaxLength(100);
+
+
+
+                // -------------------------------------------------
+                // AVATAR STYLE
+                // -------------------------------------------------
+
+                entity.Property(
+                    u => u.AvatarStyle
+                )
+                .HasMaxLength(30)
+                .HasDefaultValue(
+                    "violet"
+                );
+
+
+
+                // -------------------------------------------------
+                // INTERFACE THEME
+                // -------------------------------------------------
+
+                entity.Property(
+                    u => u.ThemeStyle
+                )
+                .HasMaxLength(30)
+                .HasDefaultValue(
+                    "violet"
+                );
+
+
+
+                // -------------------------------------------------
+                // CREATED AT
+                // -------------------------------------------------
+
+                entity.Property(
+                    u => u.CreatedAt
+                )
+                .HasDefaultValueSql(
+                    "CURRENT_TIMESTAMP"
+                );
             });
 
 
@@ -261,43 +393,64 @@ namespace AnimeWave.Data
 
             builder.Entity<ViewingHistory>(entity =>
             {
-                entity.HasKey(v => v.Id);
+                entity.HasKey(
+                    v => v.Id
+                );
 
 
-                entity.Property(v => v.UserId)
-                    .IsRequired();
+                entity.Property(
+                    v => v.UserId
+                )
+                .IsRequired();
 
 
-                entity.Property(v => v.ViewedAt)
-                    .HasDefaultValueSql(
-                        "CURRENT_TIMESTAMP"
-                    );
+                entity.Property(
+                    v => v.ViewedAt
+                )
+                .HasDefaultValueSql(
+                    "CURRENT_TIMESTAMP"
+                );
 
 
-                // ViewingHistory -> User
-                entity.HasOne(v => v.User)
-                    .WithMany(u => u.ViewingHistories)
-                    .HasForeignKey(v => v.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                // ViewingHistory -> ApplicationUser
+                entity.HasOne(
+                    v => v.User
+                )
+                .WithMany(
+                    u => u.ViewingHistories
+                )
+                .HasForeignKey(
+                    v => v.UserId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
                 // ViewingHistory -> Anime
-                entity.HasOne(v => v.Anime)
-                    .WithMany()
-                    .HasForeignKey(v => v.AnimeId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(
+                    v => v.Anime
+                )
+                .WithMany()
+                .HasForeignKey(
+                    v => v.AnimeId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
 
 
                 // Для одного пользователя каждое Anime
                 // хранится в истории только один раз.
                 //
-                // При повторном просмотре мы просто
-                // обновляем ViewedAt.
-                entity.HasIndex(v => new
-                {
-                    v.UserId,
-                    v.AnimeId
-                })
+                // При повторном просмотре обновляем ViewedAt.
+                entity.HasIndex(
+                    v => new
+                    {
+                        v.UserId,
+                        v.AnimeId
+                    }
+                )
                 .IsUnique();
             });
         }

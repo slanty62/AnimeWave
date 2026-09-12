@@ -1,18 +1,103 @@
-﻿@{
-    var pageTitle =
-        ViewData["Title"]?.ToString()
-        ?? "AnimeWave";
+﻿@using AnimeWave.Models
+@using Microsoft.AspNetCore.Identity
 
-    var isAuthenticated =
-        User.Identity?.IsAuthenticated == true;
+@inject UserManager<ApplicationUser> UserManager
 
-    var userName =
-        User.Identity?.Name ?? "A";
+@{
+    // =========================================================
+    // CURRENT USER
+    // =========================================================
 
-    var userInitial =
-        !string.IsNullOrWhiteSpace(userName)
-            ? userName.Substring(0, 1).ToUpper()
-            : "A";
+    ApplicationUser? layoutUser = null;
+
+
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        layoutUser =
+            await UserManager
+                .GetUserAsync(User);
+    }
+
+
+
+    // =========================================================
+    // GLOBAL THEME
+    // =========================================================
+
+    string animeWaveTheme =
+        layoutUser?.ThemeStyle switch
+        {
+            "sakura" => "sakura",
+
+            "cyber" => "cyber",
+
+            "ocean" => "ocean",
+
+            "crimson" => "crimson",
+
+            _ => "violet"
+        };
+
+
+
+    // =========================================================
+    // NAVBAR AVATAR
+    // =========================================================
+
+    string navbarAvatarStyle =
+        layoutUser?.AvatarStyle switch
+        {
+            "sakura" => "sakura",
+
+            "kitsune" => "kitsune",
+
+            "blade" => "blade",
+
+            "neko" => "neko",
+
+            "star" => "star",
+
+            "cyber" => "cyber",
+
+            "wave" => "wave",
+
+            _ => "violet"
+        };
+
+
+    string navbarAvatarSymbol =
+        navbarAvatarStyle switch
+        {
+            "sakura" => "桜",
+
+            "kitsune" => "狐",
+
+            "blade" => "刀",
+
+            "neko" => "猫",
+
+            "star" => "星",
+
+            "cyber" => "夢",
+
+            "wave" => "波",
+
+            _ => "月"
+        };
+
+
+    string navbarDisplayName =
+        !string.IsNullOrWhiteSpace(
+            layoutUser?.DisplayName
+        )
+            ? layoutUser!.DisplayName!
+            : (
+                layoutUser?.UserName
+                ??
+                User.Identity?.Name
+                ??
+                "Профиль"
+            );
 }
 
 <!DOCTYPE html>
@@ -23,22 +108,33 @@
 
     <meta charset="utf-8" />
 
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
 
+    <meta name="theme-color"
+          content="#080a0f" />
+
+
     <title>
-        @pageTitle - AnimeWave
+        @ViewData["Title"] - AnimeWave
     </title>
 
 
-    <meta name="description"
-          content="AnimeWave — каталог аниме, избранное и персональные подборки." />
+
+    <!-- =========================================================
+         BOOTSTRAP
+         ========================================================= -->
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
 
-    <!-- =========================================
-         CSS
-         ========================================= -->
+
+    <!-- =========================================================
+         ANIMEWAVE
+         ========================================================= -->
 
     <link rel="stylesheet"
           href="~/css/site.css"
@@ -47,7 +143,8 @@
 </head>
 
 
-<body class="aw-body">
+
+<body class="aw-site-body aw-theme-@animeWaveTheme">
 
 
     <!-- =========================================================
@@ -56,36 +153,48 @@
 
     <header class="aw-navbar">
 
-        <div class="aw-navbar-container">
+        <div class="aw-navbar-inner">
 
 
-            <!-- LOGO -->
+            <!-- =================================================
+                 LOGO
+                 ================================================= -->
 
             <a asp-area=""
                asp-controller="Home"
                asp-action="Index"
-               class="aw-logo">
+               class="aw-navbar-logo">
 
-                <span class="aw-logo-icon">
-                    A
+                <span class="aw-navbar-logo-mark">
+
+                    <i></i>
+                    <i></i>
+                    <i></i>
+
                 </span>
 
-                <span class="aw-logo-text">
-                    AnimeWave
+
+                <span class="aw-navbar-logo-text">
+
+                    Anime<strong>Wave</strong>
+
                 </span>
 
             </a>
 
 
 
-            <!-- MAIN NAVIGATION -->
+            <!-- =================================================
+                 DESKTOP NAVIGATION
+                 ================================================= -->
 
-            <nav class="aw-main-nav">
+            <nav class="aw-navbar-links"
+                 aria-label="Основная навигация">
+
 
                 <a asp-area=""
                    asp-controller="Home"
-                   asp-action="Index"
-                   class="aw-nav-link">
+                   asp-action="Index">
 
                     Главная
 
@@ -94,22 +203,35 @@
 
                 <a asp-area=""
                    asp-controller="Anime"
-                   asp-action="Index"
-                   class="aw-nav-link">
+                   asp-action="Index">
 
                     Каталог
 
                 </a>
 
 
-                @if (isAuthenticated)
+
+                @if (User.Identity?.IsAuthenticated == true)
                 {
                     <a asp-area=""
                        asp-controller="Favorites"
-                       asp-action="Index"
-                       class="aw-nav-link">
+                       asp-action="Index">
 
                         Избранное
+
+                    </a>
+                }
+
+
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-area="Admin"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       class="aw-navbar-admin">
+
+                        Админка
 
                     </a>
                 }
@@ -118,12 +240,16 @@
 
 
 
-            <!-- RIGHT SIDE -->
+            <!-- =================================================
+                 RIGHT
+                 ================================================= -->
 
-            <div class="aw-navbar-right">
+            <div class="aw-navbar-actions">
 
 
-                <!-- SEARCH -->
+                <!-- =============================================
+                     SMART SEARCH
+                     ============================================= -->
 
                 <button type="button"
                         class="aw-navbar-search"
@@ -131,55 +257,56 @@
                         title="Поиск аниме"
                         aria-label="Открыть поиск">
 
-                    <svg viewBox="0 0 24 24"
-                         aria-hidden="true">
+                    <svg width="18"
+                         height="18"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
 
-                        <path d="M10.5 4a6.5 6.5 0 1 0 3.98 11.64L19.84 21 21 19.84l-5.36-5.36A6.5 6.5 0 0 0 10.5 4Zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
+                        <circle cx="11"
+                                cy="11"
+                                r="6.5"
+                                stroke="currentColor"
+                                stroke-width="1.7" />
+
+                        <path d="M16 16L20 20"
+                              stroke="currentColor"
+                              stroke-width="1.7"
+                              stroke-linecap="round" />
 
                     </svg>
 
                 </button>
 
 
-                @if (isAuthenticated)
+
+                <!-- =============================================
+                     AUTHENTICATED
+                     ============================================= -->
+                @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <!-- FAVORITES -->
 
-                    <a asp-area=""
-                       asp-controller="Favorites"
-                       asp-action="Index"
-                       class="aw-navbar-favorites">
-
-                        Избранное
-
-                    </a>
-
-
-
-                    <!-- ADMIN -->
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-area="Admin"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           class="aw-navbar-admin">
-
-                            Админка
-
-                        </a>
-                    }
-
-
-
-                    <!-- USER AVATAR -->
+                    <!-- PROFILE -->
 
                     <a asp-area=""
                        asp-controller="Profile"
                        asp-action="Index"
-                       class="aw-navbar-user"
-                       title="Мой профиль">
+                       class="aw-navbar-profile"
+                       title="@navbarDisplayName">
 
-                        @userInitial
+
+                        <span class="aw-navbar-user aw-avatar-@navbarAvatarStyle">
+
+                            @navbarAvatarSymbol
+
+                        </span>
+
+
+                        <span class="aw-navbar-profile-name">
+
+                            @navbarDisplayName
+
+                        </span>
 
                     </a>
 
@@ -196,17 +323,45 @@
 
                         @Html.AntiForgeryToken()
 
-                        <button type="submit"
-                                class="aw-navbar-logout">
 
-                            Выйти
+                        <button type="submit"
+                                class="aw-navbar-logout"
+                                title="Выйти">
+
+                            <svg width="17"
+                                 height="17"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+
+                                <path d="M10 6H6.5C5.67157 6 5 6.67157 5 7.5V16.5C5 17.3284 5.67157 18 6.5 18H10"
+                                      stroke="currentColor"
+                                      stroke-width="1.7"
+                                      stroke-linecap="round" />
+
+
+                                <path d="M14 8L18 12L14 16"
+                                      stroke="currentColor"
+                                      stroke-width="1.7"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round" />
+
+
+                                <path d="M18 12H9"
+                                      stroke="currentColor"
+                                      stroke-width="1.7"
+                                      stroke-linecap="round" />
+
+                            </svg>
 
                         </button>
 
                     </form>
                 }
+
                 else
                 {
+
                     <!-- LOGIN -->
 
                     <a asp-area=""
@@ -217,6 +372,7 @@
                         Войти
 
                     </a>
+
 
 
                     <!-- REGISTER -->
@@ -240,100 +396,138 @@
 
 
     <!-- =========================================================
-         TOAST: SUCCESS
+         TOAST CONTAINER
          ========================================================= -->
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="aw-toast aw-toast-success"
-             data-aw-toast>
+    <div class="aw-toast-container"
+         id="awToastContainer">
 
-            <div class="aw-toast-icon">
-                ✓
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="aw-toast aw-toast-success"
+                 data-aw-toast>
+
+                <div class="aw-toast-icon">
+
+                    ✓
+
+                </div>
+
+
+                <div class="aw-toast-content">
+
+                    <span>
+                        SUCCESS
+                    </span>
+
+
+                    <p>
+                        @TempData["SuccessMessage"]
+                    </p>
+
+                </div>
+
+
+                <button type="button"
+                        class="aw-toast-close"
+                        aria-label="Закрыть уведомление">
+
+                    ×
+
+                </button>
+
             </div>
+        }
 
 
-            <div class="aw-toast-content">
 
-                <span class="aw-toast-label">
-                    Успешно
-                </span>
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="aw-toast aw-toast-error"
+                 data-aw-toast>
 
-                <strong>
-                    @TempData["SuccessMessage"]
-                </strong>
+                <div class="aw-toast-icon">
+
+                    !
+
+                </div>
+
+
+                <div class="aw-toast-content">
+
+                    <span>
+                        ERROR
+                    </span>
+
+
+                    <p>
+                        @TempData["ErrorMessage"]
+                    </p>
+
+                </div>
+
+
+                <button type="button"
+                        class="aw-toast-close"
+                        aria-label="Закрыть уведомление">
+
+                    ×
+
+                </button>
 
             </div>
+        }
 
 
-            <button type="button"
-                    class="aw-toast-close"
-                    data-aw-toast-close
-                    aria-label="Закрыть">
 
-                ×
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="aw-toast aw-toast-info"
+                 data-aw-toast>
 
-            </button>
+                <div class="aw-toast-icon">
+
+                    i
+
+                </div>
 
 
-            <div class="aw-toast-progress">
+                <div class="aw-toast-content">
+
+                    <span>
+                        INFO
+                    </span>
+
+
+                    <p>
+                        @TempData["InfoMessage"]
+                    </p>
+
+                </div>
+
+
+                <button type="button"
+                        class="aw-toast-close"
+                        aria-label="Закрыть уведомление">
+
+                    ×
+
+                </button>
+
             </div>
+        }
 
-        </div>
-    }
+    </div>
 
 
 
     <!-- =========================================================
-         TOAST: ERROR
+         PAGE
          ========================================================= -->
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="aw-toast aw-toast-error"
-             data-aw-toast>
-
-            <div class="aw-toast-icon">
-                !
-            </div>
-
-
-            <div class="aw-toast-content">
-
-                <span class="aw-toast-label">
-                    Ошибка
-                </span>
-
-                <strong>
-                    @TempData["ErrorMessage"]
-                </strong>
-
-            </div>
-
-
-            <button type="button"
-                    class="aw-toast-close"
-                    data-aw-toast-close
-                    aria-label="Закрыть">
-
-                ×
-
-            </button>
-
-
-            <div class="aw-toast-progress">
-            </div>
-
-        </div>
-    }
-
-
-
-    <!-- =========================================================
-         MAIN CONTENT
-         ========================================================= -->
-
-    <main class="aw-page-enter">
+    <main class="aw-page-enter"
+          role="main">
 
         @RenderBody()
 
@@ -347,24 +541,24 @@
 
     <footer class="aw-footer">
 
-        <div class="aw-footer-container">
+        <div class="aw-footer-inner">
 
 
             <div class="aw-footer-brand">
 
-                <div class="aw-footer-logo">
+                <a asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index"
+                   class="aw-footer-logo">
 
-                    <span>
-                        A
-                    </span>
+                    Anime<strong>Wave</strong>
 
-                    AnimeWave
-
-                </div>
+                </a>
 
 
                 <p>
-                    Твой мир аниме.
+                    Современный каталог аниме.
+                    Находи, сохраняй и открывай новые истории.
                 </p>
 
             </div>
@@ -373,42 +567,112 @@
 
             <div class="aw-footer-links">
 
-                <a asp-area=""
-                   asp-controller="Home"
-                   asp-action="Index">
+                <div>
 
-                    Главная
-
-                </a>
+                    <span>
+                        NAVIGATION
+                    </span>
 
 
-                <a asp-area=""
-                   asp-controller="Anime"
-                   asp-action="Index">
-
-                    Каталог
-
-                </a>
-
-
-                @if (isAuthenticated)
-                {
                     <a asp-area=""
-                       asp-controller="Favorites"
+                       asp-controller="Home"
                        asp-action="Index">
 
-                        Избранное
+                        Главная
 
                     </a>
-                }
+
+
+                    <a asp-area=""
+                       asp-controller="Anime"
+                       asp-action="Index">
+
+                        Каталог
+
+                    </a>
+
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-area=""
+                           asp-controller="Favorites"
+                           asp-action="Index">
+
+                            Избранное
+
+                        </a>
+                    }
+
+                </div>
+
+
+
+                <div>
+
+                    <span>
+                        ACCOUNT
+                    </span>
+
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-area=""
+                           asp-controller="Profile"
+                           asp-action="Index">
+
+                            Профиль
+
+                        </a>
+
+
+                        <a asp-area=""
+                           asp-controller="Profile"
+                           asp-action="Edit">
+
+                            Настройки
+
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-area=""
+                           asp-controller="Account"
+                           asp-action="Login">
+
+                            Войти
+
+                        </a>
+
+
+                        <a asp-area=""
+                           asp-controller="Account"
+                           asp-action="Register">
+
+                            Регистрация
+
+                        </a>
+                    }
+
+                </div>
 
             </div>
 
 
 
-            <div class="aw-footer-copy">
+            <div class="aw-footer-bottom">
 
-                © @DateTime.Now.Year AnimeWave
+                <span>
+
+                    © @DateTime.Now.Year AnimeWave
+
+                </span>
+
+
+                <span>
+
+                    ASP.NET Core MVC · PostgreSQL
+
+                </span>
 
             </div>
 
@@ -419,537 +683,456 @@
 
 
     <!-- =========================================================
-         GLOBAL JAVASCRIPT
+         SMART SEARCH
+         ========================================================= -->
+    @await Html.PartialAsync("_SmartSearch")
+
+
+
+    <!-- =========================================================
+         SCRIPTS
+         ========================================================= -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js">
+    </script>
+
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
+
+
+    <!-- =========================================================
+         GLOBAL ANIMEWAVE UI
          ========================================================= -->
 
     <script>
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
+            document.addEventListener(
+                "DOMContentLoaded",
+                function() {
 
+                    // =================================================
+                    // TOASTS
+                    // =================================================
 
-                /* =================================================
-                   TOAST NOTIFICATIONS
-                   ================================================= */
-
-                const toasts =
-                    document.querySelectorAll(
-                        "[data-aw-toast]"
-                    );
-
-
-                toasts.forEach(
-                    function (toast, index) {
-
-                        const closeButton =
-                            toast.querySelector(
-                                "[data-aw-toast-close]"
-                            );
-
-
-                        /* SHOW */
-
-                        setTimeout(
-                            function () {
-
-                                toast.classList.add(
-                                    "aw-toast-show"
-                                );
-
-                            },
-                            100 + (index * 120)
+                    const toasts =
+                        document.querySelectorAll(
+                            "[data-aw-toast]"
                         );
 
 
-                        /* HIDE */
-
-                        function hideToast() {
-
-                            if (
-                                toast.classList.contains(
-                                    "aw-toast-hide"
-                                )
-                            ) {
-                                return;
-                            }
-
-
-                            toast.classList.remove(
-                                "aw-toast-show"
-                            );
-
-
-                            toast.classList.add(
-                                "aw-toast-hide"
-                            );
-
+                    toasts.forEach(
+                        function(toast, index) {
 
                             setTimeout(
-                                function () {
+                                function() {
 
-                                    toast.remove();
-
-                                },
-                                450
-                            );
-                        }
-
-
-                        /* CLOSE BUTTON */
-
-                        if (closeButton) {
-
-                            closeButton.addEventListener(
-                                "click",
-                                hideToast
-                            );
-
-                        }
-
-
-                        /* AUTO CLOSE */
-
-                        setTimeout(
-                            hideToast,
-                            4300 + (index * 300)
-                        );
-
-                    }
-                );
-
-
-
-                /* =================================================
-                   CARD REVEAL
-                   Плавное появление карточек
-                   ================================================= */
-
-                const revealSelectors = [
-
-                    ".aw-home-card",
-
-                    ".aw-anime-card",
-
-                    ".anime-card",
-
-                    ".aw-favorite-card",
-
-                    ".aw-admin-row",
-
-                    ".aw-episode-admin-card"
-
-                ];
-
-
-                const cards =
-                    document.querySelectorAll(
-                        revealSelectors.join(",")
-                    );
-
-
-                if (
-                    "IntersectionObserver"
-                    in window
-                ) {
-
-                    const observer =
-                        new IntersectionObserver(
-                            function (entries) {
-
-                                entries.forEach(
-                                    function (entry) {
-
-                                        if (
-                                            !entry.isIntersecting
-                                        ) {
-                                            return;
-                                        }
-
-
-                                        const card =
-                                            entry.target;
-
-
-                                        const delay =
-                                            Number(
-                                                card.dataset
-                                                    .awRevealDelay
-                                                || 0
-                                            );
-
-
-                                        setTimeout(
-                                            function () {
-
-                                                card.classList.add(
-                                                    "aw-card-visible"
-                                                );
-
-                                            },
-                                            delay
-                                        );
-
-
-                                        observer.unobserve(
-                                            card
-                                        );
-
-                                    }
-                                );
-
-                            },
-                            {
-                                threshold: 0.06
-                            }
-                        );
-
-
-                    cards.forEach(
-                        function (card, index) {
-
-                            card.classList.add(
-                                "aw-card-reveal"
-                            );
-
-
-                            card.dataset.awRevealDelay =
-                                Math.min(
-                                    (index % 10) * 45,
-                                    300
-                                );
-
-
-                            observer.observe(
-                                card
-                            );
-
-                        }
-                    );
-
-                }
-                else {
-
-                    cards.forEach(
-                        function (card) {
-
-                            card.classList.add(
-                                "aw-card-visible"
-                            );
-
-                        }
-                    );
-
-                }
-
-
-
-                /* =================================================
-                   FORM BUTTON LOADING
-                   ================================================= */
-
-                const forms =
-                    document.querySelectorAll(
-                        "form:not([data-no-loading])"
-                    );
-
-
-                forms.forEach(
-                    function (form) {
-
-                        form.addEventListener(
-                            "submit",
-                            function () {
-
-
-                                /* Если HTML5 validation не прошла,
-                                   loading не показываем */
-
-                                if (
-                                    !form.checkValidity()
-                                ) {
-                                    return;
-                                }
-
-
-                                const submitButton =
-                                    form.querySelector(
-                                        "button[type='submit']"
+                                    toast.classList.add(
+                                        "is-visible"
                                     );
 
-
-                                if (!submitButton) {
-                                    return;
-                                }
-
-
-                                /* Не запускаем повторно */
-
-                                if (
-                                    submitButton.classList
-                                        .contains(
-                                            "aw-button-loading"
-                                        )
-                                ) {
-                                    return;
-                                }
+                                },
+                                120 * index
+                            );
 
 
-                                submitButton.classList.add(
-                                    "aw-button-loading"
+                            const closeButton =
+                                toast.querySelector(
+                                    ".aw-toast-close"
                                 );
 
 
-                                submitButton.dataset
-                                    .originalHtml =
-                                    submitButton.innerHTML;
+                            function closeToast() {
+
+                                toast.classList.remove(
+                                    "is-visible"
+                                );
+
+
+                                toast.classList.add(
+                                    "is-hiding"
+                                );
 
 
                                 setTimeout(
-                                    function () {
+                                    function() {
 
-                                        submitButton.innerHTML =
-                                            '<span class="aw-button-spinner"></span> Сохранение...';
+                                        toast.remove();
 
                                     },
-                                    80
+                                    350
+                                );
+
+                            }
+
+
+                            if (closeButton) {
+
+                                closeButton.addEventListener(
+                                    "click",
+                                    closeToast
+                                );
+
+                            }
+
+
+                            setTimeout(
+                                closeToast,
+                                4500 + (index * 250)
+                            );
+
+                        }
+                    );
+
+
+
+                    // =================================================
+                    // CARD REVEAL
+                    // =================================================
+
+                    const revealItems =
+                        document.querySelectorAll(
+                            ".aw-card-reveal"
+                        );
+
+
+                    if (
+                        "IntersectionObserver"
+                        in window
+                    ) {
+                        const revealObserver =
+                            new IntersectionObserver(
+                                function(entries) {
+
+                                    entries.forEach(
+                                        function(entry) {
+
+                                            if (
+                                                entry.isIntersecting
+                                            ) {
+                                                entry.target
+                                                    .classList
+                                                    .add(
+                                                        "is-visible"
+                                                    );
+
+
+                                                revealObserver
+                                                    .unobserve(
+                                                        entry.target
+                                                    );
+                                            }
+
+                                        }
+                                    );
+
+                                },
+                                {
+                                    threshold: 0.08
+                                }
+                            );
+
+
+                        revealItems.forEach(
+                            function(item) {
+
+                                revealObserver.observe(
+                                    item
                                 );
 
                             }
                         );
-
                     }
-                );
+                    else {
+                        revealItems.forEach(
+                            function(item) {
+
+                                item.classList.add(
+                                    "is-visible"
+                                );
+
+                            }
+                        );
+                    }
 
 
 
-                /* =================================================
-                   IMAGE FADE-IN
-                   ================================================= */
+                    // =================================================
+                    // FORM SUBMIT LOADING
+                    //
+                    // data-no-loading можно ставить на формы,
+                    // которые не должны блокировать кнопку.
+                    // =================================================
 
-                const images =
-                    document.querySelectorAll(
-                        "img"
+                    const forms =
+                        document.querySelectorAll(
+                            "form:not([data-no-loading])"
+                        );
+
+
+                    forms.forEach(
+                        function(form) {
+
+                            form.addEventListener(
+                                "submit",
+                                function() {
+
+                                    if (
+                                        !form.checkValidity()
+                                    ) {
+                                        return;
+                                    }
+
+
+                                    const submitButton =
+                                        form.querySelector(
+                                            'button[type="submit"], input[type="submit"]'
+                                        );
+
+
+                                    if (!submitButton) {
+                                        return;
+                                    }
+
+
+                                    if (
+                                        submitButton.dataset
+                                            .awLoading
+                                        ===
+                                        "true"
+                                    ) {
+                                        return;
+                                    }
+
+
+                                    submitButton.dataset
+                                        .awLoading =
+                                        "true";
+
+
+                                    submitButton.classList.add(
+                                        "aw-button-loading"
+                                    );
+
+
+                                    if (
+                                        submitButton
+                                            .tagName
+                                        ===
+                                        "BUTTON"
+                                    ) {
+                                        submitButton.dataset
+                                            .originalText =
+                                            submitButton.innerHTML;
+
+
+                                        submitButton.innerHTML =
+                                            '<span class="aw-button-spinner"></span>'
+                                            +
+                                            '<span>Загрузка...</span>';
+                                    }
+
+
+                                    submitButton.disabled =
+                                        true;
+
+                                }
+                            );
+
+                        }
                     );
 
 
-                images.forEach(
-                    function (image) {
 
-                        if (
-                            image.complete
-                            &&
-                            image.naturalWidth > 0
-                        ) {
+                    // =================================================
+                    // IMAGE FADE-IN
+                    // =================================================
+
+                    const images =
+                        document.querySelectorAll(
+                            "img"
+                        );
+
+
+                    images.forEach(
+                        function(image) {
 
                             image.classList.add(
-                                "aw-image-loaded"
+                                "aw-image-loading"
                             );
 
-                            return;
-                        }
 
+                            function markLoaded() {
 
-                        image.addEventListener(
-                            "load",
-                            function () {
+                                image.classList.remove(
+                                    "aw-image-loading"
+                                );
+
 
                                 image.classList.add(
                                     "aw-image-loaded"
                                 );
 
                             }
-                        );
-
-                    }
-                );
 
 
+                            if (image.complete) {
 
-                /* =================================================
-                   SKELETON LOADING
-                   ================================================= */
+                                markLoaded();
 
-                const gridSelectors = [
+                            }
+                            else {
 
-                    ".aw-home-grid",
-
-                    ".aw-catalog-grid",
-
-                    ".aw-anime-grid",
-
-                    ".aw-favorites-grid"
-
-                ];
-
-
-                const grids =
-                    document.querySelectorAll(
-                        gridSelectors.join(",")
-                    );
-
-
-                grids.forEach(
-                    function (grid) {
-
-                        const realCards =
-                            Array.from(
-                                grid.children
-                            );
-
-
-                        if (
-                            realCards.length === 0
-                        ) {
-                            return;
-                        }
-
-
-                        const parent =
-                            grid.parentElement;
-
-
-                        if (!parent) {
-                            return;
-                        }
-
-
-                        const skeleton =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        skeleton.className =
-                            "aw-skeleton-layer";
-
-
-                        const count =
-                            Math.min(
-                                realCards.length,
-                                8
-                            );
-
-
-                        for (
-                            let i = 0;
-                            i < count;
-                            i++
-                        ) {
-
-                            const skeletonCard =
-                                document.createElement(
-                                    "div"
+                                image.addEventListener(
+                                    "load",
+                                    markLoaded,
+                                    {
+                                        once: true
+                                    }
                                 );
 
 
-                            skeletonCard.className =
-                                "aw-skeleton-card";
+                                image.addEventListener(
+                                    "error",
+                                    markLoaded,
+                                    {
+                                        once: true
+                                    }
+                                );
 
-
-                            skeletonCard.innerHTML = `
-                                <div class="aw-skeleton-poster"></div>
-
-                                <div class="aw-skeleton-line aw-skeleton-title"></div>
-
-                                <div class="aw-skeleton-line aw-skeleton-small"></div>
-                            `;
-
-
-                            skeleton.appendChild(
-                                skeletonCard
-                            );
+                            }
 
                         }
+                    );
 
 
-                        parent.classList.add(
-                            "aw-skeleton-host"
+
+                    // =================================================
+                    // ACTIVE NAVBAR LINK
+                    // =================================================
+
+                    const currentPath =
+                        window.location.pathname
+                            .toLowerCase();
+
+
+                    const navbarLinks =
+                        document.querySelectorAll(
+                            ".aw-navbar-links a"
                         );
 
 
-                        parent.insertBefore(
-                            skeleton,
-                            grid
-                        );
+                    navbarLinks.forEach(
+                        function(link) {
+
+                            const href =
+                                link.getAttribute(
+                                    "href"
+                                );
 
 
-                        grid.classList.add(
-                            "aw-grid-loading"
-                        );
+                            if (!href) {
+                                return;
+                            }
 
 
-                        function finishSkeleton() {
-
-                            setTimeout(
-                                function () {
-
-                                    skeleton.classList.add(
-                                        "aw-skeleton-hide"
-                                    );
+                            const linkPath =
+                                href
+                                    .split("?")[0]
+                                    .toLowerCase();
 
 
-                                    grid.classList.remove(
-                                        "aw-grid-loading"
-                                    );
+                            if (
+                                linkPath === "/"
+                                &&
+                                currentPath === "/"
+                            ) {
+                                link.classList.add(
+                                    "is-active"
+                                );
+
+                                return;
+                            }
 
 
-                                    setTimeout(
-                                        function () {
-
-                                            skeleton.remove();
-
-                                        },
-                                        420
-                                    );
-
-                                },
-                                180
-                            );
-
-                        }
-
-
-                        if (
-                            document.readyState ===
-                            "complete"
-                        ) {
-
-                            finishSkeleton();
+                            if (
+                                linkPath !== "/"
+                                &&
+                                currentPath.startsWith(
+                                    linkPath
+                                )
+                            ) {
+                                link.classList.add(
+                                    "is-active"
+                                );
+                            }
 
                         }
-                        else {
+                    );
 
-                            window.addEventListener(
-                                "load",
-                                finishSkeleton,
-                                {
-                                    once: true
+
+
+                    // =================================================
+                    // CTRL / CMD + K
+                    //
+                    // Сам popup обрабатывается _SmartSearch,
+                    // здесь только страховочная активация кнопки.
+                    // =================================================
+
+                    document.addEventListener(
+                        "keydown",
+                        function(event) {
+
+                            if (
+                                (
+                                    event.ctrlKey
+                                    ||
+                                    event.metaKey
+                                )
+                                &&
+                                event.key
+                                    .toLowerCase()
+                                ===
+                                "k"
+                            ) {
+                                const searchButton =
+                                    document.getElementById(
+                                        "awSmartSearchButton"
+                                    );
+
+
+                                if (searchButton) {
+
+                                    event.preventDefault();
+
+                                    searchButton.click();
+
                                 }
-                            );
+                            }
 
                         }
+                    );
 
-                    }
-                );
-
-            }
-        );
+                }
+            );
 
     </script>
 
 
+
     <!-- =========================================================
-     PAGE-SPECIFIC SCRIPTS
-     Скрипты отдельных страниц
-     ========================================================= -->
-    @await Html.PartialAsync("_SmartSearch")
-
-
+         PAGE SCRIPTS
+         ========================================================= -->
     @await RenderSectionAsync(
-        "Scripts",
-        required: false
-    )
+            "Scripts",
+            required: false
+        )
 
 </body>
 

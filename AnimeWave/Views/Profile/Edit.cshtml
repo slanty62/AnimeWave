@@ -2,361 +2,281 @@
 
 @{
     ViewData["Title"] = "Редактирование профиля";
-
-    var currentAvatar =
-        Model.AvatarOptions
-            .FirstOrDefault(
-                a => a.Id == Model.AvatarStyle
-            );
-
-    var currentSymbol =
-        currentAvatar?.Symbol
-        ?? "月";
 }
 
 
 <section class="aw-profile-edit-page">
 
-    <div class="aw-profile-edit-container">
+    <div class="aw-profile-edit-shell">
 
 
         <!-- =====================================================
              HEADER
              ===================================================== -->
 
-        <div class="aw-profile-edit-header">
+        <header class="aw-profile-edit-header">
+
+            <div>
+
+                <span class="aw-profile-edit-eyebrow">
+                    ACCOUNT SETTINGS
+                </span>
+
+
+                <h1>
+                    Настрой
+                    <strong>профиль</strong>
+                </h1>
+
+
+                <p>
+                    Измени имя, аватар, тему интерфейса
+                    и параметры аккаунта.
+                </p>
+
+            </div>
+
 
             <a asp-controller="Profile"
                asp-action="Index"
                class="aw-profile-edit-back">
 
-                ← Назад в профиль
+                ←
+
+                <span>
+                    Вернуться в профиль
+                </span>
 
             </a>
 
-
-            <span>
-                ACCOUNT SETTINGS
-            </span>
+        </header>
 
 
-            <h1>
-                Настройки
-                <strong>профиля</strong>
-            </h1>
 
-
-            <p>
-                Измени имя, аватар, email
-                или пароль аккаунта AnimeWave.
-            </p>
-
-        </div>
-
-
+        <!-- =====================================================
+             FORM
+             ===================================================== -->
 
         <form asp-controller="Profile"
               asp-action="Edit"
               method="post"
-              class="aw-profile-edit-form">
+              class="aw-profile-edit-form"
+              data-no-loading>
 
             @Html.AntiForgeryToken()
 
 
+            <!-- =================================================
+                 VALIDATION
+                 ================================================= -->
+
             <div asp-validation-summary="ModelOnly"
-                 class="aw-profile-edit-validation">
+                 class="aw-profile-validation">
             </div>
 
 
 
-            <div class="aw-profile-edit-layout">
+            <!-- =================================================
+                 PROFILE PREVIEW
+                 ================================================= -->
+
+            <section class="aw-profile-preview">
+
+                <div class="aw-profile-preview-glow">
+                </div>
 
 
-                <!-- =================================================
-                     LEFT
-                     ================================================= -->
+                <div class="aw-profile-preview-avatar
+                    aw-avatar-@Model.AvatarStyle"
+                     id="awProfilePreviewAvatar">
 
-                <div class="aw-profile-edit-main">
+                    <span id="awProfilePreviewSymbol">
 
+                        @{
+                            var currentAvatar =
+                                Model.AvatarOptions
+                                    .FirstOrDefault(
+                                        a =>
+                                            a.Id ==
+                                            Model.AvatarStyle
+                                    );
+                        }
 
-                    <!-- =============================================
-                         AVATAR
-                         ============================================= -->
+                        @(currentAvatar?.Symbol ?? "月")
 
-                    <section class="aw-profile-edit-card">
+                    </span>
 
-                        <div class="aw-profile-edit-card-head">
+                    <i></i>
 
-                            <span>
-                                01
-                            </span>
-
-
-                            <div>
-
-                                <h2>
-                                    Аватар
-                                </h2>
+                </div>
 
 
-                                <p>
-                                    Выбери стиль своего профиля.
-                                </p>
+                <div class="aw-profile-preview-content">
 
-                            </div>
-
-                        </div>
+                    <span class="aw-profile-preview-label">
+                        LIVE PREVIEW
+                    </span>
 
 
+                    <h2 id="awProfilePreviewName">
 
-                        <div class="aw-profile-avatar-options">
+                        @(string.IsNullOrWhiteSpace(Model.DisplayName)
+                            ? "AnimeWave User"
+                            : Model.DisplayName)
 
-                            @foreach (
-                                var avatar
-                                in Model.AvatarOptions
-                            )
-                            {
-                                <label class="aw-profile-avatar-option">
-
-                                    <input type="radio"
-                                           asp-for="AvatarStyle"
-                                           value="@avatar.Id"
-                                           data-avatar-symbol="@avatar.Symbol" />
+                    </h2>
 
 
-                                    <span class="aw-profile-avatar-choice aw-avatar-@avatar.Id">
+                    <p id="awProfilePreviewEmail">
 
-                                        <strong>
-                                            @avatar.Symbol
-                                        </strong>
+                        @(string.IsNullOrWhiteSpace(Model.Email)
+                            ? "user@animewave.local"
+                            : Model.Email)
 
-                                    </span>
-
-
-                                    <small>
-                                        @avatar.Name
-                                    </small>
-
-                                </label>
-                            }
-
-                        </div>
+                    </p>
 
 
-                        <span asp-validation-for="AvatarStyle"
-                              class="aw-profile-edit-error">
+                    <div class="aw-profile-preview-theme">
+
+                        <span>
+                            Интерфейс
                         </span>
 
-                    </section>
+
+                        <strong id="awProfilePreviewTheme">
+
+                            @{
+                                var currentTheme =
+                                    Model.ThemeOptions
+                                        .FirstOrDefault(
+                                            t =>
+                                                t.Id ==
+                                                Model.ThemeStyle
+                                        );
+                            }
+
+                            @(currentTheme?.Name ?? "Violet")
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
 
 
 
-                    <!-- =============================================
-                         ACCOUNT
-                         ============================================= -->
+            <!-- =================================================
+                 AVATAR
+                 ================================================= -->
 
-                    <section class="aw-profile-edit-card">
+            <section class="aw-profile-edit-panel">
 
-                        <div class="aw-profile-edit-card-head">
+                <div class="aw-profile-edit-panel-head">
 
-                            <span>
-                                02
+                    <div>
+
+                        <span>
+                            01 / AVATAR
+                        </span>
+
+
+                        <h2>
+                            Выбери аватар
+                        </h2>
+
+
+                        <p>
+                            Символ будет отображаться
+                            в твоём профиле AnimeWave.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="aw-avatar-picker">
+
+                    @foreach (var avatar in Model.AvatarOptions)
+                    {
+                        string avatarInputId =
+                            $"avatar-{avatar.Id}";
+
+
+                        <label for="@avatarInputId"
+                               class="aw-avatar-choice">
+
+                            <input type="radio"
+                                   asp-for="AvatarStyle"
+                                   value="@avatar.Id"
+                                   id="@avatarInputId"
+                                   data-avatar-symbol="@avatar.Symbol" />
+
+
+                            <span class="aw-avatar-choice-visual
+                                aw-avatar-@avatar.Id">
+
+                                <b>
+                                    @avatar.Symbol
+                                </b>
+
                             </span>
 
 
-                            <div>
+                            <span class="aw-avatar-choice-name">
 
-                                <h2>
-                                    Основная информация
-                                </h2>
+                                @avatar.Name
 
-
-                                <p>
-                                    Имя и email аккаунта.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="aw-profile-edit-fields">
-
-
-                            <div class="aw-profile-edit-field">
-
-                                <label asp-for="DisplayName">
-                                    Отображаемое имя
-                                </label>
-
-
-                                <input asp-for="DisplayName"
-                                       placeholder="Ваше имя" />
-
-
-                                <span asp-validation-for="DisplayName"
-                                      class="aw-profile-edit-error">
-                                </span>
-
-                            </div>
-
-
-
-                            <div class="aw-profile-edit-field">
-
-                                <label asp-for="Email">
-                                    Email
-                                </label>
-
-
-                                <input asp-for="Email"
-                                       type="email"
-                                       placeholder="name@example.com" />
-
-
-                                <small>
-                                    Для изменения email потребуется текущий пароль.
-                                </small>
-
-
-                                <span asp-validation-for="Email"
-                                      class="aw-profile-edit-error">
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-
-                    <!-- =============================================
-                         PASSWORD
-                         ============================================= -->
-
-                    <section class="aw-profile-edit-card">
-
-                        <div class="aw-profile-edit-card-head">
-
-                            <span>
-                                03
                             </span>
 
 
-                            <div>
+                            <span class="aw-avatar-choice-check">
 
-                                <h2>
-                                    Безопасность
-                                </h2>
+                                ✓
 
+                            </span>
 
-                                <p>
-                                    Пароль можно оставить без изменений.
-                                </p>
+                        </label>
+                    }
 
-                            </div>
-
-                        </div>
+                </div>
 
 
+                <span asp-validation-for="AvatarStyle"
+                      class="aw-profile-field-error">
+                </span>
 
-                        <div class="aw-profile-edit-fields">
-
-
-                            <div class="aw-profile-edit-field">
-
-                                <label asp-for="CurrentPassword">
-                                    Текущий пароль
-                                </label>
-
-
-                                <input asp-for="CurrentPassword"
-                                       type="password"
-                                       autocomplete="current-password"
-                                       placeholder="••••••••" />
-
-
-                                <span asp-validation-for="CurrentPassword"
-                                      class="aw-profile-edit-error">
-                                </span>
-
-                            </div>
+            </section>
 
 
 
-                            <div class="aw-profile-edit-two">
+            <!-- =================================================
+                 THEME
+                 ================================================= -->
+
+            <section class="aw-profile-edit-panel">
+
+                <div class="aw-profile-edit-panel-head">
+
+                    <div>
+
+                        <span>
+                            02 / INTERFACE
+                        </span>
 
 
-                                <div class="aw-profile-edit-field">
-
-                                    <label asp-for="NewPassword">
-                                        Новый пароль
-                                    </label>
+                        <h2>
+                            Тема AnimeWave
+                        </h2>
 
 
-                                    <input asp-for="NewPassword"
-                                           type="password"
-                                           autocomplete="new-password"
-                                           placeholder="Минимум 6 символов" />
-
-
-                                    <span asp-validation-for="NewPassword"
-                                          class="aw-profile-edit-error">
-                                    </span>
-
-                                </div>
-
-
-
-                                <div class="aw-profile-edit-field">
-
-                                    <label asp-for="ConfirmNewPassword">
-                                        Повторите пароль
-                                    </label>
-
-
-                                    <input asp-for="ConfirmNewPassword"
-                                           type="password"
-                                           autocomplete="new-password"
-                                           placeholder="Повторите пароль" />
-
-
-                                    <span asp-validation-for="ConfirmNewPassword"
-                                          class="aw-profile-edit-error">
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-
-                    <!-- =============================================
-                         ACTIONS
-                         ============================================= -->
-
-                    <div class="aw-profile-edit-actions">
-
-                        <button type="submit"
-                                class="aw-profile-edit-save">
-
-                            Сохранить изменения
-
-                        </button>
-
-
-                        <a asp-controller="Profile"
-                           asp-action="Index">
-
-                            Отмена
-
-                        </a>
+                        <p>
+                            Основной фон останется тёмным.
+                            Меняются акценты, glow, кнопки
+                            и активные элементы.
+                        </p>
 
                     </div>
 
@@ -364,50 +284,389 @@
 
 
 
-                <!-- =================================================
-                     PREVIEW
-                     ================================================= -->
+                <div class="aw-theme-picker">
 
-                <aside class="aw-profile-edit-preview">
+                    @foreach (var theme in Model.ThemeOptions)
+                    {
+                        string themeInputId =
+                            $"theme-{theme.Id}";
 
-                    <div class="aw-profile-edit-preview-sticky">
 
-                        <span class="aw-profile-preview-label">
-                            PROFILE PREVIEW
+                        <label for="@themeInputId"
+                               class="aw-theme-card aw-theme-card-@theme.Id">
+
+                            <input type="radio"
+                                   asp-for="ThemeStyle"
+                                   value="@theme.Id"
+                                   id="@themeInputId"
+                                   data-theme-name="@theme.Name" />
+
+
+                            <!-- PREVIEW -->
+
+                            <span class="aw-theme-card-preview">
+
+                                <span class="aw-theme-preview-sidebar">
+
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+
+                                </span>
+
+
+                                <span class="aw-theme-preview-content">
+
+                                    <i class="aw-theme-preview-line is-large">
+                                    </i>
+
+                                    <i class="aw-theme-preview-line">
+                                    </i>
+
+                                    <i class="aw-theme-preview-line is-small">
+                                    </i>
+
+
+                                    <b class="aw-theme-preview-button">
+                                    </b>
+
+                                </span>
+
+
+                                <span class="aw-theme-preview-glow">
+                                </span>
+
+                            </span>
+
+
+
+                            <!-- INFO -->
+
+                            <span class="aw-theme-card-info">
+
+                                <strong>
+                                    @theme.Name
+                                </strong>
+
+
+                                <small>
+                                    @theme.Description
+                                </small>
+
+                            </span>
+
+
+
+                            <!-- CHECK -->
+
+                            <span class="aw-theme-card-check">
+
+                                ✓
+
+                            </span>
+
+                        </label>
+                    }
+
+                </div>
+
+
+                <span asp-validation-for="ThemeStyle"
+                      class="aw-profile-field-error">
+                </span>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 BASIC PROFILE
+                 ================================================= -->
+
+            <section class="aw-profile-edit-panel">
+
+                <div class="aw-profile-edit-panel-head">
+
+                    <div>
+
+                        <span>
+                            03 / PROFILE
                         </span>
 
 
-                        <div id="profileAvatarPreview"
-                             class="aw-profile-preview-avatar aw-avatar-@Model.AvatarStyle">
-
-                            <span id="profileAvatarSymbol">
-                                @currentSymbol
-                            </span>
-
-                        </div>
-
-
-                        <h3 id="profileNamePreview">
-                            @Model.DisplayName
-                        </h3>
+                        <h2>
+                            Основная информация
+                        </h2>
 
 
                         <p>
-                            @Model.Email
+                            Имя будет видно в профиле.
+                            Email используется для входа.
                         </p>
-
-
-                        <div class="aw-profile-preview-status">
-
-                            <i></i>
-
-                            ACTIVE MEMBER
-
-                        </div>
 
                     </div>
 
-                </aside>
+                </div>
+
+
+
+                <div class="aw-profile-form-grid">
+
+
+                    <!-- DISPLAY NAME -->
+
+                    <div class="aw-profile-field">
+
+                        <label asp-for="DisplayName">
+
+                            Имя
+
+                        </label>
+
+
+                        <div class="aw-profile-input-wrap">
+
+                            <span>
+                                ✦
+                            </span>
+
+
+                            <input asp-for="DisplayName"
+                                   id="awDisplayNameInput"
+                                   autocomplete="name"
+                                   placeholder="Как тебя называть?" />
+
+                        </div>
+
+
+                        <span asp-validation-for="DisplayName"
+                              class="aw-profile-field-error">
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="aw-profile-field">
+
+                        <label asp-for="Email">
+
+                            Email
+
+                        </label>
+
+
+                        <div class="aw-profile-input-wrap">
+
+                            <span>
+                                @@
+                            </span>
+
+
+                            <input asp-for="Email"
+                                   id="awEmailInput"
+                                   type="email"
+                                   autocomplete="email"
+                                   placeholder="you@example.com" />
+
+                        </div>
+
+
+                        <span asp-validation-for="Email"
+                              class="aw-profile-field-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PASSWORD
+                 ================================================= -->
+
+            <section class="aw-profile-edit-panel">
+
+                <div class="aw-profile-edit-panel-head">
+
+                    <div>
+
+                        <span>
+                            04 / SECURITY
+                        </span>
+
+
+                        <h2>
+                            Безопасность
+                        </h2>
+
+
+                        <p>
+                            Оставь новый пароль пустым,
+                            если не хочешь его менять.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="aw-profile-security-note">
+
+                    <span>
+                        !
+                    </span>
+
+
+                    <p>
+                        Текущий пароль требуется только
+                        при изменении email или пароля.
+                    </p>
+
+                </div>
+
+
+
+                <div class="aw-profile-form-grid aw-profile-password-grid">
+
+
+                    <!-- CURRENT PASSWORD -->
+
+                    <div class="aw-profile-field aw-profile-field-wide">
+
+                        <label asp-for="CurrentPassword">
+
+                            Текущий пароль
+
+                        </label>
+
+
+                        <div class="aw-profile-input-wrap">
+
+                            <span>
+                                ◆
+                            </span>
+
+
+                            <input asp-for="CurrentPassword"
+                                   type="password"
+                                   autocomplete="current-password"
+                                   placeholder="Текущий пароль" />
+
+                        </div>
+
+
+                        <span asp-validation-for="CurrentPassword"
+                              class="aw-profile-field-error">
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- NEW PASSWORD -->
+
+                    <div class="aw-profile-field">
+
+                        <label asp-for="NewPassword">
+
+                            Новый пароль
+
+                        </label>
+
+
+                        <div class="aw-profile-input-wrap">
+
+                            <span>
+                                +
+                            </span>
+
+
+                            <input asp-for="NewPassword"
+                                   type="password"
+                                   autocomplete="new-password"
+                                   placeholder="Минимум 6 символов" />
+
+                        </div>
+
+
+                        <span asp-validation-for="NewPassword"
+                              class="aw-profile-field-error">
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- CONFIRM -->
+
+                    <div class="aw-profile-field">
+
+                        <label asp-for="ConfirmNewPassword">
+
+                            Повторите пароль
+
+                        </label>
+
+
+                        <div class="aw-profile-input-wrap">
+
+                            <span>
+                                ✓
+                            </span>
+
+
+                            <input asp-for="ConfirmNewPassword"
+                                   type="password"
+                                   autocomplete="new-password"
+                                   placeholder="Повтори новый пароль" />
+
+                        </div>
+
+
+                        <span asp-validation-for="ConfirmNewPassword"
+                              class="aw-profile-field-error">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ACTIONS
+                 ================================================= -->
+
+            <div class="aw-profile-edit-actions">
+
+                <a asp-controller="Profile"
+                   asp-action="Index"
+                   class="aw-profile-cancel">
+
+                    Отмена
+
+                </a>
+
+
+                <button type="submit"
+                        class="aw-profile-save">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    Сохранить изменения
+
+                </button>
 
             </div>
 
@@ -418,54 +677,1230 @@
 </section>
 
 
+
+<style>
+
+    /* =========================================================
+           LOCAL THEME VARIABLES
+           ========================================================= */
+
+    body.aw-theme-violet,
+    body:not([class*="aw-theme-"]) {
+        --aw-profile-accent: #8b5cf6;
+        --aw-profile-accent-strong: #7c3aed;
+        --aw-profile-accent-soft: #a78bfa;
+        --aw-profile-accent-secondary: #d946ef;
+        --aw-profile-accent-rgb: 139, 92, 246;
+    }
+
+
+    body.aw-theme-sakura {
+        --aw-profile-accent: #ec4899;
+        --aw-profile-accent-strong: #db2777;
+        --aw-profile-accent-soft: #f9a8d4;
+        --aw-profile-accent-secondary: #fb7185;
+        --aw-profile-accent-rgb: 236, 72, 153;
+    }
+
+
+    body.aw-theme-cyber {
+        --aw-profile-accent: #22d3ee;
+        --aw-profile-accent-strong: #0891b2;
+        --aw-profile-accent-soft: #67e8f9;
+        --aw-profile-accent-secondary: #2dd4bf;
+        --aw-profile-accent-rgb: 34, 211, 238;
+    }
+
+
+    body.aw-theme-ocean {
+        --aw-profile-accent: #3b82f6;
+        --aw-profile-accent-strong: #2563eb;
+        --aw-profile-accent-soft: #93c5fd;
+        --aw-profile-accent-secondary: #06b6d4;
+        --aw-profile-accent-rgb: 59, 130, 246;
+    }
+
+
+    body.aw-theme-crimson {
+        --aw-profile-accent: #ef4444;
+        --aw-profile-accent-strong: #dc2626;
+        --aw-profile-accent-soft: #fca5a5;
+        --aw-profile-accent-secondary: #fb7185;
+        --aw-profile-accent-rgb: 239, 68, 68;
+    }
+
+
+
+    /* =========================================================
+           PAGE
+           ========================================================= */
+
+    .aw-profile-edit-page,
+    .aw-profile-edit-page * {
+        box-sizing: border-box;
+    }
+
+
+    .aw-profile-edit-page {
+        position: relative;
+        min-height: 100vh;
+        padding: 115px 24px 90px;
+        overflow: hidden;
+        background: radial-gradient( circle at 15% 0%, rgba( var(--aw-profile-accent-rgb), .11 ), transparent 27% ), radial-gradient( circle at 92% 22%, rgba( var(--aw-profile-accent-rgb), .055 ), transparent 25% ), #080a0f;
+        color: #fff;
+        transition: background .35s ease;
+    }
+
+
+        .aw-profile-edit-page::before {
+            content: "";
+            position: absolute;
+            width: 460px;
+            height: 460px;
+            right: -260px;
+            top: 400px;
+            pointer-events: none;
+            border-radius: 50%;
+            background: rgba( var(--aw-profile-accent-rgb), .07 );
+            filter: blur(120px);
+        }
+
+
+    .aw-profile-edit-shell {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+    }
+
+
+
+    /* =========================================================
+           HEADER
+           ========================================================= */
+
+    .aw-profile-edit-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 30px;
+        margin-bottom: 32px;
+    }
+
+
+    .aw-profile-edit-eyebrow {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--aw-profile-accent);
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 2.4px;
+    }
+
+
+    .aw-profile-edit-header h1 {
+        margin: 0 0 9px;
+        color: #fff;
+        font-size: clamp( 40px, 5vw, 62px );
+        line-height: .96;
+        letter-spacing: -2.7px;
+    }
+
+
+        .aw-profile-edit-header h1 strong {
+            color: var(--aw-profile-accent-soft);
+        }
+
+
+    .aw-profile-edit-header p {
+        margin: 0;
+        color: #626a76;
+        font-size: 9px;
+    }
+
+
+    .aw-profile-edit-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 13px;
+        border: 1px solid rgba(255,255,255,.055);
+        border-radius: 9px;
+        background: rgba(255,255,255,.02);
+        color: #737b87;
+        font-size: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: color .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+
+        .aw-profile-edit-back:hover {
+            border-color: rgba( var(--aw-profile-accent-rgb), .24 );
+            background: rgba( var(--aw-profile-accent-rgb), .06 );
+            color: #fff;
+        }
+
+
+
+    /* =========================================================
+           FORM
+           ========================================================= */
+
+    .aw-profile-edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+
+
+    /* =========================================================
+           VALIDATION
+           ========================================================= */
+
+    .aw-profile-validation:empty {
+        display: none;
+    }
+
+
+    .aw-profile-validation {
+        padding: 14px 16px;
+        border: 1px solid rgba(239,68,68,.20);
+        border-radius: 11px;
+        background: rgba(239,68,68,.055);
+        color: #fca5a5;
+        font-size: 8px;
+        line-height: 1.6;
+    }
+
+
+        .aw-profile-validation ul {
+            margin: 0;
+            padding-left: 17px;
+        }
+
+
+
+    /* =========================================================
+           LIVE PROFILE PREVIEW
+           ========================================================= */
+
+    .aw-profile-preview {
+        position: relative;
+        min-height: 170px;
+        display: flex;
+        align-items: center;
+        gap: 23px;
+        padding: 24px 26px;
+        overflow: hidden;
+        border: 1px solid rgba( var(--aw-profile-accent-rgb), .13 );
+        border-radius: 18px;
+        background: linear-gradient( 135deg, rgba( var(--aw-profile-accent-rgb), .075 ), rgba(15,18,25,.88) 45%, rgba(10,12,18,.94) );
+        box-shadow: 0 25px 60px rgba(0,0,0,.16);
+        transition: border-color .35s ease, background .35s ease;
+    }
+
+
+    .aw-profile-preview-glow {
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        left: -80px;
+        top: -100px;
+        pointer-events: none;
+        border-radius: 50%;
+        background: rgba( var(--aw-profile-accent-rgb), .14 );
+        filter: blur(70px);
+    }
+
+
+    .aw-profile-preview-avatar {
+        position: relative;
+        z-index: 2;
+        width: 92px;
+        height: 92px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 25px;
+        color: #fff;
+        font-size: 31px;
+        font-weight: 900;
+        box-shadow: 0 18px 45px rgba(0,0,0,.28);
+        transition: transform .3s ease;
+    }
+
+
+        .aw-profile-preview-avatar:hover {
+            transform: translateY(-3px) rotate(-2deg);
+        }
+
+
+        .aw-profile-preview-avatar i {
+            position: absolute;
+            right: 7px;
+            bottom: 7px;
+            width: 11px;
+            height: 11px;
+            border: 2px solid #11141b;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 12px rgba(34,197,94,.55);
+        }
+
+
+    .aw-profile-preview-content {
+        position: relative;
+        z-index: 2;
+        min-width: 0;
+    }
+
+
+    .aw-profile-preview-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--aw-profile-accent);
+        font-size: 6px;
+        font-weight: 900;
+        letter-spacing: 1.7px;
+    }
+
+
+    .aw-profile-preview-content h2 {
+        margin: 0 0 5px;
+        overflow: hidden;
+        color: #f3f4f6;
+        font-size: 23px;
+        letter-spacing: -.8px;
+        text-overflow: ellipsis;
+    }
+
+
+    .aw-profile-preview-content > p {
+        margin: 0;
+        color: #606976;
+        font-size: 8px;
+    }
+
+
+    .aw-profile-preview-theme {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 12px;
+    }
+
+
+        .aw-profile-preview-theme span {
+            color: #474e59;
+            font-size: 7px;
+        }
+
+
+        .aw-profile-preview-theme strong {
+            padding: 4px 7px;
+            border: 1px solid rgba( var(--aw-profile-accent-rgb), .15 );
+            border-radius: 5px;
+            background: rgba( var(--aw-profile-accent-rgb), .06 );
+            color: var(--aw-profile-accent-soft);
+            font-size: 7px;
+        }
+
+
+
+    /* =========================================================
+           PANELS
+           ========================================================= */
+
+    .aw-profile-edit-panel {
+        padding: 24px;
+        border: 1px solid rgba(255,255,255,.05);
+        border-radius: 16px;
+        background: rgba(14,17,24,.86);
+        box-shadow: 0 15px 45px rgba(0,0,0,.08);
+    }
+
+
+    .aw-profile-edit-panel-head {
+        margin-bottom: 20px;
+    }
+
+
+        .aw-profile-edit-panel-head > div > span {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--aw-profile-accent);
+            font-size: 6px;
+            font-weight: 900;
+            letter-spacing: 1.8px;
+        }
+
+
+        .aw-profile-edit-panel-head h2 {
+            margin: 0 0 6px;
+            color: #eceef1;
+            font-size: 17px;
+            letter-spacing: -.4px;
+        }
+
+
+        .aw-profile-edit-panel-head p {
+            margin: 0;
+            max-width: 650px;
+            color: #555d69;
+            font-size: 8px;
+            line-height: 1.6;
+        }
+
+
+
+    /* =========================================================
+           AVATAR PICKER
+           ========================================================= */
+
+    .aw-avatar-picker {
+        display: grid;
+        grid-template-columns: repeat( 8, minmax(0,1fr) );
+        gap: 8px;
+    }
+
+
+    .aw-avatar-choice {
+        position: relative;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 7px;
+        border: 1px solid rgba(255,255,255,.045);
+        border-radius: 11px;
+        background: rgba(255,255,255,.012);
+        cursor: pointer;
+        transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+
+        .aw-avatar-choice:hover {
+            transform: translateY(-3px);
+            border-color: rgba( var(--aw-profile-accent-rgb), .18 );
+            background: rgba( var(--aw-profile-accent-rgb), .035 );
+        }
+
+
+        .aw-avatar-choice input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+    .aw-avatar-choice-visual {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 900;
+        box-shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+
+
+        .aw-avatar-choice-visual b {
+            font-weight: 900;
+        }
+
+
+    .aw-avatar-choice-name {
+        max-width: 100%;
+        overflow: hidden;
+        color: #6d7581;
+        font-size: 7px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+    .aw-avatar-choice-check {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 17px;
+        height: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--aw-profile-accent);
+        color: #fff;
+        font-size: 6px;
+        font-weight: 900;
+        opacity: 0;
+        transform: scale(.65);
+        transition: opacity .2s ease, transform .2s ease;
+    }
+
+
+    .aw-avatar-choice:has(input:checked) {
+        border-color: rgba( var(--aw-profile-accent-rgb), .40 );
+        background: rgba( var(--aw-profile-accent-rgb), .065 );
+    }
+
+
+        .aw-avatar-choice:has(input:checked)
+        .aw-avatar-choice-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+
+
+    /* =========================================================
+           THEME PICKER
+           ========================================================= */
+
+    .aw-theme-picker {
+        display: grid;
+        grid-template-columns: repeat( 5, minmax(0,1fr) );
+        gap: 9px;
+    }
+
+
+    .aw-theme-card {
+        --theme-a: #8b5cf6;
+        --theme-b: #d946ef;
+        position: relative;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+        padding: 11px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.05);
+        border-radius: 12px;
+        background: #0c0f15;
+        cursor: pointer;
+        transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+
+        .aw-theme-card:hover {
+            transform: translateY(-4px);
+            border-color: color-mix( in srgb, var(--theme-a) 40%, transparent );
+            box-shadow: 0 15px 35px color-mix( in srgb, var(--theme-a) 8%, transparent );
+        }
+
+
+        .aw-theme-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+
+    /* COLORS */
+
+    .aw-theme-card-violet {
+        --theme-a: #8b5cf6;
+        --theme-b: #d946ef;
+    }
+
+
+    .aw-theme-card-sakura {
+        --theme-a: #ec4899;
+        --theme-b: #fb7185;
+    }
+
+
+    .aw-theme-card-cyber {
+        --theme-a: #22d3ee;
+        --theme-b: #2dd4bf;
+    }
+
+
+    .aw-theme-card-ocean {
+        --theme-a: #3b82f6;
+        --theme-b: #06b6d4;
+    }
+
+
+    .aw-theme-card-crimson {
+        --theme-a: #ef4444;
+        --theme-b: #fb7185;
+    }
+
+
+
+    /* PREVIEW */
+
+    .aw-theme-card-preview {
+        position: relative;
+        height: 96px;
+        display: grid;
+        grid-template-columns: 25px minmax(0,1fr);
+        gap: 8px;
+        padding: 9px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.035);
+        border-radius: 9px;
+        background: linear-gradient( 145deg, #151923, #080a0f );
+    }
+
+
+    .aw-theme-preview-glow {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        right: -40px;
+        top: -45px;
+        border-radius: 50%;
+        background: var(--theme-a);
+        opacity: .21;
+        filter: blur(28px);
+    }
+
+
+    .aw-theme-preview-sidebar {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 7px 5px;
+        border-radius: 6px;
+        background: rgba(255,255,255,.025);
+    }
+
+
+        .aw-theme-preview-sidebar i {
+            width: 100%;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.09);
+        }
+
+
+            .aw-theme-preview-sidebar i:first-child {
+                background: var(--theme-a);
+            }
+
+
+    .aw-theme-preview-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        padding-top: 9px;
+    }
+
+
+    .aw-theme-preview-line {
+        width: 70%;
+        height: 5px;
+        display: block;
+        margin-bottom: 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.09);
+    }
+
+
+        .aw-theme-preview-line.is-large {
+            width: 86%;
+            height: 7px;
+            background: rgba(255,255,255,.15);
+        }
+
+
+        .aw-theme-preview-line.is-small {
+            width: 47%;
+        }
+
+
+    .aw-theme-preview-button {
+        width: 38px;
+        height: 12px;
+        display: block;
+        margin-top: auto;
+        border-radius: 4px;
+        background: linear-gradient( 90deg, var(--theme-a), var(--theme-b) );
+        box-shadow: 0 0 15px color-mix( in srgb, var(--theme-a) 42%, transparent );
+    }
+
+
+
+    /* THEME INFO */
+
+    .aw-theme-card-info {
+        min-width: 0;
+    }
+
+
+        .aw-theme-card-info strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #e1e3e7;
+            font-size: 9px;
+        }
+
+
+        .aw-theme-card-info small {
+            display: block;
+            min-height: 27px;
+            color: #4f5762;
+            font-size: 6px;
+            line-height: 1.45;
+        }
+
+
+    .aw-theme-card-check {
+        position: absolute;
+        z-index: 5;
+        top: 7px;
+        right: 7px;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--theme-a);
+        color: #fff;
+        font-size: 6px;
+        font-weight: 900;
+        opacity: 0;
+        transform: scale(.65);
+        transition: opacity .2s ease, transform .2s ease;
+    }
+
+
+    .aw-theme-card:has(input:checked) {
+        border-color: var(--theme-a);
+        box-shadow: 0 15px 38px color-mix( in srgb, var(--theme-a) 12%, transparent );
+    }
+
+
+        .aw-theme-card:has(input:checked)
+        .aw-theme-card-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+
+
+    /* =========================================================
+           FIELDS
+           ========================================================= */
+
+    .aw-profile-form-grid {
+        display: grid;
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+        gap: 13px;
+    }
+
+
+    .aw-profile-field {
+        min-width: 0;
+    }
+
+
+    .aw-profile-field-wide {
+        grid-column: 1 / -1;
+    }
+
+
+    .aw-profile-field > label {
+        display: block;
+        margin: 0 0 7px;
+        color: #6a727e;
+        font-size: 7px;
+        font-weight: 800;
+    }
+
+
+    .aw-profile-input-wrap {
+        position: relative;
+    }
+
+
+        .aw-profile-input-wrap > span {
+            position: absolute;
+            z-index: 2;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--aw-profile-accent);
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+
+        .aw-profile-input-wrap input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px 0 37px;
+            border: 1px solid rgba(255,255,255,.055);
+            outline: none;
+            border-radius: 9px;
+            background: rgba(255,255,255,.022);
+            color: #eef0f3;
+            font-family: inherit;
+            font-size: 9px;
+            transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+        }
+
+
+            .aw-profile-input-wrap input::placeholder {
+                color: #3e4550;
+            }
+
+
+            .aw-profile-input-wrap input:focus {
+                border-color: rgba( var(--aw-profile-accent-rgb), .38 );
+                background: rgba( var(--aw-profile-accent-rgb), .025 );
+                box-shadow: 0 0 0 3px rgba( var(--aw-profile-accent-rgb), .055 );
+            }
+
+
+    .aw-profile-field-error {
+        display: block;
+        min-height: 13px;
+        margin-top: 5px;
+        color: #f87171;
+        font-size: 6.5px;
+    }
+
+
+
+    /* =========================================================
+           SECURITY
+           ========================================================= */
+
+    .aw-profile-security-note {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 16px;
+        padding: 10px 12px;
+        border: 1px solid rgba( var(--aw-profile-accent-rgb), .10 );
+        border-radius: 8px;
+        background: rgba( var(--aw-profile-accent-rgb), .035 );
+    }
+
+
+        .aw-profile-security-note > span {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 6px;
+            background: rgba( var(--aw-profile-accent-rgb), .10 );
+            color: var(--aw-profile-accent-soft);
+            font-size: 8px;
+            font-weight: 900;
+        }
+
+
+        .aw-profile-security-note p {
+            margin: 0;
+            color: #606875;
+            font-size: 7px;
+        }
+
+
+
+    /* =========================================================
+           ACTIONS
+           ========================================================= */
+
+    .aw-profile-edit-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 9px;
+        padding-top: 4px;
+    }
+
+
+    .aw-profile-cancel,
+    .aw-profile-save {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 17px;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 8px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+
+    .aw-profile-cancel {
+        border: 1px solid rgba(255,255,255,.055);
+        background: rgba(255,255,255,.02);
+        color: #707884;
+    }
+
+
+        .aw-profile-cancel:hover {
+            color: #fff;
+            background: rgba(255,255,255,.045);
+        }
+
+
+    .aw-profile-save {
+        border: 0;
+        background: linear-gradient( 135deg, var(--aw-profile-accent), var(--aw-profile-accent-strong) );
+        color: #fff;
+        box-shadow: 0 12px 35px rgba( var(--aw-profile-accent-rgb), .19 );
+    }
+
+
+        .aw-profile-save:hover {
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+
+
+    /* =========================================================
+           FALLBACK AVATARS
+           ========================================================= */
+
+    .aw-avatar-violet {
+        background: linear-gradient( 135deg, #8b5cf6, #6d28d9 );
+    }
+
+
+    .aw-avatar-sakura {
+        background: linear-gradient( 135deg, #f472b6, #db2777 );
+    }
+
+
+    .aw-avatar-kitsune {
+        background: linear-gradient( 135deg, #fb923c, #ea580c );
+    }
+
+
+    .aw-avatar-blade {
+        background: linear-gradient( 135deg, #94a3b8, #475569 );
+    }
+
+
+    .aw-avatar-neko {
+        background: linear-gradient( 135deg, #c084fc, #7e22ce );
+    }
+
+
+    .aw-avatar-star {
+        background: linear-gradient( 135deg, #fbbf24, #d97706 );
+    }
+
+
+    .aw-avatar-cyber {
+        background: linear-gradient( 135deg, #22d3ee, #2563eb );
+    }
+
+
+    .aw-avatar-wave {
+        background: linear-gradient( 135deg, #38bdf8, #0f766e );
+    }
+
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 1000px) {
+
+        .aw-avatar-picker {
+            grid-template-columns: repeat( 4, minmax(0,1fr) );
+        }
+
+
+        .aw-theme-picker {
+            grid-template-columns: repeat( 3, minmax(0,1fr) );
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .aw-profile-edit-page {
+            padding: 95px 14px 65px;
+        }
+
+
+        .aw-profile-edit-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+
+        .aw-profile-preview {
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+
+        .aw-profile-preview-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            font-size: 25px;
+        }
+
+
+        .aw-profile-edit-panel {
+            padding: 17px;
+        }
+
+
+        .aw-profile-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+
+        .aw-profile-field-wide {
+            grid-column: auto;
+        }
+
+
+        .aw-theme-picker {
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
+        }
+
+
+        .aw-profile-edit-actions {
+            flex-direction: column-reverse;
+        }
+
+
+        .aw-profile-cancel,
+        .aw-profile-save {
+            width: 100%;
+        }
+    }
+
+
+    @@media (max-width: 480px) {
+
+        .aw-profile-preview {
+            flex-direction: column;
+        }
+
+
+        .aw-avatar-picker {
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
+        }
+
+
+        .aw-theme-picker {
+            grid-template-columns: 1fr;
+        }
+
+
+        .aw-theme-card-preview {
+            height: 105px;
+        }
+    }
+
+</style>
+
+
+
 @section Scripts
 {
+    <partial name="_ValidationScriptsPartial" />
+
+
     <script>
         document.addEventListener(
             "DOMContentLoaded",
-            function () {
+            function() {
 
-                const avatarPreview =
-                    document.getElementById(
-                        "profileAvatarPreview"
-                    );
+                // =================================================
+                // ELEMENTS
+                // =================================================
 
-                const avatarSymbol =
+                const displayNameInput =
                     document.getElementById(
-                        "profileAvatarSymbol"
-                    );
-
-                const nameInput =
-                    document.getElementById(
-                        "DisplayName"
-                    );
-
-                const namePreview =
-                    document.getElementById(
-                        "profileNamePreview"
+                        "awDisplayNameInput"
                     );
 
 
-                const avatarInputs =
+                const emailInput =
+                    document.getElementById(
+                        "awEmailInput"
+                    );
+
+
+                const previewName =
+                    document.getElementById(
+                        "awProfilePreviewName"
+                    );
+
+
+                const previewEmail =
+                    document.getElementById(
+                        "awProfilePreviewEmail"
+                    );
+
+
+                const previewAvatar =
+                    document.getElementById(
+                        "awProfilePreviewAvatar"
+                    );
+
+
+                const previewSymbol =
+                    document.getElementById(
+                        "awProfilePreviewSymbol"
+                    );
+
+
+                const previewTheme =
+                    document.getElementById(
+                        "awProfilePreviewTheme"
+                    );
+
+
+
+                // =================================================
+                // LIVE NAME
+                // =================================================
+
+                if (
+                    displayNameInput
+                    &&
+                    previewName
+                ) {
+                    displayNameInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const value =
+                                displayNameInput.value.trim();
+
+
+                            previewName.textContent =
+                                value.length > 0
+                                    ? value
+                                    : "AnimeWave User";
+
+                        }
+                    );
+                }
+
+
+
+                // =================================================
+                // LIVE EMAIL
+                // =================================================
+
+                if (
+                    emailInput
+                    &&
+                    previewEmail
+                ) {
+                    emailInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const value =
+                                emailInput.value.trim();
+
+
+                            previewEmail.textContent =
+                                value.length > 0
+                                    ? value
+                                    : "user@animewave.local";
+
+                        }
+                    );
+                }
+
+
+
+                // =================================================
+                // LIVE AVATAR
+                // =================================================
+
+                const avatarRadios =
                     document.querySelectorAll(
-                        "input[name='AvatarStyle']"
+                        'input[name="AvatarStyle"]'
                     );
 
 
-                avatarInputs.forEach(
-                    function (input) {
+                const avatarClasses = [
+                    "aw-avatar-violet",
+                    "aw-avatar-sakura",
+                    "aw-avatar-kitsune",
+                    "aw-avatar-blade",
+                    "aw-avatar-neko",
+                    "aw-avatar-star",
+                    "aw-avatar-cyber",
+                    "aw-avatar-wave"
+                ];
 
-                        input.addEventListener(
+
+                avatarRadios.forEach(
+                    function(radio) {
+
+                        radio.addEventListener(
                             "change",
-                            function () {
+                            function() {
 
-                                avatarPreview.className =
-                                    "aw-profile-preview-avatar aw-avatar-"
-                                    + input.value;
+                                if (!radio.checked) {
+                                    return;
+                                }
 
 
-                                avatarSymbol.textContent =
-                                    input.dataset.avatarSymbol;
+                                if (previewAvatar) {
+
+                                    previewAvatar
+                                        .classList
+                                        .remove(
+                                            ...avatarClasses
+                                        );
+
+
+                                    previewAvatar
+                                        .classList
+                                        .add(
+                                            "aw-avatar-"
+                                            +
+                                            radio.value
+                                        );
+
+                                }
+
+
+                                if (previewSymbol) {
+
+                                    previewSymbol.textContent =
+                                        radio.dataset.avatarSymbol
+                                        ||
+                                        "月";
+
+                                }
 
                             }
                         );
@@ -474,18 +1909,92 @@
                 );
 
 
-                if (nameInput) {
 
-                    nameInput.addEventListener(
-                        "input",
-                        function () {
+                // =================================================
+                // LIVE THEME
+                // =================================================
 
-                            namePreview.textContent =
-                                nameInput.value.trim()
-                                ||
-                                "AnimeWave User";
+                const themeRadios =
+                    document.querySelectorAll(
+                        'input[name="ThemeStyle"]'
+                    );
 
-                        }
+
+                const themeClasses = [
+                    "aw-theme-violet",
+                    "aw-theme-sakura",
+                    "aw-theme-cyber",
+                    "aw-theme-ocean",
+                    "aw-theme-crimson"
+                ];
+
+
+                function applyThemePreview(
+                    theme,
+                    themeName
+                ) {
+                    document.body.classList.remove(
+                        ...themeClasses
+                    );
+
+
+                    document.body.classList.add(
+                        "aw-theme-" + theme
+                    );
+
+
+                    if (previewTheme) {
+
+                        previewTheme.textContent =
+                            themeName
+                            ||
+                            theme;
+
+                    }
+                }
+
+
+
+                themeRadios.forEach(
+                    function(radio) {
+
+                        radio.addEventListener(
+                            "change",
+                            function() {
+
+                                if (!radio.checked) {
+                                    return;
+                                }
+
+
+                                applyThemePreview(
+                                    radio.value,
+                                    radio.dataset.themeName
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+
+
+                // =================================================
+                // INITIAL PREVIEW
+                // =================================================
+
+                const selectedTheme =
+                    document.querySelector(
+                        'input[name="ThemeStyle"]:checked'
+                    );
+
+
+                if (selectedTheme) {
+
+                    applyThemePreview(
+                        selectedTheme.value,
+                        selectedTheme.dataset.themeName
                     );
 
                 }

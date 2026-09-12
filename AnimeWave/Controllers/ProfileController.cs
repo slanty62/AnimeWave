@@ -14,79 +14,167 @@ namespace AnimeWave.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        private readonly UserManager<ApplicationUser>
-            _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly SignInManager<ApplicationUser>
-            _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
 
 
         // =========================================================
-        // AVATARS
+        // AVATAR CATALOG
         // =========================================================
 
-        private static readonly
-            Dictionary<string, (string Name, string Symbol)>
-            AvatarCatalog =
-                new()
+        private static readonly Dictionary<
+            string,
+            (string Name, string Symbol)
+        > AvatarCatalog =
+            new()
+            {
                 {
-                    {
-                        "violet",
-                        ("Лунный", "月")
-                    },
+                    "violet",
+                    (
+                        "Лунный",
+                        "月"
+                    )
+                },
 
-                    {
-                        "sakura",
-                        ("Сакура", "桜")
-                    },
+                {
+                    "sakura",
+                    (
+                        "Сакура",
+                        "桜"
+                    )
+                },
 
-                    {
-                        "kitsune",
-                        ("Кицунэ", "狐")
-                    },
+                {
+                    "kitsune",
+                    (
+                        "Кицунэ",
+                        "狐"
+                    )
+                },
 
-                    {
-                        "blade",
-                        ("Клинок", "刀")
-                    },
+                {
+                    "blade",
+                    (
+                        "Клинок",
+                        "刀"
+                    )
+                },
 
-                    {
-                        "neko",
-                        ("Нэко", "猫")
-                    },
+                {
+                    "neko",
+                    (
+                        "Нэко",
+                        "猫"
+                    )
+                },
 
-                    {
-                        "star",
-                        ("Звезда", "星")
-                    },
+                {
+                    "star",
+                    (
+                        "Звезда",
+                        "星"
+                    )
+                },
 
-                    {
-                        "cyber",
-                        ("Cyber", "夢")
-                    },
+                {
+                    "cyber",
+                    (
+                        "Cyber",
+                        "夢"
+                    )
+                },
 
-                    {
-                        "wave",
-                        ("Волна", "波")
-                    }
-                };
+                {
+                    "wave",
+                    (
+                        "Волна",
+                        "波"
+                    )
+                }
+            };
 
+
+
+        // =========================================================
+        // THEME CATALOG
+        // =========================================================
+
+        private static readonly Dictionary<
+            string,
+            (string Name, string Description)
+        > ThemeCatalog =
+            new()
+            {
+                {
+                    "violet",
+                    (
+                        "Violet",
+                        "Фирменный фиолетовый AnimeWave"
+                    )
+                },
+
+                {
+                    "sakura",
+                    (
+                        "Sakura",
+                        "Розовые и малиновые акценты"
+                    )
+                },
+
+                {
+                    "cyber",
+                    (
+                        "Cyber",
+                        "Неоновый cyan и футуристический glow"
+                    )
+                },
+
+                {
+                    "ocean",
+                    (
+                        "Ocean",
+                        "Холодные синие и голубые оттенки"
+                    )
+                },
+
+                {
+                    "crimson",
+                    (
+                        "Crimson",
+                        "Насыщенные красные акценты"
+                    )
+                }
+            };
+
+
+
+        // =========================================================
+        // CONSTRUCTOR
+        // =========================================================
 
         public ProfileController(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
-            _context = context;
+            _context =
+                context;
 
-            _userManager = userManager;
+            _userManager =
+                userManager;
 
-            _signInManager = signInManager;
+            _signInManager =
+                signInManager;
         }
+
 
 
         // =========================================================
         // PROFILE
+        //
+        // GET: /Profile
         // =========================================================
 
         [HttpGet]
@@ -103,55 +191,81 @@ namespace AnimeWave.Controllers
             }
 
 
+
+            // =====================================================
+            // DISPLAY NAME
+            // =====================================================
+
             string displayName =
                 !string.IsNullOrWhiteSpace(
                     user.DisplayName
                 )
                     ? user.DisplayName
-                    : user.UserName
-                        ?? user.Email
-                        ?? "Пользователь";
+                    : (
+                        user.UserName
+                        ??
+                        user.Email
+                        ??
+                        "AnimeWave User"
+                    );
+
 
 
             string initial =
-                !string.IsNullOrWhiteSpace(displayName)
-                    ? displayName[..1].ToUpper()
+                !string.IsNullOrWhiteSpace(
+                    displayName
+                )
+                    ? displayName
+                        .Trim()[0]
+                        .ToString()
+                        .ToUpperInvariant()
                     : "A";
 
 
-            var avatar =
-                GetAvatar(
-                    user.AvatarStyle
-                );
 
+            // =====================================================
+            // STATISTICS
+            // =====================================================
 
             int favoritesCount =
                 await _context.Favorites
+
+                    .AsNoTracking()
+
                     .CountAsync(
                         f =>
-                            f.UserId == user.Id
+                            f.UserId ==
+                            user.Id
                     );
+
 
 
             int viewedCount =
                 await _context.ViewingHistories
+
+                    .AsNoTracking()
+
                     .CountAsync(
                         v =>
-                            v.UserId == user.Id
+                            v.UserId ==
+                            user.Id
                     );
 
 
-            var recent =
+
+            // =====================================================
+            // RECENT VIEWING HISTORY
+            // =====================================================
+
+            var recentAnime =
                 await _context.ViewingHistories
+
+                    .AsNoTracking()
 
                     .Where(
                         v =>
-                            v.UserId == user.Id
-                    )
-
-                    .Include(
-                        v =>
-                            v.Anime
+                            v.UserId ==
+                            user.Id
                     )
 
                     .OrderByDescending(
@@ -191,6 +305,11 @@ namespace AnimeWave.Controllers
                     .ToListAsync();
 
 
+
+            // =====================================================
+            // VIEW MODEL
+            // =====================================================
+
             var model =
                 new ProfileViewModel
                 {
@@ -199,7 +318,7 @@ namespace AnimeWave.Controllers
 
                     Email =
                         user.Email
-                        ?? "Email не указан",
+                        ?? string.Empty,
 
                     Initial =
                         initial,
@@ -210,7 +329,9 @@ namespace AnimeWave.Controllers
                         ),
 
                     AvatarSymbol =
-                        avatar.Symbol,
+                        GetAvatarSymbol(
+                            user.AvatarStyle
+                        ),
 
                     CreatedAt =
                         user.CreatedAt,
@@ -222,18 +343,22 @@ namespace AnimeWave.Controllers
                         viewedCount,
 
                     RecentAnime =
-                        recent
+                        recentAnime
                 };
 
 
-            return View(model);
+
+            return View(
+                model
+            );
         }
 
 
 
         // =========================================================
-        // EDIT
-        // GET
+        // EDIT PROFILE
+        //
+        // GET: /Profile/Edit
         // =========================================================
 
         [HttpGet]
@@ -250,41 +375,48 @@ namespace AnimeWave.Controllers
             }
 
 
+
             var model =
                 new ProfileEditViewModel
                 {
                     DisplayName =
                         user.DisplayName
-                        ??
-                        user.UserName
-                        ??
-                        string.Empty,
+                        ?? string.Empty,
 
                     Email =
                         user.Email
-                        ??
-                        string.Empty,
+                        ?? string.Empty,
 
                     AvatarStyle =
                         NormalizeAvatar(
                             user.AvatarStyle
-                        )
+                        ),
+
+                    AvatarOptions =
+                        GetAvatarOptions(),
+
+                    ThemeStyle =
+                        NormalizeTheme(
+                            user.ThemeStyle
+                        ),
+
+                    ThemeOptions =
+                        GetThemeOptions()
                 };
 
 
-            FillAvatarOptions(
+
+            return View(
                 model
             );
-
-
-            return View(model);
         }
 
 
 
         // =========================================================
-        // EDIT
-        // POST
+        // EDIT PROFILE
+        //
+        // POST: /Profile/Edit
         // =========================================================
 
         [HttpPost]
@@ -303,11 +435,51 @@ namespace AnimeWave.Controllers
             }
 
 
+
+            // =====================================================
+            // ALWAYS RESTORE OPTIONS
+            //
+            // Эти списки нужны, если мы вернём View
+            // после ошибки Validation.
+            // =====================================================
+
+            model.AvatarOptions =
+                GetAvatarOptions();
+
+
+            model.ThemeOptions =
+                GetThemeOptions();
+
+
+
+            // =====================================================
+            // NORMALIZE BASIC INPUT
+            // =====================================================
+
+            model.DisplayName =
+                model.DisplayName?
+                    .Trim()
+                ?? string.Empty;
+
+
+            model.Email =
+                model.Email?
+                    .Trim()
+                ?? string.Empty;
+
+
+
             // =====================================================
             // AVATAR VALIDATION
             // =====================================================
 
             if (
+                string.IsNullOrWhiteSpace(
+                    model.AvatarStyle
+                )
+
+                ||
+
                 !AvatarCatalog.ContainsKey(
                     model.AvatarStyle
                 )
@@ -315,30 +487,66 @@ namespace AnimeWave.Controllers
             {
                 ModelState.AddModelError(
                     nameof(model.AvatarStyle),
-                    "Выбран неизвестный аватар."
+                    "Выберите корректный аватар."
                 );
+
+
+                model.AvatarStyle =
+                    NormalizeAvatar(
+                        user.AvatarStyle
+                    );
             }
 
 
 
-            string newEmail =
-                model.Email.Trim();
+            // =====================================================
+            // THEME VALIDATION
+            // =====================================================
+
+            if (
+                string.IsNullOrWhiteSpace(
+                    model.ThemeStyle
+                )
+
+                ||
+
+                !ThemeCatalog.ContainsKey(
+                    model.ThemeStyle
+                )
+            )
+            {
+                ModelState.AddModelError(
+                    nameof(model.ThemeStyle),
+                    "Выберите корректную тему."
+                );
 
 
-            string displayName =
-                model.DisplayName.Trim();
+                model.ThemeStyle =
+                    NormalizeTheme(
+                        user.ThemeStyle
+                    );
+            }
 
+
+
+            // =====================================================
+            // CHECK WHAT USER WANTS TO CHANGE
+            // =====================================================
+
+            string currentEmail =
+                user.Email
+                ?? string.Empty;
 
 
             bool emailChanged =
                 !string.Equals(
-                    user.Email,
-                    newEmail,
+                    currentEmail,
+                    model.Email,
                     StringComparison.OrdinalIgnoreCase
                 );
 
 
-            bool passwordChangeRequested =
+            bool passwordChanged =
                 !string.IsNullOrWhiteSpace(
                     model.NewPassword
                 );
@@ -347,12 +555,16 @@ namespace AnimeWave.Controllers
             bool sensitiveChange =
                 emailChanged
                 ||
-                passwordChangeRequested;
+                passwordChanged;
 
 
 
             // =====================================================
-            // CURRENT PASSWORD REQUIRED
+            // CURRENT PASSWORD IS REQUIRED
+            //
+            // Только если пользователь меняет:
+            // - Email
+            // - Password
             // =====================================================
 
             if (
@@ -365,63 +577,63 @@ namespace AnimeWave.Controllers
             {
                 ModelState.AddModelError(
                     nameof(model.CurrentPassword),
-                    "Для изменения email или пароля введите текущий пароль."
+                    "Введите текущий пароль для изменения email или пароля."
                 );
             }
 
 
 
             // =====================================================
-            // EMAIL UNIQUE
+            // EMAIL UNIQUENESS
             // =====================================================
 
-            if (emailChanged)
+            if (
+                emailChanged
+                &&
+                !string.IsNullOrWhiteSpace(
+                    model.Email
+                )
+            )
             {
-                var existingUser =
+                var userWithSameEmail =
                     await _userManager
                         .FindByEmailAsync(
-                            newEmail
+                            model.Email
                         );
 
 
                 if (
-                    existingUser != null
+                    userWithSameEmail != null
                     &&
-                    existingUser.Id != user.Id
+                    userWithSameEmail.Id != user.Id
                 )
                 {
                     ModelState.AddModelError(
                         nameof(model.Email),
-                        "Пользователь с таким email уже существует."
+                        "Этот email уже используется другим аккаунтом."
                     );
                 }
             }
 
 
 
-            if (!ModelState.IsValid)
-            {
-                FillAvatarOptions(
-                    model
-                );
-
-
-                return View(model);
-            }
-
-
-
             // =====================================================
-            // CHECK PASSWORD
+            // CURRENT PASSWORD CHECK
             // =====================================================
 
-            if (sensitiveChange)
+            if (
+                sensitiveChange
+                &&
+                !string.IsNullOrWhiteSpace(
+                    model.CurrentPassword
+                )
+            )
             {
                 bool passwordCorrect =
                     await _userManager
                         .CheckPasswordAsync(
                             user,
-                            model.CurrentPassword!
+                            model.CurrentPassword
                         );
 
 
@@ -431,22 +643,32 @@ namespace AnimeWave.Controllers
                         nameof(model.CurrentPassword),
                         "Текущий пароль указан неверно."
                     );
-
-
-                    FillAvatarOptions(
-                        model
-                    );
-
-
-                    return View(model);
                 }
             }
 
 
 
+            // =====================================================
+            // MODEL VALIDATION
+            // =====================================================
+
+            if (!ModelState.IsValid)
+            {
+                return View(
+                    model
+                );
+            }
+
+
+
+            // =====================================================
+            // DATABASE TRANSACTION
+            // =====================================================
+
             await using var transaction =
                 await _context.Database
                     .BeginTransactionAsync();
+
 
 
             try
@@ -455,7 +677,7 @@ namespace AnimeWave.Controllers
                 // CHANGE PASSWORD
                 // =================================================
 
-                if (passwordChangeRequested)
+                if (passwordChanged)
                 {
                     var passwordResult =
                         await _userManager
@@ -468,35 +690,21 @@ namespace AnimeWave.Controllers
 
                     if (!passwordResult.Succeeded)
                     {
-                        await transaction
-                            .RollbackAsync();
-
-
-                        foreach (
-                            var error
-                            in passwordResult.Errors
-                        )
-                        {
-                            ModelState.AddModelError(
-                                nameof(model.NewPassword),
-                                error.Description
-                            );
-                        }
-
-
-                        FillAvatarOptions(
-                            model
+                        AddIdentityErrors(
+                            passwordResult
                         );
 
 
-                        return View(model);
+                        return View(
+                            model
+                        );
                     }
                 }
 
 
 
                 // =================================================
-                // EMAIL
+                // CHANGE EMAIL
                 // =================================================
 
                 if (emailChanged)
@@ -505,84 +713,58 @@ namespace AnimeWave.Controllers
                         await _userManager
                             .SetEmailAsync(
                                 user,
-                                newEmail
+                                model.Email
                             );
 
 
                     if (!emailResult.Succeeded)
                     {
-                        await transaction
-                            .RollbackAsync();
-
-
-                        foreach (
-                            var error
-                            in emailResult.Errors
-                        )
-                        {
-                            ModelState.AddModelError(
-                                nameof(model.Email),
-                                error.Description
-                            );
-                        }
-
-
-                        FillAvatarOptions(
-                            model
+                        AddIdentityErrors(
+                            emailResult
                         );
 
 
-                        return View(model);
+                        return View(
+                            model
+                        );
                     }
 
 
 
-                    // У тебя UserName используется как email,
-                    // поэтому обновляем его одновременно.
+                    // В AnimeWave UserName = Email.
+                    //
+                    // Поэтому при смене Email
+                    // обновляем и UserName.
 
-                    var userNameResult =
+                    var usernameResult =
                         await _userManager
                             .SetUserNameAsync(
                                 user,
-                                newEmail
+                                model.Email
                             );
 
 
-                    if (!userNameResult.Succeeded)
+                    if (!usernameResult.Succeeded)
                     {
-                        await transaction
-                            .RollbackAsync();
-
-
-                        foreach (
-                            var error
-                            in userNameResult.Errors
-                        )
-                        {
-                            ModelState.AddModelError(
-                                nameof(model.Email),
-                                error.Description
-                            );
-                        }
-
-
-                        FillAvatarOptions(
-                            model
+                        AddIdentityErrors(
+                            usernameResult
                         );
 
 
-                        return View(model);
+                        return View(
+                            model
+                        );
                     }
                 }
 
 
 
                 // =================================================
-                // DISPLAY NAME + AVATAR
+                // PROFILE DATA
                 // =================================================
 
                 user.DisplayName =
-                    displayName;
+                    model.DisplayName;
 
 
                 user.AvatarStyle =
@@ -590,6 +772,17 @@ namespace AnimeWave.Controllers
                         model.AvatarStyle
                     );
 
+
+                user.ThemeStyle =
+                    NormalizeTheme(
+                        model.ThemeStyle
+                    );
+
+
+
+                // =================================================
+                // UPDATE USER
+                // =================================================
 
                 var updateResult =
                     await _userManager
@@ -600,39 +793,30 @@ namespace AnimeWave.Controllers
 
                 if (!updateResult.Succeeded)
                 {
-                    await transaction
-                        .RollbackAsync();
-
-
-                    foreach (
-                        var error
-                        in updateResult.Errors
-                    )
-                    {
-                        ModelState.AddModelError(
-                            string.Empty,
-                            error.Description
-                        );
-                    }
-
-
-                    FillAvatarOptions(
-                        model
+                    AddIdentityErrors(
+                        updateResult
                     );
 
 
-                    return View(model);
+                    return View(
+                        model
+                    );
                 }
 
 
+
+                // =================================================
+                // COMMIT
+                // =================================================
 
                 await transaction
                     .CommitAsync();
 
 
 
-                // Обновляем cookie пользователя,
-                // чтобы изменения сразу применились.
+                // =================================================
+                // REFRESH AUTH COOKIE
+                // =================================================
 
                 await _signInManager
                     .RefreshSignInAsync(
@@ -641,102 +825,224 @@ namespace AnimeWave.Controllers
 
 
 
+                // =================================================
+                // SUCCESS TOAST
+                // =================================================
+
                 TempData["SuccessMessage"] =
                     "Профиль успешно обновлён ✓";
+
 
 
                 return RedirectToAction(
                     nameof(Index)
                 );
             }
-            catch
+            catch (Exception)
             {
                 await transaction
                     .RollbackAsync();
 
 
-                ModelState.AddModelError(
-                    string.Empty,
-                    "Не удалось сохранить изменения. Попробуйте ещё раз."
-                );
+                TempData["ErrorMessage"] =
+                    "Не удалось обновить профиль. Попробуйте ещё раз.";
 
 
-                FillAvatarOptions(
+                model.AvatarOptions =
+                    GetAvatarOptions();
+
+
+                model.ThemeOptions =
+                    GetThemeOptions();
+
+
+                return View(
                     model
                 );
-
-
-                return View(model);
             }
         }
 
 
 
         // =========================================================
-        // AVATAR HELPERS
+        // ADD IDENTITY ERRORS TO MODEL STATE
+        // =========================================================
+
+        private void AddIdentityErrors(
+            IdentityResult result)
+        {
+            foreach (
+                var error
+                in result.Errors
+            )
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    error.Description
+                );
+            }
+        }
+
+
+
+        // =========================================================
+        // GET AVATAR OPTIONS
+        // =========================================================
+
+        private static List<ProfileAvatarOptionViewModel>
+            GetAvatarOptions()
+        {
+            return AvatarCatalog
+
+                .Select(
+                    avatar =>
+                        new ProfileAvatarOptionViewModel
+                        {
+                            Id =
+                                avatar.Key,
+
+                            Name =
+                                avatar.Value.Name,
+
+                            Symbol =
+                                avatar.Value.Symbol
+                        }
+                )
+
+                .ToList();
+        }
+
+
+
+        // =========================================================
+        // NORMALIZE AVATAR
         // =========================================================
 
         private static string NormalizeAvatar(
             string? avatarStyle)
         {
-            if (
-                !string.IsNullOrWhiteSpace(
-                    avatarStyle
-                )
-                &&
-                AvatarCatalog.ContainsKey(
-                    avatarStyle
-                )
-            )
+            return avatarStyle switch
             {
-                return avatarStyle;
-            }
+                "sakura" =>
+                    "sakura",
 
+                "kitsune" =>
+                    "kitsune",
 
-            return "violet";
+                "blade" =>
+                    "blade",
+
+                "neko" =>
+                    "neko",
+
+                "star" =>
+                    "star",
+
+                "cyber" =>
+                    "cyber",
+
+                "wave" =>
+                    "wave",
+
+                _ =>
+                    "violet"
+            };
         }
 
 
-        private static (
-            string Name,
-            string Symbol
-        ) GetAvatar(
+
+        // =========================================================
+        // GET AVATAR SYMBOL
+        // =========================================================
+
+        private static string GetAvatarSymbol(
             string? avatarStyle)
         {
-            string normalized =
-                NormalizeAvatar(
-                    avatarStyle
-                );
+            return NormalizeAvatar(
+                avatarStyle
+            ) switch
+            {
+                "sakura" =>
+                    "桜",
 
+                "kitsune" =>
+                    "狐",
 
-            return AvatarCatalog[
-                normalized
-            ];
+                "blade" =>
+                    "刀",
+
+                "neko" =>
+                    "猫",
+
+                "star" =>
+                    "星",
+
+                "cyber" =>
+                    "夢",
+
+                "wave" =>
+                    "波",
+
+                _ =>
+                    "月"
+            };
         }
 
 
-        private static void FillAvatarOptions(
-            ProfileEditViewModel model)
+
+        // =========================================================
+        // GET THEME OPTIONS
+        // =========================================================
+
+        private static List<ProfileThemeOptionViewModel>
+            GetThemeOptions()
         {
-            model.AvatarOptions =
-                AvatarCatalog
+            return ThemeCatalog
 
-                    .Select(
-                        avatar =>
-                            new ProfileAvatarOptionViewModel
-                            {
-                                Id =
-                                    avatar.Key,
+                .Select(
+                    theme =>
+                        new ProfileThemeOptionViewModel
+                        {
+                            Id =
+                                theme.Key,
 
-                                Name =
-                                    avatar.Value.Name,
+                            Name =
+                                theme.Value.Name,
 
-                                Symbol =
-                                    avatar.Value.Symbol
-                            }
-                    )
+                            Description =
+                                theme.Value.Description
+                        }
+                )
 
-                    .ToList();
+                .ToList();
+        }
+
+
+
+        // =========================================================
+        // NORMALIZE THEME
+        // =========================================================
+
+        private static string NormalizeTheme(
+            string? themeStyle)
+        {
+            return themeStyle switch
+            {
+                "sakura" =>
+                    "sakura",
+
+                "cyber" =>
+                    "cyber",
+
+                "ocean" =>
+                    "ocean",
+
+                "crimson" =>
+                    "crimson",
+
+                _ =>
+                    "violet"
+            };
         }
     }
 }

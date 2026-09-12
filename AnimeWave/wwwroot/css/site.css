@@ -10711,3 +10711,1526 @@ a.aw-pagination-arrow:hover {
         min-width: 15px;
     }
 }
+
+/* =========================================================
+   ANIMEWAVE GLOBAL THEMES
+   ========================================================= */
+
+:root {
+    --aw-accent: #8b5cf6;
+    --aw-accent-strong: #7c3aed;
+    --aw-accent-soft: #a78bfa;
+    --aw-accent-secondary: #d946ef;
+    --aw-accent-rgb: 139, 92, 246;
+}
+
+
+/* =========================================================
+   VIOLET
+   ========================================================= */
+
+body.aw-theme-violet {
+    --aw-accent: #8b5cf6;
+    --aw-accent-strong: #7c3aed;
+    --aw-accent-soft: #a78bfa;
+    --aw-accent-secondary: #d946ef;
+    --aw-accent-rgb: 139, 92, 246;
+}
+
+
+/* =========================================================
+   SAKURA
+   ========================================================= */
+
+body.aw-theme-sakura {
+    --aw-accent: #ec4899;
+    --aw-accent-strong: #db2777;
+    --aw-accent-soft: #f9a8d4;
+    --aw-accent-secondary: #fb7185;
+    --aw-accent-rgb: 236, 72, 153;
+}
+
+
+/* =========================================================
+   CYBER
+   ========================================================= */
+
+body.aw-theme-cyber {
+    --aw-accent: #22d3ee;
+    --aw-accent-strong: #0891b2;
+    --aw-accent-soft: #67e8f9;
+    --aw-accent-secondary: #2dd4bf;
+    --aw-accent-rgb: 34, 211, 238;
+}
+
+
+/* =========================================================
+   OCEAN
+   ========================================================= */
+
+body.aw-theme-ocean {
+    --aw-accent: #3b82f6;
+    --aw-accent-strong: #2563eb;
+    --aw-accent-soft: #93c5fd;
+    --aw-accent-secondary: #06b6d4;
+    --aw-accent-rgb: 59, 130, 246;
+}
+
+
+/* =========================================================
+   CRIMSON
+   ========================================================= */
+
+body.aw-theme-crimson {
+    --aw-accent: #ef4444;
+    --aw-accent-strong: #dc2626;
+    --aw-accent-soft: #fca5a5;
+    --aw-accent-secondary: #fb7185;
+    --aw-accent-rgb: 239, 68, 68;
+}
+
+
+/* =========================================================
+   TEXT SELECTION
+   ========================================================= */
+
+body[class*="aw-theme-"] ::selection {
+    background: rgba( var(--aw-accent-rgb), .32 );
+    color: #fff;
+}
+
+
+/* =========================================================
+   ACCENT TEXT
+   ========================================================= */
+
+body[class*="aw-theme-"] .aw-dashboard-eyebrow,
+body[class*="aw-theme-"] .aw-catalog-eyebrow,
+body[class*="aw-theme-"] .aw-similar-kicker,
+body[class*="aw-theme-"] .aw-similar-eyebrow,
+body[class*="aw-theme-"] .aw-details-kicker,
+body[class*="aw-theme-"] .aw-details-eyebrow,
+body[class*="aw-theme-"] .aw-details-section-title span,
+body[class*="aw-theme-"] .aw-profile-edit-eyebrow {
+    color: var(--aw-accent) !important;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTONS
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-dashboard-primary-button,
+body[class*="aw-theme-"]
+.aw-catalog-filter-submit,
+body[class*="aw-theme-"]
+.aw-profile-edit-submit,
+body[class*="aw-theme-"]
+.aw-profile-save-button,
+body[class*="aw-theme-"]
+.aw-create-submit,
+body[class*="aw-theme-"]
+.aw-admin-primary-button,
+body[class*="aw-theme-"]
+.aw-pagination-page.is-active {
+    border-color: rgba( var(--aw-accent-rgb), .42 ) !important;
+    background: linear-gradient( 135deg, var(--aw-accent), var(--aw-accent-strong) ) !important;
+    color: #fff !important;
+    box-shadow: 0 10px 30px rgba( var(--aw-accent-rgb), .20 ) !important;
+}
+
+
+/* =========================================================
+   NAVBAR ADMIN
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-navbar-admin {
+    border-color: rgba( var(--aw-accent-rgb), .20 ) !important;
+    color: var(--aw-accent-soft) !important;
+}
+
+
+    body[class*="aw-theme-"]
+    .aw-navbar-admin:hover {
+        border-color: rgba( var(--aw-accent-rgb), .42 ) !important;
+        background: rgba( var(--aw-accent-rgb), .10 ) !important;
+        color: #fff !important;
+    }
+
+
+/* =========================================================
+   NAVBAR PROFILE
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-navbar-user {
+    box-shadow: 0 0 0 1px rgba( var(--aw-accent-rgb), .20 ), 0 0 18px rgba( var(--aw-accent-rgb), .08 ) !important;
+}
+
+
+/* =========================================================
+   DETAILS GENRES
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-details-genres a {
+    border-color: rgba( var(--aw-accent-rgb), .15 ) !important;
+    background: rgba( var(--aw-accent-rgb), .055 ) !important;
+    color: var(--aw-accent-soft) !important;
+}
+
+
+    body[class*="aw-theme-"]
+    .aw-details-genres a:hover {
+        border-color: rgba( var(--aw-accent-rgb), .35 ) !important;
+        background: rgba( var(--aw-accent-rgb), .14 ) !important;
+        color: #fff !important;
+    }
+
+
+/* =========================================================
+   SIMILAR ANIME
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-similar-header h2 strong {
+    color: var(--aw-accent-soft) !important;
+}
+
+
+body[class*="aw-theme-"]
+.aw-similar-genres span.is-match {
+    border-color: rgba( var(--aw-accent-rgb), .18 ) !important;
+    background: rgba( var(--aw-accent-rgb), .065 ) !important;
+    color: var(--aw-accent-soft) !important;
+}
+
+
+body[class*="aw-theme-"]
+.aw-similar-match {
+    border-color: rgba( var(--aw-accent-rgb), .18 ) !important;
+    color: var(--aw-accent-soft) !important;
+}
+
+
+    body[class*="aw-theme-"]
+    .aw-similar-match i {
+        background: var(--aw-accent) !important;
+        box-shadow: 0 0 9px rgba( var(--aw-accent-rgb), .8 ) !important;
+    }
+
+
+/* =========================================================
+   CARDS GLOW
+   ========================================================= */
+
+body[class*="aw-theme-"]
+.aw-dashboard-stat:hover,
+body[class*="aw-theme-"]
+.aw-similar-card:hover
+.aw-similar-poster,
+body[class*="aw-theme-"]
+.aw-anime-card:hover
+.aw-anime-card-poster {
+    border-color: rgba( var(--aw-accent-rgb), .23 ) !important;
+    box-shadow: 0 20px 48px rgba( var(--aw-accent-rgb), .10 ) !important;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+body[class*="aw-theme-"]
+a.aw-pagination-page:hover,
+body[class*="aw-theme-"]
+a.aw-pagination-arrow:hover {
+    border-color: rgba( var(--aw-accent-rgb), .30 ) !important;
+    background: rgba( var(--aw-accent-rgb), .08 ) !important;
+}
+
+
+/* =========================================================
+   THEME PICKER
+   ========================================================= */
+
+.aw-theme-picker {
+    margin: 28px 0;
+    padding: 23px;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 16px;
+    background: rgba(255,255,255,.015);
+}
+
+
+.aw-theme-picker-head {
+    margin-bottom: 17px;
+}
+
+
+    .aw-theme-picker-head > div > span {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--aw-accent);
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 1.8px;
+    }
+
+
+    .aw-theme-picker-head h2 {
+        margin: 0 0 6px;
+        color: #f2f3f5;
+        font-size: 18px;
+    }
+
+
+    .aw-theme-picker-head p {
+        margin: 0;
+        color: #5e6672;
+        font-size: 8px;
+    }
+
+
+/* OPTIONS */
+
+.aw-theme-options {
+    display: grid;
+    grid-template-columns: repeat( 5, minmax(0,1fr) );
+    gap: 9px;
+}
+
+
+.aw-theme-option {
+    --theme-a: #8b5cf6;
+    --theme-b: #d946ef;
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 12px;
+    background: #0d1016;
+    cursor: pointer;
+    transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+
+    .aw-theme-option:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255,255,255,.11);
+    }
+
+
+    /* HIDE RADIO */
+
+    .aw-theme-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+
+/* VIOLET */
+
+.aw-theme-option-violet {
+    --theme-a: #8b5cf6;
+    --theme-b: #d946ef;
+}
+
+
+/* SAKURA */
+
+.aw-theme-option-sakura {
+    --theme-a: #ec4899;
+    --theme-b: #fb7185;
+}
+
+
+/* CYBER */
+
+.aw-theme-option-cyber {
+    --theme-a: #22d3ee;
+    --theme-b: #2dd4bf;
+}
+
+
+/* OCEAN */
+
+.aw-theme-option-ocean {
+    --theme-a: #3b82f6;
+    --theme-b: #06b6d4;
+}
+
+
+/* CRIMSON */
+
+.aw-theme-option-crimson {
+    --theme-a: #ef4444;
+    --theme-b: #fb7185;
+}
+
+
+/* PREVIEW */
+
+.aw-theme-option-preview {
+    position: relative;
+    height: 72px;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    padding: 9px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: linear-gradient( 145deg, #151923, #090b10 );
+}
+
+
+    .aw-theme-option-preview::before {
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        right: -35px;
+        top: -45px;
+        border-radius: 50%;
+        background: var(--theme-a);
+        opacity: .22;
+        filter: blur(25px);
+    }
+
+
+    .aw-theme-option-preview i {
+        position: relative;
+        z-index: 2;
+        width: 7px;
+        border-radius: 3px;
+        background: linear-gradient( 180deg, var(--theme-a), var(--theme-b) );
+    }
+
+
+        .aw-theme-option-preview i:nth-child(1) {
+            height: 22px;
+        }
+
+
+        .aw-theme-option-preview i:nth-child(2) {
+            height: 36px;
+        }
+
+
+        .aw-theme-option-preview i:nth-child(3) {
+            height: 28px;
+        }
+
+
+    .aw-theme-option-preview b {
+        position: absolute;
+        z-index: 2;
+        right: 9px;
+        bottom: 9px;
+        width: 24px;
+        height: 7px;
+        border-radius: 999px;
+        background: linear-gradient( 90deg, var(--theme-a), var(--theme-b) );
+        box-shadow: 0 0 15px var(--theme-a);
+    }
+
+
+/* INFO */
+
+.aw-theme-option-info {
+    min-width: 0;
+}
+
+
+    .aw-theme-option-info strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #dfe2e6;
+        font-size: 9px;
+    }
+
+
+    .aw-theme-option-info small {
+        display: block;
+        color: #4f5762;
+        font-size: 6.5px;
+        line-height: 1.4;
+    }
+
+
+/* CHECK */
+
+.aw-theme-option-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--theme-a);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 900;
+    opacity: 0;
+    transform: scale(.65);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+
+/* SELECTED */
+
+.aw-theme-option:has(input:checked) {
+    border-color: var(--theme-a);
+    background: color-mix( in srgb, var(--theme-a) 6%, #0d1016 );
+    box-shadow: 0 12px 35px color-mix( in srgb, var(--theme-a) 14%, transparent );
+}
+
+
+    .aw-theme-option:has(input:checked)
+    .aw-theme-option-check {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+
+/* =========================================================
+   THEME PICKER RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .aw-theme-options {
+        grid-template-columns: repeat( 3, minmax(0,1fr) );
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .aw-theme-options {
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+    }
+
+
+    .aw-theme-picker {
+        padding: 16px;
+    }
+}
+
+/* =========================================================
+   ANIMEWAVE NAVBAR FIX
+   Works with new _Layout.cshtml
+   ========================================================= */
+
+:root {
+    --aw-accent: #8b5cf6;
+    --aw-accent-strong: #7c3aed;
+    --aw-accent-soft: #a78bfa;
+    --aw-accent-secondary: #d946ef;
+    --aw-accent-rgb: 139, 92, 246;
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.aw-navbar {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,.045);
+    background: rgba(8,10,15,.82);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    box-shadow: 0 10px 40px rgba(0,0,0,.15);
+}
+
+
+.aw-navbar-inner {
+    width: min( 1460px, calc(100% - 48px) );
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.aw-navbar-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+
+    .aw-navbar-logo:hover {
+        color: #fff !important;
+    }
+
+
+.aw-navbar-logo-mark {
+    position: relative;
+    width: 31px;
+    height: 31px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 6px;
+    overflow: hidden;
+    border: 1px solid rgba( var(--aw-accent-rgb), .20 );
+    border-radius: 9px;
+    background: linear-gradient( 145deg, rgba( var(--aw-accent-rgb), .14 ), rgba(255,255,255,.025) );
+    box-shadow: 0 0 20px rgba( var(--aw-accent-rgb), .08 );
+}
+
+
+    .aw-navbar-logo-mark::before {
+        content: "";
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        left: -15px;
+        top: -18px;
+        border-radius: 50%;
+        background: var(--aw-accent);
+        opacity: .18;
+        filter: blur(12px);
+    }
+
+
+    .aw-navbar-logo-mark i {
+        position: relative;
+        z-index: 2;
+        width: 4px;
+        display: block;
+        border-radius: 999px;
+        background: linear-gradient( 180deg, var(--aw-accent-soft), var(--aw-accent) );
+    }
+
+
+        .aw-navbar-logo-mark i:nth-child(1) {
+            height: 9px;
+        }
+
+
+        .aw-navbar-logo-mark i:nth-child(2) {
+            height: 17px;
+        }
+
+
+        .aw-navbar-logo-mark i:nth-child(3) {
+            height: 12px;
+        }
+
+
+.aw-navbar-logo-text {
+    color: #f5f5f7;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+    line-height: 1;
+}
+
+
+    .aw-navbar-logo-text strong {
+        color: var(--aw-accent-soft);
+        font-weight: 850;
+    }
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.aw-navbar-links {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 34px;
+}
+
+
+    .aw-navbar-links > a {
+        position: relative;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        border-radius: 8px;
+        color: #7e8590 !important;
+        font-size: 8px;
+        font-weight: 700;
+        text-decoration: none !important;
+        white-space: nowrap;
+        transition: color .2s ease, background .2s ease;
+    }
+
+
+        .aw-navbar-links > a::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: -18px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient( 90deg, var(--aw-accent), var(--aw-accent-secondary) );
+            opacity: 0;
+            transform: scaleX(.4);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+
+        .aw-navbar-links > a:hover {
+            color: #fff !important;
+            background: rgba(255,255,255,.025);
+        }
+
+
+        .aw-navbar-links > a.is-active {
+            color: #fff !important;
+        }
+
+
+            .aw-navbar-links > a.is-active::after {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+
+
+    /* =========================================================
+   ADMIN
+   ========================================================= */
+
+    .aw-navbar-links > .aw-navbar-admin {
+        min-height: 30px;
+        margin-left: 3px;
+        padding: 0 9px;
+        border: 1px solid rgba( var(--aw-accent-rgb), .18 );
+        border-radius: 7px;
+        background: rgba( var(--aw-accent-rgb), .065 );
+        color: var(--aw-accent-soft) !important;
+        font-size: 7px;
+    }
+
+
+        .aw-navbar-links > .aw-navbar-admin::after {
+            display: none;
+        }
+
+
+        .aw-navbar-links > .aw-navbar-admin:hover {
+            border-color: rgba( var(--aw-accent-rgb), .38 );
+            background: rgba( var(--aw-accent-rgb), .12 );
+            color: #fff !important;
+        }
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.aw-navbar-actions {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.aw-navbar-search {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.055);
+    border-radius: 9px;
+    outline: none;
+    background: rgba(255,255,255,.022);
+    color: #777f8b;
+    cursor: pointer;
+    transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+
+    .aw-navbar-search:hover {
+        transform: translateY(-1px);
+        border-color: rgba( var(--aw-accent-rgb), .25 );
+        background: rgba( var(--aw-accent-rgb), .07 );
+        color: var(--aw-accent-soft);
+    }
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.aw-navbar-profile {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px 4px 4px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #858d98 !important;
+    text-decoration: none !important;
+    transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+
+    .aw-navbar-profile:hover {
+        border-color: rgba(255,255,255,.055);
+        background: rgba(255,255,255,.025);
+        color: #fff !important;
+    }
+
+
+.aw-navbar-user {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 9px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+    box-shadow: 0 0 0 1px rgba( var(--aw-accent-rgb), .08 );
+}
+
+
+.aw-navbar-profile-name {
+    display: block;
+    max-width: 115px;
+    overflow: hidden;
+    color: inherit;
+    font-size: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.aw-navbar-logout-form {
+    display: flex;
+    margin: 0;
+}
+
+
+.aw-navbar-logout {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.045);
+    border-radius: 9px;
+    outline: none;
+    background: rgba(255,255,255,.018);
+    color: #5e6672;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+
+    .aw-navbar-logout:hover {
+        border-color: rgba(239,68,68,.18);
+        background: rgba(239,68,68,.055);
+        color: #f87171;
+    }
+
+
+/* =========================================================
+   LOGIN / REGISTER
+   ========================================================= */
+
+.aw-navbar-login,
+.aw-navbar-register {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 8px;
+    font-weight: 750;
+    text-decoration: none !important;
+    transition: transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+
+.aw-navbar-login {
+    border: 1px solid rgba(255,255,255,.05);
+    background: rgba(255,255,255,.018);
+    color: #838b96 !important;
+}
+
+
+    .aw-navbar-login:hover {
+        color: #fff !important;
+        background: rgba(255,255,255,.045);
+    }
+
+
+.aw-navbar-register {
+    border: 1px solid rgba( var(--aw-accent-rgb), .25 );
+    background: linear-gradient( 135deg, var(--aw-accent), var(--aw-accent-strong) );
+    color: #fff !important;
+    box-shadow: 0 8px 22px rgba( var(--aw-accent-rgb), .14 );
+}
+
+
+    .aw-navbar-register:hover {
+        transform: translateY(-1px);
+        color: #fff !important;
+    }
+
+
+/* =========================================================
+   AVATAR COLORS
+   ========================================================= */
+
+.aw-navbar-user.aw-avatar-violet {
+    background: linear-gradient( 135deg, #8b5cf6, #6d28d9 );
+}
+
+
+.aw-navbar-user.aw-avatar-sakura {
+    background: linear-gradient( 135deg, #f472b6, #db2777 );
+}
+
+
+.aw-navbar-user.aw-avatar-kitsune {
+    background: linear-gradient( 135deg, #fb923c, #ea580c );
+}
+
+
+.aw-navbar-user.aw-avatar-blade {
+    background: linear-gradient( 135deg, #94a3b8, #475569 );
+}
+
+
+.aw-navbar-user.aw-avatar-neko {
+    background: linear-gradient( 135deg, #c084fc, #7e22ce );
+}
+
+
+.aw-navbar-user.aw-avatar-star {
+    background: linear-gradient( 135deg, #fbbf24, #d97706 );
+}
+
+
+.aw-navbar-user.aw-avatar-cyber {
+    background: linear-gradient( 135deg, #22d3ee, #2563eb );
+}
+
+
+.aw-navbar-user.aw-avatar-wave {
+    background: linear-gradient( 135deg, #38bdf8, #0f766e );
+}
+
+
+/* =========================================================
+   PREVENT BOOTSTRAP DEFAULT LINK COLORS
+   ========================================================= */
+
+.aw-navbar a,
+.aw-navbar a:visited,
+.aw-navbar a:hover,
+.aw-navbar a:focus {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.aw-page-enter {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .aw-navbar-inner {
+        width: calc(100% - 28px);
+    }
+
+
+    .aw-navbar-links {
+        margin-left: 20px;
+    }
+
+
+    .aw-navbar-profile-name {
+        display: none;
+    }
+}
+
+
+@media (max-width: 760px) {
+
+    .aw-navbar {
+        height: 64px;
+    }
+
+
+    .aw-navbar-logo-text {
+        font-size: 14px;
+    }
+
+
+    .aw-navbar-links {
+        gap: 2px;
+        margin-left: 13px;
+    }
+
+
+        .aw-navbar-links > a {
+            padding: 0 7px;
+            font-size: 7px;
+        }
+
+
+            .aw-navbar-links > a::after {
+                bottom: -14px;
+            }
+
+
+        .aw-navbar-links > .aw-navbar-admin {
+            display: none;
+        }
+}
+
+
+@media (max-width: 580px) {
+
+    .aw-navbar-logo-text {
+        display: none;
+    }
+
+
+    .aw-navbar-links {
+        margin-left: 8px;
+    }
+
+
+        .aw-navbar-links > a {
+            display: none;
+        }
+
+
+            .aw-navbar-links > a:nth-child(1),
+            .aw-navbar-links > a:nth-child(2) {
+                display: inline-flex;
+            }
+
+
+    .aw-navbar-login {
+        display: none;
+    }
+}
+
+/* =========================================================
+   ANIMEWAVE FOOTER
+   Works with new _Layout.cshtml
+   ========================================================= */
+
+.aw-footer {
+    position: relative;
+    width: 100%;
+    margin-top: 0;
+    border-top: 1px solid rgba(255,255,255,.045);
+    background: linear-gradient( 180deg, #080a0f 0%, #07090d 100% );
+    color: #fff;
+}
+
+
+    .aw-footer::before {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 220px;
+        left: 8%;
+        top: -100px;
+        pointer-events: none;
+        border-radius: 50%;
+        background: rgba( var(--aw-accent-rgb), .045 );
+        filter: blur(95px);
+    }
+
+
+/* =========================================================
+   INNER
+   ========================================================= */
+
+.aw-footer-inner {
+    position: relative;
+    z-index: 2;
+    width: min( 1460px, calc(100% - 48px) );
+    margin: 0 auto;
+    padding: 42px 0 20px;
+    display: grid;
+    grid-template-columns: minmax(250px,1fr) auto;
+    column-gap: 90px;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.aw-footer-brand {
+    max-width: 390px;
+}
+
+
+.aw-footer-logo {
+    display: inline-flex;
+    margin-bottom: 12px;
+    color: #f5f5f7 !important;
+    font-size: 17px;
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: -.7px;
+    text-decoration: none !important;
+}
+
+
+    .aw-footer-logo strong {
+        color: var(--aw-accent-soft);
+        font-weight: 850;
+    }
+
+
+    .aw-footer-logo:hover {
+        color: #fff !important;
+    }
+
+
+.aw-footer-brand p {
+    max-width: 350px;
+    margin: 0;
+    color: #515965;
+    font-size: 8px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+.aw-footer-links {
+    display: grid;
+    grid-template-columns: repeat( 2, minmax(120px,1fr) );
+    gap: 55px;
+}
+
+
+    .aw-footer-links > div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 9px;
+    }
+
+
+        .aw-footer-links > div > span {
+            display: block;
+            margin-bottom: 2px;
+            color: var(--aw-accent);
+            font-size: 6px;
+            font-weight: 900;
+            letter-spacing: 1.8px;
+        }
+
+
+    .aw-footer-links a {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        color: #5f6773 !important;
+        font-size: 8px;
+        font-weight: 650;
+        line-height: 1.4;
+        text-decoration: none !important;
+        transition: color .2s ease, transform .2s ease;
+    }
+
+
+        .aw-footer-links a::before {
+            content: "";
+            width: 0;
+            height: 1px;
+            margin-right: 0;
+            border-radius: 999px;
+            background: var(--aw-accent);
+            transition: width .2s ease, margin-right .2s ease;
+        }
+
+
+        .aw-footer-links a:hover {
+            color: #fff !important;
+            transform: translateX(2px);
+        }
+
+
+            .aw-footer-links a:hover::before {
+                width: 10px;
+                margin-right: 6px;
+            }
+
+
+/* =========================================================
+   BOTTOM
+   ========================================================= */
+
+.aw-footer-bottom {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 34px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.035);
+    color: #3f4651;
+    font-size: 6.5px;
+    font-weight: 600;
+}
+
+
+    .aw-footer-bottom span:last-child {
+        color: #464e59;
+    }
+
+
+/* =========================================================
+   REMOVE BOOTSTRAP DEFAULT LINK APPEARANCE
+   ========================================================= */
+
+.aw-footer a,
+.aw-footer a:visited,
+.aw-footer a:hover,
+.aw-footer a:focus {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .aw-footer-inner {
+        grid-template-columns: 1fr;
+        row-gap: 30px;
+    }
+
+
+    .aw-footer-links {
+        width: 100%;
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
+        gap: 30px;
+    }
+
+
+    .aw-footer-brand {
+        max-width: 100%;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .aw-footer-inner {
+        width: calc(100% - 28px);
+        padding-top: 32px;
+    }
+
+
+    .aw-footer-links {
+        gap: 20px;
+    }
+
+
+    .aw-footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+/* =========================================================
+   FONT IMPROVEMENTS
+   Делаем шрифт понятнее и чуть крупнее
+   ========================================================= */
+
+html {
+    font-size: 16px;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+    font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.aw-navbar,
+.aw-navbar a,
+.aw-navbar button,
+.aw-navbar-user,
+.aw-navbar-actions a,
+.aw-navbar-actions button {
+    font-size: 14px;
+}
+
+.aw-navbar-logo,
+.aw-logo,
+.aw-brand {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.aw-navbar-menu a,
+.aw-navbar-nav a {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.aw-navbar-user-name,
+.aw-navbar-profile-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================================
+   HERO / MAIN TITLES
+   ========================================================= */
+
+.aw-hero-eyebrow,
+.aw-section-eyebrow {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.aw-hero-title,
+.aw-page-title,
+.aw-section-title {
+    line-height: 1.05;
+    font-weight: 900;
+}
+
+.aw-hero-subtitle,
+.aw-hero-description,
+.aw-page-description,
+.aw-section-description {
+    font-size: 16px;
+    line-height: 1.75;
+    color: #c8ced8;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.aw-btn,
+.aw-btn-primary,
+.aw-btn-secondary,
+.aw-btn-outline,
+button,
+input[type="submit"] {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.aw-anime-card-title,
+.aw-card-title,
+.aw-related-card-title {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.aw-anime-card-subtitle,
+.aw-card-subtitle,
+.aw-related-card-subtitle,
+.aw-anime-meta,
+.aw-card-meta {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #a8b0bd;
+}
+
+.aw-anime-card-description,
+.aw-card-description {
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+label,
+.aw-form-label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+input,
+textarea,
+select,
+.aw-input,
+.aw-textarea,
+.aw-select {
+    font-size: 15px;
+}
+
+    input::placeholder,
+    textarea::placeholder {
+        font-size: 14px;
+        color: #7f8896;
+    }
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.aw-footer-logo {
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.aw-footer-brand p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #8f98a6;
+}
+
+.aw-footer-links > div > span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.aw-footer-links a {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.aw-footer-bottom {
+    font-size: 12px;
+    font-weight: 500;
+    color: #97a1af;
+}
+
+/* =========================================================
+   SMALL TEXT
+   ========================================================= */
+
+small,
+.aw-small-text,
+.aw-muted {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+    body,
+    button,
+    input,
+    textarea,
+    select {
+        font-size: 15px;
+    }
+
+    .aw-navbar,
+    .aw-navbar a,
+    .aw-navbar button {
+        font-size: 13px;
+    }
+
+    .aw-footer-links a {
+        font-size: 13px;
+    }
+
+    .aw-footer-brand p,
+    .aw-footer-bottom {
+        font-size: 12px;
+    }
+}
