@@ -1,34 +1,79 @@
 ﻿@model AnimeWave.Models.Anime
 
 @using AnimeWave.Models
+@using AnimeWave.ViewModels
 
 @{
     ViewData["Title"] = Model.Title;
+
+
+    // =========================================================
+    // FAVORITE
+    // =========================================================
 
     bool isFavorite =
         ViewBag.IsFavorite is bool favoriteValue
         && favoriteValue;
 
+
+
+    // =========================================================
+    // SIMILAR ANIME
+    // =========================================================
+
     var similarAnime =
-        ViewBag.SimilarAnime as IEnumerable<Anime>
+        ViewBag.SimilarAnime
+            as IEnumerable<Anime>
         ?? Enumerable.Empty<Anime>();
+
+
+
+    // =========================================================
+    // REVIEWS
+    // =========================================================
+
+    var reviewsSection =
+        ViewBag.ReviewsSection
+            as AnimeReviewsSectionViewModel;
+
+
+
+    // =========================================================
+    // CURRENT GENRES
+    // =========================================================
 
     var currentGenreIds =
         Model.AnimeGenres?
-            .Select(ag => ag.GenreId)
+            .Select(
+                ag => ag.GenreId
+            )
             .ToHashSet()
         ?? new HashSet<int>();
 
+
+
     var genres =
         Model.AnimeGenres?
-            .Where(ag => ag.Genre != null)
-            .Select(ag => ag.Genre)
+            .Where(
+                ag => ag.Genre != null
+            )
+            .Select(
+                ag => ag.Genre
+            )
             .ToList()
         ?? new List<Genre>();
 
+
+
+    // =========================================================
+    // EPISODES
+    // =========================================================
+
     var episodes =
         Model.Episodes?
-            .OrderBy(e => e.EpisodeNumber)
+            .OrderBy(
+                e => e.EpisodeNumber
+            )
             .ToList()
         ?? new List<Episode>();
 }
@@ -43,9 +88,15 @@
 
     <section class="aw-details-hero">
 
+
+        <!-- =====================================================
+             BACKGROUND
+             ===================================================== -->
+
         <div class="aw-details-bg">
 
-            @if (!string.IsNullOrWhiteSpace(Model.BannerUrl))
+            @if (!string.IsNullOrWhiteSpace(
+                Model.BannerUrl))
             {
                 <img src="@Model.BannerUrl"
                      alt=""
@@ -55,40 +106,62 @@
         </div>
 
 
-        <div class="aw-details-bg-overlay"></div>
+        <div class="aw-details-bg-overlay">
+        </div>
 
-        <div class="aw-details-bg-bottom"></div>
 
+        <div class="aw-details-bg-bottom">
+        </div>
+
+
+
+        <!-- =====================================================
+             HERO CONTENT
+             ===================================================== -->
 
         <div class="aw-details-hero-inner">
 
 
-            <!-- POSTER -->
+            <!-- =================================================
+                 POSTER
+                 ================================================= -->
 
             <div class="aw-details-main-poster">
 
-                @if (!string.IsNullOrWhiteSpace(Model.PosterUrl))
+                @if (!string.IsNullOrWhiteSpace(
+                    Model.PosterUrl))
                 {
                     <img src="@Model.PosterUrl"
                          alt="@Model.Title"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
 
+
                     <div class="aw-details-poster-empty"
                          style="display:none;">
+
                         AW
+
                     </div>
                 }
                 else
                 {
                     <div class="aw-details-poster-empty">
+
                         AW
+
                     </div>
                 }
 
 
+
+                <!-- CATALOG RATING -->
+
                 <div class="aw-details-poster-score">
 
-                    <span>★</span>
+                    <span>
+                        ★
+                    </span>
+
 
                     @Model.Rating.ToString("0.0")
 
@@ -98,25 +171,34 @@
 
 
 
-            <!-- CONTENT -->
+            <!-- =================================================
+                 INFORMATION
+                 ================================================= -->
 
             <div class="aw-details-hero-content">
 
+
                 <div class="aw-details-kicker">
 
-                    <i></i>
+                    <i>
+                    </i>
 
                     ANIMEWAVE CATALOG
 
                 </div>
 
 
+
+                <!-- TITLE -->
+
                 <h1>
                     @Model.Title
                 </h1>
 
 
-                @if (!string.IsNullOrWhiteSpace(Model.OriginalTitle))
+
+                @if (!string.IsNullOrWhiteSpace(
+                    Model.OriginalTitle))
                 {
                     <p class="aw-details-original">
 
@@ -126,7 +208,10 @@
                 }
 
 
-                <!-- META -->
+
+                <!-- =================================================
+                     META
+                     ================================================= -->
 
                 <div class="aw-details-meta">
 
@@ -137,7 +222,8 @@
                     </span>
 
 
-                    <i></i>
+                    <i>
+                    </i>
 
 
                     <span>
@@ -145,33 +231,49 @@
                     </span>
 
 
-                    @if (!string.IsNullOrWhiteSpace(Model.AgeRating))
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.AgeRating))
                     {
-                        <i></i>
+                        <i>
+                        </i>
+
 
                         <span class="aw-details-age">
+
                             @Model.AgeRating
+
                         </span>
                     }
+
 
 
                     @if (Model.EpisodesCount > 0)
                     {
-                        <i></i>
+                        <i>
+                        </i>
+
 
                         <span>
+
                             @Model.EpisodesCount серий
+
                         </span>
                     }
 
 
-                    @if (!string.IsNullOrWhiteSpace(Model.Status))
+
+                    @if (!string.IsNullOrWhiteSpace(
+                        Model.Status))
                     {
-                        <i></i>
+                        <i>
+                        </i>
+
 
                         <span class="aw-details-status">
 
-                            <b></b>
+                            <b>
+                            </b>
 
                             @Model.Status
 
@@ -182,7 +284,9 @@
 
 
 
-                <!-- GENRES -->
+                <!-- =================================================
+                     GENRES
+                     ================================================= -->
                 @if (genres.Any())
                 {
                     <div class="aw-details-genres">
@@ -203,7 +307,9 @@
 
 
 
-                <!-- DESCRIPTION -->
+                <!-- =================================================
+                     DESCRIPTION
+                     ================================================= -->
 
                 <p class="aw-details-hero-description">
 
@@ -215,13 +321,19 @@
 
 
 
-                <!-- ACTIONS -->
+                <!-- =================================================
+                     ACTIONS
+                     ================================================= -->
 
                 <div class="aw-details-actions">
 
+
+                    <!-- WATCH -->
                     @if (episodes.Any())
                     {
-                        var firstEpisode = episodes.First();
+                        var firstEpisode =
+                            episodes.First();
+
 
                         <a asp-controller="Anime"
                            asp-action="Watch"
@@ -230,7 +342,9 @@
                            class="aw-details-primary">
 
                             <span class="aw-details-play">
+
                                 ▶
+
                             </span>
 
                             Смотреть
@@ -252,7 +366,13 @@
                     }
 
 
-                    @if (User.Identity?.IsAuthenticated == true)
+
+                    <!-- FAVORITE -->
+                    @if (
+                                            User.Identity?.IsAuthenticated
+                                            ==
+                                            true
+                                        )
                     {
                         if (isFavorite)
                         {
@@ -264,6 +384,7 @@
 
                                 @Html.AntiForgeryToken()
 
+
                                 <input type="hidden"
                                        name="animeId"
                                        value="@Model.Id" />
@@ -272,7 +393,9 @@
                                 <button type="submit"
                                         class="aw-details-secondary is-active">
 
-                                    <span>♥</span>
+                                    <span>
+                                        ♥
+                                    </span>
 
                                     В избранном
 
@@ -290,6 +413,7 @@
 
                                 @Html.AntiForgeryToken()
 
+
                                 <input type="hidden"
                                        name="animeId"
                                        value="@Model.Id" />
@@ -298,7 +422,9 @@
                                 <button type="submit"
                                         class="aw-details-secondary">
 
-                                    <span>♡</span>
+                                    <span>
+                                        ♡
+                                    </span>
 
                                     В избранное
 
@@ -314,12 +440,42 @@
                            asp-route-returnUrl="@Context.Request.Path"
                            class="aw-details-secondary">
 
-                            <span>♡</span>
+                            <span>
+                                ♡
+                            </span>
 
                             В избранное
 
                         </a>
                     }
+
+
+
+                    <!-- REVIEWS QUICK LINK -->
+
+                    <a href="#reviews"
+                       class="aw-details-review-link">
+
+                        <span>
+                            ★
+                        </span>
+
+                        Отзывы
+
+                        @if (
+                            reviewsSection != null
+                            &&
+                            reviewsSection.ReviewsCount > 0
+                        )
+                        {
+                            <small>
+
+                                @reviewsSection.ReviewsCount
+
+                            </small>
+                        }
+
+                    </a>
 
                 </div>
 
@@ -332,14 +488,19 @@
 
 
     <!-- =========================================================
-         ABOUT
+         MAIN BODY
          ========================================================= -->
 
     <main class="aw-details-body">
 
 
+        <!-- =====================================================
+             ABOUT
+             ===================================================== -->
+
         <section class="aw-details-about"
                  id="aboutAnime">
+
 
             <div class="aw-details-section-title">
 
@@ -348,6 +509,7 @@
                     <span>
                         ABOUT
                     </span>
+
 
                     <h2>
                         Об аниме
@@ -358,15 +520,20 @@
             </div>
 
 
+
             <div class="aw-details-about-grid">
 
 
-                <!-- DESCRIPTION -->
+                <!-- =================================================
+                     DESCRIPTION
+                     ================================================= -->
 
                 <article class="aw-details-description-card">
 
                     <div class="aw-details-description-number">
+
                         01
+
                     </div>
 
 
@@ -387,16 +554,21 @@
 
 
 
-                <!-- FACTS -->
+                <!-- =================================================
+                     FACTS
+                     ================================================= -->
 
                 <aside class="aw-details-facts">
 
+
+                    <!-- YEAR -->
 
                     <div class="aw-details-fact">
 
                         <span>
                             ГОД
                         </span>
+
 
                         <strong>
                             @Model.ReleaseYear
@@ -405,24 +577,69 @@
                     </div>
 
 
+
+                    <!-- CATALOG RATING -->
+
                     <div class="aw-details-fact">
 
                         <span>
-                            РЕЙТИНГ
+                            РЕЙТИНГ КАТАЛОГА
                         </span>
 
+
                         <strong class="rating">
+
                             ★ @Model.Rating.ToString("0.0")
+
                         </strong>
 
                     </div>
 
+
+
+                    <!-- USER RATING -->
+
+                    <div class="aw-details-fact">
+
+                        <span>
+                            ОЦЕНКА ЗРИТЕЛЕЙ
+                        </span>
+
+
+                        @if (
+                            reviewsSection != null
+                            &&
+                            reviewsSection.ReviewsCount > 0
+                        )
+                        {
+                            <strong class="user-rating">
+
+                                ★
+                                @reviewsSection
+                                .AverageRating
+                                .ToString("0.0")
+
+                            </strong>
+                        }
+                        else
+                        {
+                            <strong>
+                                —
+                            </strong>
+                        }
+
+                    </div>
+
+
+
+                    <!-- EPISODES -->
 
                     <div class="aw-details-fact">
 
                         <span>
                             СЕРИИ
                         </span>
+
 
                         <strong>
                             @Model.EpisodesCount
@@ -431,11 +648,15 @@
                     </div>
 
 
+
+                    <!-- AGE -->
+
                     <div class="aw-details-fact">
 
                         <span>
                             ВОЗРАСТ
                         </span>
+
 
                         <strong>
 
@@ -448,11 +669,15 @@
                     </div>
 
 
-                    <div class="aw-details-fact aw-details-fact-wide">
+
+                    <!-- STATUS -->
+
+                    <div class="aw-details-fact">
 
                         <span>
                             СТАТУС
                         </span>
+
 
                         <strong>
 
@@ -479,6 +704,7 @@
         {
             <section class="aw-details-episodes">
 
+
                 <div class="aw-details-section-title">
 
                     <div>
@@ -486,6 +712,7 @@
                         <span>
                             WATCH
                         </span>
+
 
                         <h2>
                             Серии
@@ -495,10 +722,13 @@
 
 
                     <small>
+
                         @episodes.Count эп.
+
                     </small>
 
                 </div>
+
 
 
                 <div class="aw-details-episode-list">
@@ -512,17 +742,22 @@
                            class="aw-details-episode">
 
 
+                            <!-- NUMBER -->
+
                             <div class="aw-details-episode-index">
 
-                                @episode.EpisodeNumber
-                                .ToString("00")
+                                @episode.EpisodeNumber.ToString("00")
 
                             </div>
 
 
+
+                            <!-- THUMBNAIL -->
+
                             <div class="aw-details-episode-thumb">
 
-                                @if (!string.IsNullOrWhiteSpace(episode.ThumbnailUrl))
+                                @if (!string.IsNullOrWhiteSpace(
+                                    episode.ThumbnailUrl))
                                 {
                                     <img src="@episode.ThumbnailUrl"
                                          alt="@episode.Title"
@@ -539,10 +774,16 @@
                             </div>
 
 
+
+                            <!-- TEXT -->
+
                             <div class="aw-details-episode-text">
 
                                 <span>
-                                    EPISODE @episode.EpisodeNumber
+
+                                    EPISODE
+                                    @episode.EpisodeNumber
+
                                 </span>
 
 
@@ -551,15 +792,21 @@
                                 </h3>
 
 
-                                @if (!string.IsNullOrWhiteSpace(episode.Description))
+                                @if (!string.IsNullOrWhiteSpace(
+                                    episode.Description))
                                 {
                                     <p>
+
                                         @episode.Description
+
                                     </p>
                                 }
 
                             </div>
 
+
+
+                            <!-- ARROW -->
 
                             <div class="aw-details-episode-go">
 
@@ -578,6 +825,17 @@
 
 
         <!-- =====================================================
+             REVIEWS
+             ===================================================== -->
+        @if (reviewsSection != null)
+        {
+            <partial name="_Reviews"
+                     model="reviewsSection" />
+        }
+
+
+
+        <!-- =====================================================
              SIMILAR ANIME
              ===================================================== -->
         @if (similarAnime.Any())
@@ -585,7 +843,9 @@
             <section class="aw-similar">
 
 
-                <!-- HEADER -->
+                <!-- =================================================
+                     HEADER
+                     ================================================= -->
 
                 <div class="aw-similar-header">
 
@@ -607,8 +867,10 @@
 
 
                         <p>
+
                             Подбираем аниме по совпадающим жанрам
                             и рейтингу.
+
                         </p>
 
                     </div>
@@ -620,7 +882,9 @@
 
                         Весь каталог
 
-                        <span>→</span>
+                        <span>
+                            →
+                        </span>
 
                     </a>
 
@@ -628,7 +892,9 @@
 
 
 
-                <!-- GRID -->
+                <!-- =================================================
+                     GRID
+                     ================================================= -->
 
                 <div class="aw-similar-grid">
 
@@ -648,13 +914,18 @@
                         <article class="aw-similar-card">
 
 
+                            <!-- =====================================
+                                 POSTER
+                                 ===================================== -->
+
                             <a asp-controller="Anime"
                                asp-action="Details"
                                asp-route-id="@similar.Id"
                                class="aw-similar-poster">
 
 
-                                @if (!string.IsNullOrWhiteSpace(similar.PosterUrl))
+                                @if (!string.IsNullOrWhiteSpace(
+                                    similar.PosterUrl))
                                 {
                                     <img src="@similar.PosterUrl"
                                          alt="@similar.Title"
@@ -684,14 +955,18 @@
 
                                 <div class="aw-similar-poster-top">
 
+
                                     <span class="aw-similar-score">
 
-                                        ★ @similar.Rating.ToString("0.0")
+                                        ★
+                                        @similar.Rating.ToString("0.0")
 
                                     </span>
 
 
-                                    @if (!string.IsNullOrWhiteSpace(similar.AgeRating))
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        similar.AgeRating))
                                     {
                                         <span class="aw-similar-age">
 
@@ -704,12 +979,13 @@
 
 
 
-                                <!-- MATCH -->
+                                <!-- GENRE MATCH -->
                                 @if (matches > 0)
                                 {
                                     <span class="aw-similar-match">
 
-                                        <i></i>
+                                        <i>
+                                        </i>
 
                                         @matches совп.
 
@@ -736,15 +1012,19 @@
                                 </div>
 
 
-                                <div class="aw-similar-poster-shadow"></div>
+                                <div class="aw-similar-poster-shadow">
+                                </div>
 
                             </a>
 
 
 
-                            <!-- CARD INFO -->
+                            <!-- =====================================
+                                 INFORMATION
+                                 ===================================== -->
 
                             <div class="aw-similar-info">
+
 
                                 <a asp-controller="Anime"
                                    asp-action="Details"
@@ -756,7 +1036,9 @@
                                 </a>
 
 
-                                @if (!string.IsNullOrWhiteSpace(similar.OriginalTitle))
+
+                                @if (!string.IsNullOrWhiteSpace(
+                                    similar.OriginalTitle))
                                 {
                                     <p class="aw-similar-original">
 
@@ -766,6 +1048,7 @@
                                 }
 
 
+
                                 <div class="aw-similar-meta">
 
                                     <span>
@@ -773,22 +1056,33 @@
                                     </span>
 
 
+
                                     @if (similar.EpisodesCount > 0)
                                     {
-                                        <i></i>
+                                        <i>
+                                        </i>
+
 
                                         <span>
+
                                             @similar.EpisodesCount серий
+
                                         </span>
                                     }
 
 
-                                    @if (!string.IsNullOrWhiteSpace(similar.Status))
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        similar.Status))
                                     {
-                                        <i></i>
+                                        <i>
+                                        </i>
+
 
                                         <span>
+
                                             @similar.Status
+
                                         </span>
                                     }
 
@@ -796,18 +1090,24 @@
 
 
 
+                                <!-- GENRES -->
                                 @if (
-                                    similar.AnimeGenres != null
-                                    &&
-                                    similar.AnimeGenres.Any()
-                                )
+                                                                    similar.AnimeGenres != null
+                                                                    &&
+                                                                    similar.AnimeGenres.Any()
+                                                                )
                                 {
                                     <div class="aw-similar-genres">
 
                                         @foreach (
                                             var animeGenre
                                             in similar.AnimeGenres
-                                                .Where(ag => ag.Genre != null)
+
+                                                .Where(
+                                                    ag =>
+                                                        ag.Genre != null
+                                                )
+
                                                 .Take(3)
                                         )
                                         {
@@ -846,7 +1146,7 @@
 <style>
 
     /* =========================================================
-           PAGE
+           DETAILS PAGE
            ========================================================= */
 
     .aw-details,
@@ -946,7 +1246,7 @@
 
 
     /* =========================================================
-           MAIN POSTER
+           POSTER
            ========================================================= */
 
     .aw-details-main-poster {
@@ -975,8 +1275,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient( circle at 40% 30%, rgba(139,92,246,.22), transparent 40% ), #11141c;
-        color: rgba(167,139,250,.7);
+        background: radial-gradient( circle at 40% 30%, rgba( var(--aw-accent-rgb, 139,92,246), .22 ), transparent 40% ), #11141c;
+        color: var(--aw-accent-soft, #a78bfa);
         font-size: 28px;
         font-weight: 900;
     }
@@ -994,7 +1294,7 @@
         border-radius: 8px;
         background: rgba(7,9,14,.85);
         color: #fff;
-        font-size: 9px;
+        font-size: 12px;
         font-weight: 800;
         backdrop-filter: blur(12px);
     }
@@ -1015,8 +1315,8 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 12px;
-        color: #a78bfa;
-        font-size: 7px;
+        color: var(--aw-accent-soft, #a78bfa);
+        font-size: 11px;
         font-weight: 900;
         letter-spacing: 2.2px;
     }
@@ -1026,7 +1326,7 @@
             width: 18px;
             height: 1px;
             display: block;
-            background: #8b5cf6;
+            background: var(--aw-accent, #8b5cf6);
         }
 
 
@@ -1043,11 +1343,16 @@
 
     .aw-details-original {
         margin: 0 0 19px;
-        color: rgba(255,255,255,.42);
-        font-size: 12px;
+        color: rgba(255,255,255,.48);
+        font-size: 15px;
         font-weight: 500;
     }
 
+
+
+    /* =========================================================
+           META
+           ========================================================= */
 
     .aw-details-meta {
         display: flex;
@@ -1055,8 +1360,8 @@
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 17px;
-        color: rgba(220,224,230,.66);
-        font-size: 8px;
+        color: rgba(220,224,230,.72);
+        font-size: 13px;
         font-weight: 700;
     }
 
@@ -1101,7 +1406,7 @@
 
 
     /* =========================================================
-           HERO GENRES
+           GENRES
            ========================================================= */
 
     .aw-details-genres {
@@ -1115,26 +1420,26 @@
         .aw-details-genres a {
             display: inline-flex;
             padding: 6px 9px;
-            border: 1px solid rgba(139,92,246,.14);
+            border: 1px solid rgba( var(--aw-accent-rgb, 139,92,246), .15 );
             border-radius: 6px;
-            background: rgba(139,92,246,.06);
-            color: #b9a5ed;
-            font-size: 7px;
+            background: rgba( var(--aw-accent-rgb, 139,92,246), .06 );
+            color: var(--aw-accent-soft, #a78bfa) !important;
+            font-size: 11px;
             font-weight: 700;
             transition: color .2s ease, background .2s ease, border-color .2s ease;
         }
 
 
             .aw-details-genres a:hover {
-                border-color: rgba(139,92,246,.36);
-                background: rgba(139,92,246,.14);
-                color: #fff;
+                border-color: rgba( var(--aw-accent-rgb, 139,92,246), .36 );
+                background: rgba( var(--aw-accent-rgb, 139,92,246), .14 );
+                color: #fff !important;
             }
 
 
 
     /* =========================================================
-           HERO DESCRIPTION
+           DESCRIPTION
            ========================================================= */
 
     .aw-details-hero-description {
@@ -1142,9 +1447,9 @@
         display: -webkit-box;
         margin: 0 0 26px;
         overflow: hidden;
-        color: rgba(224,227,233,.66);
-        font-size: 10px;
-        line-height: 1.8;
+        color: rgba(224,227,233,.72);
+        font-size: 14px;
+        line-height: 1.75;
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
     }
@@ -1152,7 +1457,7 @@
 
 
     /* =========================================================
-           BUTTONS
+           ACTIONS
            ========================================================= */
 
     .aw-details-actions {
@@ -1169,7 +1474,8 @@
 
 
     .aw-details-primary,
-    .aw-details-secondary {
+    .aw-details-secondary,
+    .aw-details-review-link {
         min-height: 44px;
         display: inline-flex;
         align-items: center;
@@ -1178,7 +1484,7 @@
         padding: 0 17px;
         border-radius: 9px;
         font-family: inherit;
-        font-size: 8px;
+        font-size: 13px;
         font-weight: 800;
         cursor: pointer;
         transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
@@ -1188,12 +1494,11 @@
     .aw-details-primary {
         border: 0;
         background: #fff;
-        color: #080a0f;
+        color: #080a0f !important;
     }
 
 
         .aw-details-primary:hover {
-            color: #080a0f;
             transform: translateY(-2px);
         }
 
@@ -1207,17 +1512,54 @@
 
 
         .aw-details-secondary:hover {
-            border-color: rgba(139,92,246,.30);
-            background: rgba(139,92,246,.12);
-            color: #fff;
             transform: translateY(-2px);
+            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .30 );
+            background: rgba( var(--aw-accent-rgb, 139,92,246), .12 );
+            color: #fff;
         }
 
 
         .aw-details-secondary.is-active {
-            border-color: rgba(139,92,246,.28);
-            background: rgba(139,92,246,.13);
-            color: #c4b5fd;
+            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .28 );
+            background: rgba( var(--aw-accent-rgb, 139,92,246), .13 );
+            color: var(--aw-accent-soft, #a78bfa);
+        }
+
+
+
+    /* REVIEW QUICK BUTTON */
+
+    .aw-details-review-link {
+        border: 1px solid rgba(251,191,36,.13);
+        background: rgba(251,191,36,.035);
+        color: #d6d8dd !important;
+    }
+
+
+        .aw-details-review-link > span {
+            color: #fbbf24;
+        }
+
+
+        .aw-details-review-link small {
+            min-width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: rgba(251,191,36,.10);
+            color: #fbbf24;
+            font-size: 9px;
+        }
+
+
+        .aw-details-review-link:hover {
+            transform: translateY(-2px);
+            border-color: rgba(251,191,36,.30);
+            background: rgba(251,191,36,.07);
+            color: #fff !important;
         }
 
 
@@ -1244,8 +1586,8 @@
         .aw-details-section-title span {
             display: block;
             margin-bottom: 5px;
-            color: #8b5cf6;
-            font-size: 7px;
+            color: var(--aw-accent, #8b5cf6);
+            font-size: 10px;
             font-weight: 900;
             letter-spacing: 2px;
         }
@@ -1254,14 +1596,15 @@
         .aw-details-section-title h2 {
             margin: 0;
             color: #f6f6f7;
-            font-size: 25px;
+            font-size: 28px;
+            font-weight: 850;
             letter-spacing: -1px;
         }
 
 
         .aw-details-section-title small {
-            color: #464d58;
-            font-size: 7px;
+            color: #59616d;
+            font-size: 11px;
             font-weight: 800;
         }
 
@@ -1278,14 +1621,14 @@
 
     .aw-details-about-grid {
         display: grid;
-        grid-template-columns: minmax(0,1fr) 360px;
+        grid-template-columns: minmax(0,1fr) 430px;
         gap: 18px;
     }
 
 
     .aw-details-description-card {
         position: relative;
-        min-height: 230px;
+        min-height: 245px;
         padding: 27px 30px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,.045);
@@ -1310,7 +1653,7 @@
         z-index: 2;
         margin: 0 0 16px;
         color: #e8e9ec;
-        font-size: 13px;
+        font-size: 18px;
     }
 
 
@@ -1319,21 +1662,27 @@
         z-index: 2;
         max-width: 850px;
         margin: 0;
-        color: #737b87;
-        font-size: 9px;
-        line-height: 1.95;
+        color: #7d8693;
+        font-size: 14px;
+        line-height: 1.9;
     }
 
 
+
+    /* =========================================================
+           FACTS
+           ========================================================= */
+
     .aw-details-facts {
         display: grid;
-        grid-template-columns: repeat(2,minmax(0,1fr));
+        grid-template-columns: repeat( 2, minmax(0,1fr) );
         gap: 8px;
     }
 
 
     .aw-details-fact {
         min-width: 0;
+        min-height: 76px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -1344,31 +1693,31 @@
     }
 
 
-    .aw-details-fact-wide {
-        grid-column: span 2;
-    }
-
-
-    .aw-details-fact span {
-        margin-bottom: 7px;
-        color: #474e59;
-        font-size: 6px;
-        font-weight: 900;
-        letter-spacing: 1.2px;
-    }
-
-
-    .aw-details-fact strong {
-        overflow: hidden;
-        color: #d6d9df;
-        font-size: 11px;
-        text-overflow: ellipsis;
-    }
-
-
-        .aw-details-fact strong.rating {
-            color: #fbbf24;
+        .aw-details-fact span {
+            margin-bottom: 7px;
+            color: #59616d;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1px;
         }
+
+
+        .aw-details-fact strong {
+            overflow: hidden;
+            color: #d6d9df;
+            font-size: 14px;
+            text-overflow: ellipsis;
+        }
+
+
+            .aw-details-fact strong.rating {
+                color: #fbbf24;
+            }
+
+
+            .aw-details-fact strong.user-rating {
+                color: var(--aw-accent-soft, #a78bfa);
+            }
 
 
 
@@ -1405,14 +1754,14 @@
 
         .aw-details-episode:hover {
             transform: translateX(4px);
-            border-color: rgba(139,92,246,.13);
-            background: rgba(139,92,246,.035);
+            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .13 );
+            background: rgba( var(--aw-accent-rgb, 139,92,246), .035 );
         }
 
 
     .aw-details-episode-index {
-        color: #4b535e;
-        font-size: 10px;
+        color: #58616c;
+        font-size: 13px;
         font-weight: 800;
         text-align: center;
     }
@@ -1446,7 +1795,7 @@
         justify-content: center;
         background: rgba(8,10,15,.42);
         color: #fff;
-        font-size: 10px;
+        font-size: 11px;
     }
 
 
@@ -1458,8 +1807,8 @@
         .aw-details-episode-text > span {
             display: block;
             margin-bottom: 4px;
-            color: #8b5cf6;
-            font-size: 6px;
+            color: var(--aw-accent, #8b5cf6);
+            font-size: 9px;
             font-weight: 900;
             letter-spacing: 1px;
         }
@@ -1469,7 +1818,7 @@
             margin: 0 0 4px;
             overflow: hidden;
             color: #d8dbe0;
-            font-size: 10px;
+            font-size: 14px;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -1478,23 +1827,23 @@
         .aw-details-episode-text p {
             margin: 0;
             overflow: hidden;
-            color: #4f5762;
-            font-size: 7px;
+            color: #626b77;
+            font-size: 11px;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
 
 
     .aw-details-episode-go {
-        color: #525a65;
-        font-size: 13px;
+        color: #59616d;
+        font-size: 16px;
         text-align: center;
     }
 
 
 
     /* =========================================================
-           SIMILAR
+           SIMILAR SECTION
            ========================================================= */
 
     .aw-similar {
@@ -1512,13 +1861,15 @@
             left: -200px;
             top: 0;
             pointer-events: none;
-            background: rgba(139,92,246,.055);
+            background: rgba( var(--aw-accent-rgb, 139,92,246), .055 );
             filter: blur(100px);
         }
 
 
 
-    /* HEADER */
+    /* =========================================================
+           SIMILAR HEADER
+           ========================================================= */
 
     .aw-similar-header {
         position: relative;
@@ -1533,8 +1884,8 @@
     .aw-similar-kicker {
         display: block;
         margin-bottom: 7px;
-        color: #8b5cf6;
-        font-size: 7px;
+        color: var(--aw-accent, #8b5cf6);
+        font-size: 10px;
         font-weight: 900;
         letter-spacing: 2.2px;
     }
@@ -1543,21 +1894,21 @@
     .aw-similar-header h2 {
         margin: 0 0 7px;
         color: #f4f4f6;
-        font-size: clamp( 26px, 3vw, 35px );
+        font-size: clamp( 28px, 3vw, 36px );
         line-height: 1;
         letter-spacing: -1.5px;
     }
 
 
         .aw-similar-header h2 strong {
-            color: #a78bfa;
+            color: var(--aw-accent-soft, #a78bfa);
         }
 
 
     .aw-similar-header p {
         margin: 0;
-        color: #505865;
-        font-size: 8px;
+        color: #68717e;
+        font-size: 13px;
     }
 
 
@@ -1566,8 +1917,8 @@
         align-items: center;
         gap: 8px;
         padding-bottom: 2px;
-        color: #666f7b !important;
-        font-size: 8px;
+        color: #79828e !important;
+        font-size: 12px;
         font-weight: 700;
         transition: color .2s ease;
     }
@@ -1629,7 +1980,7 @@
     .aw-similar-card:hover
     .aw-similar-poster {
         transform: translateY(-5px);
-        border-color: rgba(139,92,246,.22);
+        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .22 );
         box-shadow: 0 23px 50px rgba(0,0,0,.34);
     }
 
@@ -1657,17 +2008,20 @@
         inset: 0;
         width: 100%;
         height: 100%;
+        display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient( circle at 30% 20%, rgba(139,92,246,.17), transparent 45% ), #11141b;
-        color: #776394;
+        background: radial-gradient( circle at 30% 20%, rgba( var(--aw-accent-rgb, 139,92,246), .17 ), transparent 45% ), #11141b;
+        color: var(--aw-accent-soft, #a78bfa);
         font-size: 23px;
         font-weight: 900;
     }
 
 
 
-    /* POSTER TOP */
+    /* =========================================================
+           POSTER TOP
+           ========================================================= */
 
     .aw-similar-poster-top {
         position: absolute;
@@ -1689,7 +2043,7 @@
         border: 1px solid rgba(255,255,255,.07);
         border-radius: 6px;
         background: rgba(6,8,13,.82);
-        font-size: 7px;
+        font-size: 10px;
         font-weight: 800;
         backdrop-filter: blur(10px);
     }
@@ -1706,7 +2060,9 @@
 
 
 
-    /* MATCH */
+    /* =========================================================
+           MATCH
+           ========================================================= */
 
     .aw-similar-match {
         position: absolute;
@@ -1717,11 +2073,11 @@
         align-items: center;
         gap: 5px;
         padding: 5px 7px;
-        border: 1px solid rgba(139,92,246,.16);
+        border: 1px solid rgba( var(--aw-accent-rgb, 139,92,246), .18 );
         border-radius: 6px;
         background: rgba(7,9,14,.84);
-        color: #b7a2ed;
-        font-size: 6px;
+        color: var(--aw-accent-soft, #a78bfa);
+        font-size: 9px;
         font-weight: 800;
         backdrop-filter: blur(10px);
     }
@@ -1732,13 +2088,15 @@
             height: 4px;
             display: block;
             border-radius: 50%;
-            background: #8b5cf6;
-            box-shadow: 0 0 8px rgba(139,92,246,.8);
+            background: var(--aw-accent, #8b5cf6);
+            box-shadow: 0 0 8px rgba( var(--aw-accent-rgb, 139,92,246), .8 );
         }
 
 
 
-    /* POSTER SHADOW */
+    /* =========================================================
+           POSTER SHADOW
+           ========================================================= */
 
     .aw-similar-poster-shadow {
         position: absolute;
@@ -1750,7 +2108,9 @@
 
 
 
-    /* HOVER */
+    /* =========================================================
+           HOVER
+           ========================================================= */
 
     .aw-similar-hover {
         position: absolute;
@@ -1795,8 +2155,8 @@
 
 
     .aw-similar-hover > span {
-        color: rgba(255,255,255,.85);
-        font-size: 7px;
+        color: rgba(255,255,255,.88);
+        font-size: 11px;
         font-weight: 750;
     }
 
@@ -1816,7 +2176,7 @@
         margin-bottom: 4px;
         overflow: hidden;
         color: #e7e9ed !important;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 750;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -1833,8 +2193,8 @@
     .aw-similar-original {
         margin: 0 0 7px;
         overflow: hidden;
-        color: #4b535f;
-        font-size: 6.5px;
+        color: #626b77;
+        font-size: 11px;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
@@ -1845,8 +2205,8 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 5px;
-        color: #59616d;
-        font-size: 6.5px;
+        color: #68717d;
+        font-size: 10px;
     }
 
 
@@ -1855,7 +2215,7 @@
             height: 3px;
             display: block;
             border-radius: 50%;
-            background: #363d47;
+            background: #404751;
         }
 
 
@@ -1877,15 +2237,15 @@
             border: 1px solid rgba(255,255,255,.035);
             border-radius: 5px;
             background: rgba(255,255,255,.015);
-            color: #515966;
-            font-size: 6px;
+            color: #616a76;
+            font-size: 9px;
         }
 
 
             .aw-similar-genres span.is-match {
-                border-color: rgba(139,92,246,.16);
-                background: rgba(139,92,246,.065);
-                color: #a78bfa;
+                border-color: rgba( var(--aw-accent-rgb, 139,92,246), .18 );
+                background: rgba( var(--aw-accent-rgb, 139,92,246), .065 );
+                color: var(--aw-accent-soft, #a78bfa);
             }
 
 
@@ -1902,7 +2262,7 @@
 
 
         .aw-details-about-grid {
-            grid-template-columns: minmax(0,1fr) 320px;
+            grid-template-columns: minmax(0,1fr) 360px;
         }
     }
 
@@ -1926,12 +2286,7 @@
 
 
         .aw-details-facts {
-            grid-template-columns: repeat(5,minmax(0,1fr));
-        }
-
-
-        .aw-details-fact-wide {
-            grid-column: auto;
+            grid-template-columns: repeat( 3, minmax(0,1fr) );
         }
     }
 
@@ -1944,12 +2299,7 @@
 
 
         .aw-details-facts {
-            grid-template-columns: repeat(2,minmax(0,1fr));
-        }
-
-
-        .aw-details-fact-wide {
-            grid-column: span 2;
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
         }
     }
 

@@ -1,0 +1,492 @@
+﻿@model AnimeWave.ViewModels.AnimeReviewsSectionViewModel
+
+
+<section class="aw-reviews"
+         id="reviews">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="aw-reviews-header">
+
+        <div>
+
+            <span class="aw-reviews-kicker">
+                COMMUNITY
+            </span>
+
+
+            <h2>
+                Отзывы
+                <strong>зрителей</strong>
+            </h2>
+
+
+            <p>
+                Делись впечатлениями и помогай другим
+                выбирать, что посмотреть.
+            </p>
+
+        </div>
+
+
+
+        <!-- AVERAGE -->
+
+        <div class="aw-reviews-average">
+
+            <span>
+                СРЕДНЯЯ ОЦЕНКА
+            </span>
+
+
+            @if (Model.ReviewsCount > 0)
+            {
+                <div>
+
+                    <strong>
+                        @Model.AverageRating.ToString("0.0")
+                    </strong>
+
+                    <small>
+                        / 10
+                    </small>
+
+                </div>
+
+
+                <p>
+                    @Model.ReviewsCount отзывов
+                </p>
+            }
+            else
+            {
+                <div>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+
+                <p>
+                    оценок пока нет
+                </p>
+            }
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         REVIEW FORM
+         ===================================================== -->
+    @if (Model.IsAuthenticated)
+    {
+        <form asp-controller="Anime"
+              asp-action="SaveReview"
+              method="post"
+              class="aw-review-form">
+
+            @Html.AntiForgeryToken()
+
+
+            <input type="hidden"
+                   asp-for="Form.AnimeId"
+                   name="AnimeId" />
+
+
+            <div class="aw-review-form-head">
+
+                <div>
+
+                    <span>
+                        YOUR REVIEW
+                    </span>
+
+
+                    <h3>
+                        Ваша оценка
+                    </h3>
+
+                </div>
+
+
+                <strong id="awRatingPreview">
+
+                    @Model.Form.Rating / 10
+
+                </strong>
+
+            </div>
+
+
+
+            <!-- RATING 1 - 10 -->
+
+            <div class="aw-review-rating">
+
+                @for (int rating = 1; rating <= 10; rating++)
+                {
+                    string id =
+                        $"awRating{rating}";
+
+
+                    <label for="@id">
+
+                        <input type="radio"
+                               name="Rating"
+                               value="@rating"
+                               id="@id"
+                               checked="@(Model.Form.Rating == rating)" />
+
+
+                        <span>
+                            @rating
+                        </span>
+
+                    </label>
+                }
+
+            </div>
+
+
+
+            <!-- TEXT -->
+
+            <div class="aw-review-textarea">
+
+                <textarea name="Text"
+                          maxlength="2000"
+                          rows="5"
+                          id="awReviewText"
+                          placeholder="Что вам понравилось? Какие впечатления оставило аниме?">@Model.Form.Text</textarea>
+
+
+                <div>
+
+                    <span>
+                        Пиши без спойлеров, если возможно.
+                    </span>
+
+
+                    <span id="awReviewCounter">
+                        0 / 2000
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <button type="submit"
+                    class="aw-review-submit">
+
+                <span>
+                    ★
+                </span>
+
+                @(string.IsNullOrWhiteSpace(Model.Form.Text)
+                    ? "Опубликовать отзыв"
+                    : "Обновить отзыв")
+
+            </button>
+
+        </form>
+    }
+    else
+    {
+        <div class="aw-review-login">
+
+            <div>
+
+                <span>
+                    ★
+                </span>
+
+            </div>
+
+
+            <section>
+
+                <strong>
+                    Хотите оставить отзыв?
+                </strong>
+
+
+                <p>
+                    Войдите в AnimeWave, чтобы поставить
+                    оценку и поделиться впечатлениями.
+                </p>
+
+            </section>
+
+
+            <a asp-controller="Account"
+               asp-action="Login">
+
+                Войти
+
+            </a>
+
+        </div>
+    }
+
+
+
+    <!-- =====================================================
+         REVIEWS
+         ===================================================== -->
+    @if (Model.Reviews.Any())
+    {
+        <div class="aw-review-list">
+
+            @foreach (var review in Model.Reviews)
+            {
+                <article class="aw-review-card @(review.IsMine ? "is-mine" : "")">
+
+
+                    <!-- USER -->
+
+                    <div class="aw-review-user">
+
+                        <div class="aw-review-avatar aw-avatar-@review.AvatarStyle">
+
+                            @review.AvatarSymbol
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                @review.AuthorName
+                            </strong>
+
+
+                            <span>
+
+                                @review.CreatedAt
+                                .ToLocalTime()
+                                .ToString("dd.MM.yyyy")
+
+                                @if (review.UpdatedAt.HasValue)
+                                {
+                                    <text>
+                                        · изменён
+                                    </text>
+                                }
+
+                            </span>
+
+                        </div>
+
+
+                        @if (review.IsMine)
+                        {
+                            <span class="aw-review-you">
+
+                                ВАШ ОТЗЫВ
+
+                            </span>
+                        }
+
+                    </div>
+
+
+
+                    <!-- SCORE -->
+
+                    <div class="aw-review-score">
+
+                        <span>
+                            ★
+                        </span>
+
+
+                        <strong>
+                            @review.Rating
+                        </strong>
+
+
+                        <small>
+                            /10
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- TEXT -->
+
+                    <p class="aw-review-text">
+
+                        @review.Text
+
+                    </p>
+
+
+
+                    <!-- DELETE -->
+                    @if (review.IsMine)
+                    {
+                        <form asp-controller="Anime"
+                              asp-action="DeleteReview"
+                              method="post"
+                              class="aw-review-delete"
+                              onsubmit="return confirm('Удалить ваш отзыв?');">
+
+                            @Html.AntiForgeryToken()
+
+
+                            <input type="hidden"
+                                   name="reviewId"
+                                   value="@review.Id" />
+
+
+                            <input type="hidden"
+                                   name="animeId"
+                                   value="@Model.AnimeId" />
+
+
+                            <button type="submit">
+
+                                Удалить отзыв
+
+                            </button>
+
+                        </form>
+                    }
+
+                </article>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="aw-reviews-empty">
+
+            <span>
+                ☆
+            </span>
+
+
+            <strong>
+                Отзывов пока нет
+            </strong>
+
+
+            <p>
+                Станьте первым, кто поделится
+                впечатлениями об этом аниме.
+            </p>
+
+        </div>
+    }
+
+</section>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            // =====================================================
+            // RATING PREVIEW
+            // =====================================================
+
+            const ratingInputs =
+                document.querySelectorAll(
+                    '.aw-review-rating input[name="Rating"]'
+                );
+
+
+            const ratingPreview =
+                document.getElementById(
+                    "awRatingPreview"
+                );
+
+
+            ratingInputs.forEach(
+                function (input) {
+
+                    input.addEventListener(
+                        "change",
+                        function () {
+
+                            if (
+                                ratingPreview
+                                &&
+                                input.checked
+                            ) {
+                                ratingPreview.textContent =
+                                    input.value
+                                    +
+                                    " / 10";
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+
+            // =====================================================
+            // CHARACTER COUNTER
+            // =====================================================
+
+            const textarea =
+                document.getElementById(
+                    "awReviewText"
+                );
+
+
+            const counter =
+                document.getElementById(
+                    "awReviewCounter"
+                );
+
+
+            function updateCounter() {
+
+                if (
+                    textarea
+                    &&
+                    counter
+                ) {
+                    counter.textContent =
+                        textarea.value.length
+                        +
+                        " / 2000";
+                }
+
+            }
+
+
+            if (textarea) {
+
+                textarea.addEventListener(
+                    "input",
+                    updateCounter
+                );
+
+
+                updateCounter();
+
+            }
+
+        }
+    );
+
+</script>

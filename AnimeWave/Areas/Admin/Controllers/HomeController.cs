@@ -56,7 +56,9 @@ namespace AnimeWave.Areas.Admin.Controllers
 
 
             // Систему отзывов пока ещё не создавали.
-            int reviewsCount = 0;
+            int reviewsCount =
+    await _context.AnimeReviews
+        .CountAsync();
 
 
 

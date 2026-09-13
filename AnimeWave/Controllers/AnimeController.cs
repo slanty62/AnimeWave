@@ -1,6 +1,8 @@
 ﻿using AnimeWave.Data;
 using AnimeWave.Models;
+using AnimeWave.ViewModels;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +24,7 @@ namespace AnimeWave.Controllers
 
 
         // =========================================================
-        // КАТАЛОГ
-        // SEARCH + FILTERS + SORT + PAGINATION
+        // CATALOG
         // =========================================================
 
         [HttpGet]
@@ -62,9 +63,7 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
             // SEARCH
-            // =====================================================
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -75,7 +74,6 @@ namespace AnimeWave.Controllers
                 query =
                     query.Where(
                         a =>
-
                             EF.Functions.ILike(
                                 a.Title,
                                 $"%{search}%"
@@ -85,9 +83,7 @@ namespace AnimeWave.Controllers
 
                             (
                                 a.OriginalTitle != null
-
                                 &&
-
                                 EF.Functions.ILike(
                                     a.OriginalTitle,
                                     $"%{search}%"
@@ -98,9 +94,7 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
             // GENRE
-            // =====================================================
 
             if (genreId.HasValue)
             {
@@ -117,9 +111,7 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
             // RATING
-            // =====================================================
 
             if (minRating.HasValue)
             {
@@ -132,10 +124,6 @@ namespace AnimeWave.Controllers
             }
 
 
-
-            // =====================================================
-            // TOTAL ITEMS
-            // =====================================================
 
             int totalItems =
                 await query.CountAsync();
@@ -158,9 +146,7 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
             // SORT
-            // =====================================================
 
             query =
                 sort switch
@@ -184,10 +170,9 @@ namespace AnimeWave.Controllers
                             ),
 
                     "title" =>
-                        query
-                            .OrderBy(
-                                a => a.Title
-                            ),
+                        query.OrderBy(
+                            a => a.Title
+                        ),
 
                     "rating-low" =>
                         query
@@ -210,10 +195,6 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // PAGINATION
-            // =====================================================
-
             var animes =
                 await query
 
@@ -230,10 +211,6 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // FILTER DATA
-            // =====================================================
-
             ViewBag.Genres =
                 await _context.Genres
 
@@ -249,30 +226,23 @@ namespace AnimeWave.Controllers
             ViewBag.Search =
                 search;
 
-
             ViewBag.GenreId =
                 genreId;
-
 
             ViewBag.MinRating =
                 minRating;
 
-
             ViewBag.Sort =
                 sort;
-
 
             ViewBag.CurrentPage =
                 page;
 
-
             ViewBag.TotalPages =
                 totalPages;
 
-
             ViewBag.PageSize =
                 pageSize;
-
 
             ViewBag.TotalItems =
                 totalItems;
@@ -319,10 +289,6 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // EPISODES
-            // =====================================================
-
             anime.Episodes =
                 anime.Episodes
 
@@ -335,94 +301,83 @@ namespace AnimeWave.Controllers
 
 
 
+            string? userId =
+                User.Identity?.IsAuthenticated == true
+
+                    ? User.FindFirstValue(
+                        ClaimTypes.NameIdentifier
+                    )
+
+                    : null;
+
+
+
             // =====================================================
-            // FAVORITE
+            // FAVORITE + HISTORY
             // =====================================================
 
             ViewBag.IsFavorite =
                 false;
 
 
-
-            // =====================================================
-            // USER HISTORY
-            // =====================================================
-
-            if (
-                User.Identity?.IsAuthenticated
-                ==
-                true
-            )
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                string? userId =
-                    User.FindFirstValue(
-                        ClaimTypes.NameIdentifier
-                    );
+                ViewBag.IsFavorite =
+                    await _context.Favorites
 
+                        .AnyAsync(
+                            f =>
+                                f.UserId ==
+                                userId
 
-                if (
-                    !string.IsNullOrWhiteSpace(
-                        userId
-                    )
-                )
-                {
-                    ViewBag.IsFavorite =
-                        await _context.Favorites
+                                &&
 
-                            .AnyAsync(
-                                f =>
-                                    f.UserId ==
-                                    userId
-
-                                    &&
-
-                                    f.AnimeId ==
-                                    anime.Id
-                            );
-
-
-
-                    var history =
-                        await _context.ViewingHistories
-
-                            .FirstOrDefaultAsync(
-                                v =>
-                                    v.UserId ==
-                                    userId
-
-                                    &&
-
-                                    v.AnimeId ==
-                                    anime.Id
-                            );
-
-
-                    if (history == null)
-                    {
-                        _context.ViewingHistories.Add(
-                            new ViewingHistory
-                            {
-                                UserId =
-                                    userId,
-
-                                AnimeId =
-                                    anime.Id,
-
-                                ViewedAt =
-                                    DateTime.UtcNow
-                            }
+                                f.AnimeId ==
+                                anime.Id
                         );
-                    }
-                    else
-                    {
-                        history.ViewedAt =
-                            DateTime.UtcNow;
-                    }
 
 
-                    await _context
-                        .SaveChangesAsync();
+
+                var history =
+                    await _context.ViewingHistories
+
+                        .FirstOrDefaultAsync(
+                            v =>
+                                v.UserId ==
+                                userId
+
+                                &&
+
+                                v.AnimeId ==
+                                anime.Id
+                        );
+
+
+                if (history == null)
+                {
+                    _context.ViewingHistories.Add(
+                        new ViewingHistory
+                        {
+                            UserId =
+                                userId,
+
+                            AnimeId =
+                                anime.Id,
+
+                            ViewedAt =
+                                DateTime.UtcNow
+                        }
+                    );
                 }
+                else
+                {
+                    history.ViewedAt =
+                        DateTime.UtcNow;
+                }
+
+
+                await _context
+                    .SaveChangesAsync();
             }
 
 
@@ -435,7 +390,8 @@ namespace AnimeWave.Controllers
                 anime.AnimeGenres
 
                     .Select(
-                        ag => ag.GenreId
+                        ag =>
+                            ag.GenreId
                     )
 
                     .Distinct()
@@ -448,15 +404,8 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // ЕСЛИ ЕСТЬ ЖАНРЫ
-            // =====================================================
-
             if (currentGenreIds.Any())
             {
-                // Сначала получаем подходящих кандидатов.
-                // Текущее аниме исключаем.
-
                 var candidates =
                     await _context.Animes
 
@@ -482,17 +431,19 @@ namespace AnimeWave.Controllers
                                 )
                         )
 
+                        .OrderByDescending(
+                            a => a.Rating
+                        )
+
+                        .ThenByDescending(
+                            a => a.ReleaseYear
+                        )
+
                         .Take(40)
 
                         .ToListAsync();
 
 
-
-                // Сортируем уже в памяти:
-                //
-                // 1. Количество совпадающих жанров
-                // 2. Рейтинг
-                // 3. Год выхода
 
                 similarAnime =
                     candidates
@@ -508,25 +459,19 @@ namespace AnimeWave.Controllers
                         )
 
                         .ThenByDescending(
-                            a => a.Rating
+                            a =>
+                                a.Rating
                         )
 
                         .ThenByDescending(
-                            a => a.ReleaseYear
+                            a =>
+                                a.ReleaseYear
                         )
 
                         .Take(6)
 
                         .ToList();
             }
-
-            // =====================================================
-            // FALLBACK
-            //
-            // Если у тайтла вообще нет жанров —
-            // просто рекомендуем лучшие другие аниме.
-            // =====================================================
-
             else
             {
                 similarAnime =
@@ -546,11 +491,8 @@ namespace AnimeWave.Controllers
                         )
 
                         .OrderByDescending(
-                            a => a.Rating
-                        )
-
-                        .ThenByDescending(
-                            a => a.ReleaseYear
+                            a =>
+                                a.Rating
                         )
 
                         .Take(6)
@@ -565,8 +507,397 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // REVIEWS
+            // =====================================================
+
+            var reviewEntities =
+                await _context.AnimeReviews
+
+                    .AsNoTracking()
+
+                    .Include(
+                        r => r.User
+                    )
+
+                    .Where(
+                        r =>
+                            r.AnimeId ==
+                            anime.Id
+                    )
+
+                    .OrderByDescending(
+                        r =>
+                            r.CreatedAt
+                    )
+
+                    .ToListAsync();
+
+
+
+            var currentReview =
+                !string.IsNullOrWhiteSpace(userId)
+
+                    ? reviewEntities
+                        .FirstOrDefault(
+                            r =>
+                                r.UserId ==
+                                userId
+                        )
+
+                    : null;
+
+
+
+            double averageRating =
+                reviewEntities.Any()
+
+                    ? reviewEntities
+                        .Average(
+                            r =>
+                                r.Rating
+                        )
+
+                    : 0;
+
+
+
+            var reviewsSection =
+                new AnimeReviewsSectionViewModel
+                {
+                    AnimeId =
+                        anime.Id,
+
+                    IsAuthenticated =
+                        !string.IsNullOrWhiteSpace(
+                            userId
+                        ),
+
+                    AverageRating =
+                        averageRating,
+
+                    ReviewsCount =
+                        reviewEntities.Count,
+
+                    Form =
+                        new AnimeReviewFormViewModel
+                        {
+                            AnimeId =
+                                anime.Id,
+
+                            Rating =
+                                currentReview?.Rating
+                                ?? 10,
+
+                            Text =
+                                currentReview?.Text
+                                ?? string.Empty
+                        },
+
+                    Reviews =
+                        reviewEntities
+
+                            .Select(
+                                review =>
+                                    new AnimeReviewItemViewModel
+                                    {
+                                        Id =
+                                            review.Id,
+
+                                        AuthorName =
+                                            !string.IsNullOrWhiteSpace(
+                                                review.User.DisplayName
+                                            )
+                                                ? review.User.DisplayName!
+                                                : review.User.UserName
+                                                    ?? "AnimeWave User",
+
+                                        AvatarStyle =
+                                            NormalizeAvatar(
+                                                review.User.AvatarStyle
+                                            ),
+
+                                        AvatarSymbol =
+                                            GetAvatarSymbol(
+                                                review.User.AvatarStyle
+                                            ),
+
+                                        Rating =
+                                            review.Rating,
+
+                                        Text =
+                                            review.Text,
+
+                                        CreatedAt =
+                                            review.CreatedAt,
+
+                                        UpdatedAt =
+                                            review.UpdatedAt,
+
+                                        IsMine =
+                                            review.UserId ==
+                                            userId
+                                    }
+                            )
+
+                            .ToList()
+                };
+
+
+
+            ViewBag.ReviewsSection =
+                reviewsSection;
+
+
+
             return View(
                 anime
+            );
+        }
+
+
+
+        // =========================================================
+        // SAVE REVIEW
+        //
+        // Создаёт новый отзыв или обновляет существующий.
+        // =========================================================
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveReview(
+            AnimeReviewFormViewModel model)
+        {
+            string? userId =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier
+                );
+
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Challenge();
+            }
+
+
+
+            bool animeExists =
+                await _context.Animes
+
+                    .AsNoTracking()
+
+                    .AnyAsync(
+                        a =>
+                            a.Id ==
+                            model.AnimeId
+                    );
+
+
+            if (!animeExists)
+            {
+                return NotFound();
+            }
+
+
+
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorMessage"] =
+                    "Проверь оценку и текст отзыва.";
+
+                return RedirectToAction(
+                    nameof(Details),
+                    "Anime",
+                    new
+                    {
+                        id = model.AnimeId
+                    },
+                    "reviews"
+                );
+            }
+
+
+
+            string reviewText =
+                model.Text.Trim();
+
+
+            if (string.IsNullOrWhiteSpace(reviewText))
+            {
+                TempData["ErrorMessage"] =
+                    "Напишите текст отзыва.";
+
+                return RedirectToAction(
+                    nameof(Details),
+                    "Anime",
+                    new
+                    {
+                        id = model.AnimeId
+                    },
+                    "reviews"
+                );
+            }
+
+
+
+            var review =
+                await _context.AnimeReviews
+
+                    .FirstOrDefaultAsync(
+                        r =>
+                            r.UserId ==
+                            userId
+
+                            &&
+
+                            r.AnimeId ==
+                            model.AnimeId
+                    );
+
+
+
+            if (review == null)
+            {
+                review =
+                    new AnimeReview
+                    {
+                        UserId =
+                            userId,
+
+                        AnimeId =
+                            model.AnimeId,
+
+                        Rating =
+                            model.Rating,
+
+                        Text =
+                            reviewText,
+
+                        CreatedAt =
+                            DateTime.UtcNow
+                    };
+
+
+                _context.AnimeReviews.Add(
+                    review
+                );
+
+
+                TempData["SuccessMessage"] =
+                    "Отзыв опубликован ✓";
+            }
+            else
+            {
+                review.Rating =
+                    model.Rating;
+
+
+                review.Text =
+                    reviewText;
+
+
+                review.UpdatedAt =
+                    DateTime.UtcNow;
+
+
+                TempData["SuccessMessage"] =
+                    "Отзыв обновлён ✓";
+            }
+
+
+
+            await _context
+                .SaveChangesAsync();
+
+
+
+            return RedirectToAction(
+                nameof(Details),
+                "Anime",
+                new
+                {
+                    id = model.AnimeId
+                },
+                "reviews"
+            );
+        }
+
+
+
+        // =========================================================
+        // DELETE OWN REVIEW
+        // =========================================================
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReview(
+            int reviewId,
+            int animeId)
+        {
+            string? userId =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier
+                );
+
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Challenge();
+            }
+
+
+
+            var review =
+                await _context.AnimeReviews
+
+                    .FirstOrDefaultAsync(
+                        r =>
+                            r.Id ==
+                            reviewId
+
+                            &&
+
+                            r.UserId ==
+                            userId
+
+                            &&
+
+                            r.AnimeId ==
+                            animeId
+                    );
+
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+
+
+            _context.AnimeReviews.Remove(
+                review
+            );
+
+
+            await _context
+                .SaveChangesAsync();
+
+
+
+            TempData["SuccessMessage"] =
+                "Отзыв удалён";
+
+
+            return RedirectToAction(
+                nameof(Details),
+                "Anime",
+                new
+                {
+                    id = animeId
+                },
+                "reviews"
             );
         }
 
@@ -584,8 +915,10 @@ namespace AnimeWave.Controllers
             var episode =
                 await _context.Episodes
 
-                    .Include(e =>
-                        e.Anime)
+                    .Include(
+                        e =>
+                            e.Anime
+                    )
 
                     .FirstOrDefaultAsync(
                         e =>
@@ -606,10 +939,6 @@ namespace AnimeWave.Controllers
 
 
 
-            // =====================================================
-            // HISTORY
-            // =====================================================
-
             if (
                 User.Identity?.IsAuthenticated
                 ==
@@ -622,11 +951,7 @@ namespace AnimeWave.Controllers
                     );
 
 
-                if (
-                    !string.IsNullOrWhiteSpace(
-                        userId
-                    )
-                )
+                if (!string.IsNullOrWhiteSpace(userId))
                 {
                     var history =
                         await _context.ViewingHistories
@@ -676,6 +1001,50 @@ namespace AnimeWave.Controllers
             return View(
                 episode
             );
+        }
+
+
+
+        // =========================================================
+        // AVATAR HELPERS
+        // =========================================================
+
+        private static string NormalizeAvatar(
+            string? avatarStyle)
+        {
+            return avatarStyle switch
+            {
+                "sakura" => "sakura",
+                "kitsune" => "kitsune",
+                "blade" => "blade",
+                "neko" => "neko",
+                "star" => "star",
+                "cyber" => "cyber",
+                "wave" => "wave",
+
+                _ => "violet"
+            };
+        }
+
+
+
+        private static string GetAvatarSymbol(
+            string? avatarStyle)
+        {
+            return NormalizeAvatar(
+                avatarStyle
+            ) switch
+            {
+                "sakura" => "桜",
+                "kitsune" => "狐",
+                "blade" => "刀",
+                "neko" => "猫",
+                "star" => "星",
+                "cyber" => "夢",
+                "wave" => "波",
+
+                _ => "月"
+            };
         }
     }
 }

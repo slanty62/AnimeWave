@@ -47,6 +47,8 @@ namespace AnimeWave.Data
         public DbSet<ViewingHistory> ViewingHistories { get; set; }
             = null!;
 
+        public DbSet<AnimeReview> AnimeReviews { get; set; }
+    = null!;
 
 
         // =========================================================
@@ -453,6 +455,82 @@ namespace AnimeWave.Data
                 )
                 .IsUnique();
             });
+
+            // =====================================================
+            // ANIME REVIEWS
+            // =====================================================
+
+            builder.Entity<AnimeReview>(entity =>
+            {
+                entity.HasKey(
+                    r => r.Id
+                );
+
+
+                entity.Property(
+                    r => r.UserId
+                )
+                .IsRequired();
+
+
+                entity.Property(
+                    r => r.Text
+                )
+                .IsRequired()
+                .HasMaxLength(2000);
+
+
+                entity.Property(
+                    r => r.CreatedAt
+                )
+                .HasDefaultValueSql(
+                    "CURRENT_TIMESTAMP"
+                );
+
+
+                // Review -> User
+                //
+                // Используем именно r.User,
+                // чтобы EF не создавал UserId1.
+                entity.HasOne(
+                    r => r.User
+                )
+                .WithMany()
+                .HasForeignKey(
+                    r => r.UserId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
+
+
+                // Review -> Anime
+                entity.HasOne(
+                    r => r.Anime
+                )
+                .WithMany()
+                .HasForeignKey(
+                    r => r.AnimeId
+                )
+                .OnDelete(
+                    DeleteBehavior.Cascade
+                );
+
+
+                // Один пользователь может оставить
+                // только один отзыв на одно аниме.
+                entity.HasIndex(
+                    r => new
+                    {
+                        r.UserId,
+                        r.AnimeId
+                    }
+                )
+                .IsUnique();
+            });
+
+
         }
+
     }
 }

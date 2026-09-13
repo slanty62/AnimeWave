@@ -12234,3 +12234,570 @@ small,
         font-size: 12px;
     }
 }
+
+/* =========================================================
+   ANIMEWAVE REVIEWS
+   ========================================================= */
+
+.aw-reviews {
+    position: relative;
+    padding: 55px 0;
+    border-top: 1px solid rgba(255,255,255,.045);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.aw-reviews-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 26px;
+}
+
+
+.aw-reviews-kicker {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--aw-accent, #8b5cf6);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+
+.aw-reviews-header h2 {
+    margin: 0 0 7px;
+    color: #f4f5f7;
+    font-size: 32px;
+    font-weight: 850;
+    letter-spacing: -1.2px;
+}
+
+
+    .aw-reviews-header h2 strong {
+        color: var(--aw-accent-soft, #a78bfa);
+    }
+
+
+.aw-reviews-header > div:first-child > p {
+    margin: 0;
+    color: #78818d;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   AVERAGE
+   ========================================================= */
+
+.aw-reviews-average {
+    min-width: 170px;
+    padding: 16px 18px;
+    border: 1px solid rgba( var(--aw-accent-rgb, 139,92,246), .12 );
+    border-radius: 13px;
+    background: rgba( var(--aw-accent-rgb, 139,92,246), .035 );
+}
+
+
+    .aw-reviews-average > span {
+        display: block;
+        margin-bottom: 4px;
+        color: #555d68;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.3px;
+    }
+
+
+    .aw-reviews-average > div {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+
+
+    .aw-reviews-average strong {
+        color: #fbbf24;
+        font-size: 32px;
+        font-weight: 900;
+    }
+
+
+    .aw-reviews-average small {
+        color: #636c78;
+        font-size: 12px;
+    }
+
+
+    .aw-reviews-average p {
+        margin: 2px 0 0;
+        color: #5b6470;
+        font-size: 11px;
+    }
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.aw-review-form {
+    margin-bottom: 30px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 15px;
+    background: linear-gradient( 145deg, rgba(17,20,28,.93), rgba(11,14,20,.93) );
+}
+
+
+.aw-review-form-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+
+    .aw-review-form-head span {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--aw-accent, #8b5cf6);
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+
+    .aw-review-form-head h3 {
+        margin: 0;
+        color: #e8eaed;
+        font-size: 18px;
+    }
+
+
+    .aw-review-form-head > strong {
+        color: #fbbf24;
+        font-size: 18px;
+    }
+
+
+/* =========================================================
+   1 - 10
+   ========================================================= */
+
+.aw-review-rating {
+    display: grid;
+    grid-template-columns: repeat(10,minmax(0,1fr));
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+
+    .aw-review-rating label {
+        position: relative;
+        margin: 0;
+        cursor: pointer;
+    }
+
+
+    .aw-review-rating input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+
+    .aw-review-rating label > span {
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,.055);
+        border-radius: 8px;
+        background: rgba(255,255,255,.018);
+        color: #737c88;
+        font-size: 13px;
+        font-weight: 800;
+        transition: transform .2s ease, color .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+
+    .aw-review-rating label:hover > span {
+        transform: translateY(-2px);
+        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .30 );
+        color: #fff;
+    }
+
+
+    .aw-review-rating input:checked + span {
+        border-color: var(--aw-accent, #8b5cf6);
+        background: linear-gradient( 135deg, var(--aw-accent, #8b5cf6), var(--aw-accent-strong, #7c3aed) );
+        color: #fff;
+        box-shadow: 0 8px 22px rgba( var(--aw-accent-rgb, 139,92,246), .18 );
+    }
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.aw-review-textarea textarea {
+    width: 100%;
+    min-height: 125px;
+    resize: vertical;
+    padding: 13px 14px;
+    border: 1px solid rgba(255,255,255,.055);
+    outline: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,.02);
+    color: #e9ebee;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.7;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+
+    .aw-review-textarea textarea:focus {
+        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .38 );
+        box-shadow: 0 0 0 3px rgba( var(--aw-accent-rgb, 139,92,246), .055 );
+    }
+
+
+    .aw-review-textarea textarea::placeholder {
+        color: #484f5a;
+    }
+
+
+.aw-review-textarea > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 7px;
+    color: #4e5662;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   SUBMIT
+   ========================================================= */
+
+.aw-review-submit {
+    min-height: 43px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 14px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient( 135deg, var(--aw-accent, #8b5cf6), var(--aw-accent-strong, #7c3aed) );
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba( var(--aw-accent-rgb, 139,92,246), .16 );
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.aw-review-login {
+    display: grid;
+    grid-template-columns: 50px minmax(0,1fr) auto;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding: 17px;
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 12px;
+    background: rgba(255,255,255,.015);
+}
+
+
+    .aw-review-login > div {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: rgba( var(--aw-accent-rgb, 139,92,246), .08 );
+        color: #fbbf24;
+        font-size: 18px;
+    }
+
+
+    .aw-review-login section strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #e1e4e8;
+        font-size: 14px;
+    }
+
+
+    .aw-review-login section p {
+        margin: 0;
+        color: #5e6773;
+        font-size: 11px;
+    }
+
+
+    .aw-review-login > a {
+        padding: 9px 13px;
+        border-radius: 8px;
+        background: var(--aw-accent, #8b5cf6);
+        color: #fff !important;
+        font-size: 12px;
+        font-weight: 750;
+        text-decoration: none;
+    }
+
+
+/* =========================================================
+   REVIEW LIST
+   ========================================================= */
+
+.aw-review-list {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+}
+
+
+.aw-review-card {
+    position: relative;
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,.045);
+    border-radius: 13px;
+    background: rgba(255,255,255,.014);
+    transition: border-color .2s ease, background .2s ease;
+}
+
+
+    .aw-review-card:hover {
+        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .15 );
+        background: rgba( var(--aw-accent-rgb, 139,92,246), .025 );
+    }
+
+
+    .aw-review-card.is-mine {
+        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .14 );
+    }
+
+
+/* =========================================================
+   USER
+   ========================================================= */
+
+.aw-review-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 70px;
+}
+
+
+.aw-review-avatar {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+
+.aw-review-user > div:nth-child(2) {
+    min-width: 0;
+}
+
+
+.aw-review-user strong {
+    display: block;
+    overflow: hidden;
+    margin-bottom: 2px;
+    color: #e2e4e8;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.aw-review-user span {
+    color: #505864;
+    font-size: 10px;
+}
+
+
+.aw-review-you {
+    padding: 4px 6px;
+    border-radius: 5px;
+    background: rgba( var(--aw-accent-rgb, 139,92,246), .07 );
+    color: var(--aw-accent-soft, #a78bfa) !important;
+    font-size: 8px !important;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   SCORE
+   ========================================================= */
+
+.aw-review-score {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+
+    .aw-review-score span {
+        margin-right: 3px;
+        color: #fbbf24;
+        font-size: 12px;
+    }
+
+
+    .aw-review-score strong {
+        color: #fbbf24;
+        font-size: 18px;
+    }
+
+
+    .aw-review-score small {
+        color: #59616c;
+        font-size: 9px;
+    }
+
+
+/* =========================================================
+   TEXT
+   ========================================================= */
+
+.aw-review-text {
+    margin: 17px 0 0;
+    color: #89919d;
+    font-size: 13px;
+    line-height: 1.75;
+    white-space: pre-line;
+}
+
+
+/* =========================================================
+   DELETE
+   ========================================================= */
+
+.aw-review-delete {
+    margin: 14px 0 0;
+}
+
+
+    .aw-review-delete button {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #68545a;
+        font-family: inherit;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+
+        .aw-review-delete button:hover {
+            color: #f87171;
+        }
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.aw-reviews-empty {
+    padding: 50px 20px;
+    border: 1px dashed rgba(255,255,255,.055);
+    border-radius: 13px;
+    text-align: center;
+}
+
+
+    .aw-reviews-empty > span {
+        display: block;
+        margin-bottom: 8px;
+        color: #fbbf24;
+        font-size: 25px;
+    }
+
+
+    .aw-reviews-empty strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #dfe2e6;
+        font-size: 15px;
+    }
+
+
+    .aw-reviews-empty p {
+        margin: 0;
+        color: #555e69;
+        font-size: 11px;
+    }
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .aw-review-list {
+        grid-template-columns: 1fr;
+    }
+
+
+    .aw-reviews-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .aw-reviews-average {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .aw-review-rating {
+        grid-template-columns: repeat(5,minmax(0,1fr));
+    }
+
+
+    .aw-review-login {
+        grid-template-columns: 45px minmax(0,1fr);
+    }
+
+
+        .aw-review-login > a {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+}
