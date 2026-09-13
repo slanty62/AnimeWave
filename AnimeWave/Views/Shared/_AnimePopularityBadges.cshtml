@@ -1,0 +1,53 @@
+﻿@model AnimeWave.ViewModels.AnimePopularityViewModel
+
+
+@if (
+    Model.IsHot
+    ||
+    Model.IsTrending
+    ||
+    Model.IsTop10
+)
+{
+    <div class="aw-popularity-badges">
+
+
+        @if (Model.IsHot)
+        {
+            <span class="aw-popularity-badge aw-badge-hot">
+
+                <i>
+                    ●
+                </i>
+
+                HOT
+
+            </span>
+        }
+
+
+        @if (Model.IsTrending)
+        {
+            <span class="aw-popularity-badge aw-badge-trending">
+
+                <i>
+                    ↗
+                </i>
+
+                TRENDING
+
+            </span>
+        }
+
+
+        @if (Model.IsTop10)
+        {
+            <span class="aw-popularity-badge aw-badge-top">
+
+                TOP @Model.Rank
+
+            </span>
+        }
+
+    </div>
+}

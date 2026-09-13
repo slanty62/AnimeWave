@@ -1,24 +1,36 @@
 ﻿using AnimeWave.Data;
 using AnimeWave.Models;
+using AnimeWave.Services;
 using AnimeWave.ViewModels;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AnimeWave.Controllers
 {
     public class AnimeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAnimePopularityService _popularityService;
 
+
+        // =========================================================
+        // CONSTRUCTOR
+        // =========================================================
 
         public AnimeController(
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IAnimePopularityService popularityService)
         {
             _context = context;
+            _popularityService = popularityService;
         }
 
 
@@ -36,6 +48,10 @@ namespace AnimeWave.Controllers
             int page = 1,
             int pageSize = 12)
         {
+            // =====================================================
+            // PAGE SIZE
+            // =====================================================
+
             pageSize =
                 pageSize == 18
                     ? 18
@@ -48,27 +64,26 @@ namespace AnimeWave.Controllers
             }
 
 
-            var query =
+
+            // =====================================================
+            // BASE QUERY
+            // =====================================================
+
+            IQueryable<Anime> query =
                 _context.Animes
-
-                    .Include(a =>
-                        a.AnimeGenres)
-
-                    .ThenInclude(ag =>
-                        ag.Genre)
-
                     .AsNoTracking()
+                    .Include(a => a.AnimeGenres)
+                    .ThenInclude(ag => ag.Genre);
 
-                    .AsQueryable();
 
 
-
+            // =====================================================
             // SEARCH
+            // =====================================================
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                search =
-                    search.Trim();
+                search = search.Trim();
 
 
                 query =
@@ -78,9 +93,7 @@ namespace AnimeWave.Controllers
                                 a.Title,
                                 $"%{search}%"
                             )
-
                             ||
-
                             (
                                 a.OriginalTitle != null
                                 &&
@@ -94,7 +107,9 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
             // GENRE
+            // =====================================================
 
             if (genreId.HasValue)
             {
@@ -111,7 +126,9 @@ namespace AnimeWave.Controllers
 
 
 
-            // RATING
+            // =====================================================
+            // MIN RATING
+            // =====================================================
 
             if (minRating.HasValue)
             {
@@ -124,6 +141,10 @@ namespace AnimeWave.Controllers
             }
 
 
+
+            // =====================================================
+            // TOTAL
+            // =====================================================
 
             int totalItems =
                 await query.CountAsync();
@@ -140,13 +161,14 @@ namespace AnimeWave.Controllers
 
             if (page > totalPages)
             {
-                page =
-                    totalPages;
+                page = totalPages;
             }
 
 
 
+            // =====================================================
             // SORT
+            // =====================================================
 
             query =
                 sort switch
@@ -170,9 +192,10 @@ namespace AnimeWave.Controllers
                             ),
 
                     "title" =>
-                        query.OrderBy(
-                            a => a.Title
-                        ),
+                        query
+                            .OrderBy(
+                                a => a.Title
+                            ),
 
                     "rating-low" =>
                         query
@@ -195,33 +218,41 @@ namespace AnimeWave.Controllers
 
 
 
-            var animes =
-                await query
+            // =====================================================
+            // PAGE DATA
+            // =====================================================
 
+            List<Anime> animes =
+                await query
                     .Skip(
                         (page - 1) *
                         pageSize
                     )
-
-                    .Take(
-                        pageSize
-                    )
-
+                    .Take(pageSize)
                     .ToListAsync();
 
 
 
-            ViewBag.Genres =
+            // =====================================================
+            // GENRES
+            // =====================================================
+
+            List<Genre> genres =
                 await _context.Genres
-
                     .AsNoTracking()
-
                     .OrderBy(
                         g => g.Name
                     )
-
                     .ToListAsync();
 
+
+
+            // =====================================================
+            // VIEW DATA
+            // =====================================================
+
+            ViewBag.Genres =
+                genres;
 
             ViewBag.Search =
                 search;
@@ -249,9 +280,17 @@ namespace AnimeWave.Controllers
 
 
 
-            return View(
-                animes
-            );
+            // =====================================================
+            // POPULARITY
+            // =====================================================
+
+            ViewBag.Popularity =
+                await _popularityService
+                    .GetAllAsync();
+
+
+
+            return View(animes);
         }
 
 
@@ -264,21 +303,23 @@ namespace AnimeWave.Controllers
         public async Task<IActionResult> Details(
             int id)
         {
-            var anime =
+            // =====================================================
+            // ANIME
+            // =====================================================
+
+            Anime? anime =
                 await _context.Animes
-
-                    .Include(a =>
-                        a.AnimeGenres)
-
-                    .ThenInclude(ag =>
-                        ag.Genre)
-
-                    .Include(a =>
-                        a.Episodes)
-
+                    .Include(
+                        a => a.AnimeGenres
+                    )
+                    .ThenInclude(
+                        ag => ag.Genre
+                    )
+                    .Include(
+                        a => a.Episodes
+                    )
                     .FirstOrDefaultAsync(
-                        a =>
-                            a.Id == id
+                        a => a.Id == id
                     );
 
 
@@ -289,31 +330,54 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // OPEN COUNTER
+            //
+            // +1 при каждом открытии Details.
+            // =====================================================
+
+            await _context.Animes
+                .Where(
+                    a => a.Id == anime.Id
+                )
+                .ExecuteUpdateAsync(
+                    update =>
+                        update.SetProperty(
+                            a => a.OpenCount,
+                            a => a.OpenCount + 1
+                        )
+                );
+
+
+
+            // =====================================================
+            // EPISODES
+            // =====================================================
+
             anime.Episodes =
                 anime.Episodes
-
                     .OrderBy(
-                        e =>
-                            e.EpisodeNumber
+                        e => e.EpisodeNumber
                     )
-
                     .ToList();
 
 
 
+            // =====================================================
+            // CURRENT USER
+            // =====================================================
+
             string? userId =
                 User.Identity?.IsAuthenticated == true
-
                     ? User.FindFirstValue(
                         ClaimTypes.NameIdentifier
                     )
-
                     : null;
 
 
 
             // =====================================================
-            // FAVORITE + HISTORY
+            // FAVORITE
             // =====================================================
 
             ViewBag.IsFavorite =
@@ -324,32 +388,27 @@ namespace AnimeWave.Controllers
             {
                 ViewBag.IsFavorite =
                     await _context.Favorites
-
+                        .AsNoTracking()
                         .AnyAsync(
                             f =>
-                                f.UserId ==
-                                userId
-
+                                f.UserId == userId
                                 &&
-
-                                f.AnimeId ==
-                                anime.Id
+                                f.AnimeId == anime.Id
                         );
 
 
 
-                var history =
-                    await _context.ViewingHistories
+                // =================================================
+                // VIEWING HISTORY
+                // =================================================
 
+                ViewingHistory? history =
+                    await _context.ViewingHistories
                         .FirstOrDefaultAsync(
                             v =>
-                                v.UserId ==
-                                userId
-
+                                v.UserId == userId
                                 &&
-
-                                v.AnimeId ==
-                                anime.Id
+                                v.AnimeId == anime.Id
                         );
 
 
@@ -376,8 +435,7 @@ namespace AnimeWave.Controllers
                 }
 
 
-                await _context
-                    .SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
 
 
@@ -386,16 +444,12 @@ namespace AnimeWave.Controllers
             // SIMILAR ANIME
             // =====================================================
 
-            var currentGenreIds =
+            List<int> currentGenreIds =
                 anime.AnimeGenres
-
                     .Select(
-                        ag =>
-                            ag.GenreId
+                        ag => ag.GenreId
                     )
-
                     .Distinct()
-
                     .ToList();
 
 
@@ -404,25 +458,21 @@ namespace AnimeWave.Controllers
 
 
 
-            if (currentGenreIds.Any())
+            if (currentGenreIds.Count > 0)
             {
-                var candidates =
+                List<Anime> candidates =
                     await _context.Animes
-
                         .AsNoTracking()
-
-                        .Include(a =>
-                            a.AnimeGenres)
-
-                        .ThenInclude(ag =>
-                            ag.Genre)
-
+                        .Include(
+                            a => a.AnimeGenres
+                        )
+                        .ThenInclude(
+                            ag => ag.Genre
+                        )
                         .Where(
                             a =>
                                 a.Id != anime.Id
-
                                 &&
-
                                 a.AnimeGenres.Any(
                                     ag =>
                                         currentGenreIds.Contains(
@@ -430,24 +480,18 @@ namespace AnimeWave.Controllers
                                         )
                                 )
                         )
-
                         .OrderByDescending(
                             a => a.Rating
                         )
-
                         .ThenByDescending(
                             a => a.ReleaseYear
                         )
-
                         .Take(40)
-
                         .ToListAsync();
-
 
 
                 similarAnime =
                     candidates
-
                         .OrderByDescending(
                             a =>
                                 a.AnimeGenres.Count(
@@ -457,49 +501,38 @@ namespace AnimeWave.Controllers
                                         )
                                 )
                         )
-
                         .ThenByDescending(
-                            a =>
-                                a.Rating
+                            a => a.Rating
                         )
-
                         .ThenByDescending(
-                            a =>
-                                a.ReleaseYear
+                            a => a.ReleaseYear
                         )
-
                         .Take(6)
-
                         .ToList();
             }
             else
             {
                 similarAnime =
                     await _context.Animes
-
                         .AsNoTracking()
-
-                        .Include(a =>
-                            a.AnimeGenres)
-
-                        .ThenInclude(ag =>
-                            ag.Genre)
-
+                        .Include(
+                            a => a.AnimeGenres
+                        )
+                        .ThenInclude(
+                            ag => ag.Genre
+                        )
                         .Where(
-                            a =>
-                                a.Id != anime.Id
+                            a => a.Id != anime.Id
                         )
-
                         .OrderByDescending(
-                            a =>
-                                a.Rating
+                            a => a.Rating
                         )
-
+                        .ThenByDescending(
+                            a => a.ReleaseYear
+                        )
                         .Take(6)
-
                         .ToListAsync();
             }
-
 
 
             ViewBag.SimilarAnime =
@@ -511,58 +544,59 @@ namespace AnimeWave.Controllers
             // REVIEWS
             // =====================================================
 
-            var reviewEntities =
+            List<AnimeReview> reviewEntities =
                 await _context.AnimeReviews
-
                     .AsNoTracking()
-
                     .Include(
                         r => r.User
                     )
-
                     .Where(
-                        r =>
-                            r.AnimeId ==
-                            anime.Id
+                        r => r.AnimeId == anime.Id
                     )
-
                     .OrderByDescending(
-                        r =>
-                            r.CreatedAt
+                        r => r.CreatedAt
                     )
-
                     .ToListAsync();
 
 
 
-            var currentReview =
-                !string.IsNullOrWhiteSpace(userId)
+            // =====================================================
+            // CURRENT USER REVIEW
+            // =====================================================
 
-                    ? reviewEntities
+            AnimeReview? currentReview =
+                null;
+
+
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                currentReview =
+                    reviewEntities
                         .FirstOrDefault(
-                            r =>
-                                r.UserId ==
-                                userId
-                        )
-
-                    : null;
+                            r => r.UserId == userId
+                        );
+            }
 
 
+
+            // =====================================================
+            // AVERAGE RATING
+            // =====================================================
 
             double averageRating =
-                reviewEntities.Any()
-
-                    ? reviewEntities
-                        .Average(
-                            r =>
-                                r.Rating
-                        )
-
+                reviewEntities.Count > 0
+                    ? reviewEntities.Average(
+                        r => r.Rating
+                    )
                     : 0;
 
 
 
-            var reviewsSection =
+            // =====================================================
+            // REVIEW VIEW MODEL
+            // =====================================================
+
+            AnimeReviewsSectionViewModel reviewsSection =
                 new AnimeReviewsSectionViewModel
                 {
                     AnimeId =
@@ -596,7 +630,6 @@ namespace AnimeWave.Controllers
 
                     Reviews =
                         reviewEntities
-
                             .Select(
                                 review =>
                                     new AnimeReviewItemViewModel
@@ -639,10 +672,8 @@ namespace AnimeWave.Controllers
                                             userId
                                     }
                             )
-
                             .ToList()
                 };
-
 
 
             ViewBag.ReviewsSection =
@@ -650,17 +681,44 @@ namespace AnimeWave.Controllers
 
 
 
-            return View(
-                anime
-            );
+            // =====================================================
+            // POPULARITY
+            // =====================================================
+
+            Dictionary<int, AnimePopularityViewModel> popularity =
+                await _popularityService
+                    .GetAllAsync();
+
+
+            ViewBag.Popularity =
+                popularity;
+
+
+            if (
+                popularity.TryGetValue(
+                    anime.Id,
+                    out AnimePopularityViewModel? currentPopularity
+                )
+            )
+            {
+                ViewBag.CurrentPopularity =
+                    currentPopularity;
+            }
+            else
+            {
+                ViewBag.CurrentPopularity =
+                    null;
+            }
+
+
+
+            return View(anime);
         }
 
 
 
         // =========================================================
-        // SAVE REVIEW
-        //
-        // Создаёт новый отзыв или обновляет существующий.
+        // SAVE / UPDATE REVIEW
         // =========================================================
 
         [Authorize]
@@ -669,6 +727,10 @@ namespace AnimeWave.Controllers
         public async Task<IActionResult> SaveReview(
             AnimeReviewFormViewModel model)
         {
+            // =====================================================
+            // USER
+            // =====================================================
+
             string? userId =
                 User.FindFirstValue(
                     ClaimTypes.NameIdentifier
@@ -682,15 +744,15 @@ namespace AnimeWave.Controllers
 
 
 
+            // =====================================================
+            // ANIME EXISTS
+            // =====================================================
+
             bool animeExists =
                 await _context.Animes
-
                     .AsNoTracking()
-
                     .AnyAsync(
-                        a =>
-                            a.Id ==
-                            model.AnimeId
+                        a => a.Id == model.AnimeId
                     );
 
 
@@ -701,26 +763,34 @@ namespace AnimeWave.Controllers
 
 
 
-            if (!ModelState.IsValid)
+            // =====================================================
+            // RATING
+            // =====================================================
+
+            if (
+                model.Rating < 1
+                ||
+                model.Rating > 10
+            )
             {
                 TempData["ErrorMessage"] =
-                    "Проверь оценку и текст отзыва.";
+                    "Оценка должна быть от 1 до 10.";
 
-                return RedirectToAction(
-                    nameof(Details),
-                    "Anime",
-                    new
-                    {
-                        id = model.AnimeId
-                    },
-                    "reviews"
+
+                return RedirectToReviews(
+                    model.AnimeId
                 );
             }
 
 
 
+            // =====================================================
+            // REVIEW TEXT
+            // =====================================================
+
             string reviewText =
-                model.Text.Trim();
+                model.Text?.Trim()
+                ?? string.Empty;
 
 
             if (string.IsNullOrWhiteSpace(reviewText))
@@ -728,34 +798,44 @@ namespace AnimeWave.Controllers
                 TempData["ErrorMessage"] =
                     "Напишите текст отзыва.";
 
-                return RedirectToAction(
-                    nameof(Details),
-                    "Anime",
-                    new
-                    {
-                        id = model.AnimeId
-                    },
-                    "reviews"
+
+                return RedirectToReviews(
+                    model.AnimeId
+                );
+            }
+
+
+            if (reviewText.Length > 2000)
+            {
+                TempData["ErrorMessage"] =
+                    "Отзыв не должен превышать 2000 символов.";
+
+
+                return RedirectToReviews(
+                    model.AnimeId
                 );
             }
 
 
 
-            var review =
-                await _context.AnimeReviews
+            // =====================================================
+            // EXISTING REVIEW
+            // =====================================================
 
+            AnimeReview? review =
+                await _context.AnimeReviews
                     .FirstOrDefaultAsync(
                         r =>
-                            r.UserId ==
-                            userId
-
+                            r.UserId == userId
                             &&
-
-                            r.AnimeId ==
-                            model.AnimeId
+                            r.AnimeId == model.AnimeId
                     );
 
 
+
+            // =====================================================
+            // CREATE
+            // =====================================================
 
             if (review == null)
             {
@@ -787,6 +867,11 @@ namespace AnimeWave.Controllers
                 TempData["SuccessMessage"] =
                     "Отзыв опубликован ✓";
             }
+
+            // =====================================================
+            // UPDATE
+            // =====================================================
+
             else
             {
                 review.Rating =
@@ -807,26 +892,18 @@ namespace AnimeWave.Controllers
 
 
 
-            await _context
-                .SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
 
-
-            return RedirectToAction(
-                nameof(Details),
-                "Anime",
-                new
-                {
-                    id = model.AnimeId
-                },
-                "reviews"
+            return RedirectToReviews(
+                model.AnimeId
             );
         }
 
 
 
         // =========================================================
-        // DELETE OWN REVIEW
+        // DELETE REVIEW
         // =========================================================
 
         [Authorize]
@@ -849,23 +926,15 @@ namespace AnimeWave.Controllers
 
 
 
-            var review =
+            AnimeReview? review =
                 await _context.AnimeReviews
-
                     .FirstOrDefaultAsync(
                         r =>
-                            r.Id ==
-                            reviewId
-
+                            r.Id == reviewId
                             &&
-
-                            r.UserId ==
-                            userId
-
+                            r.UserId == userId
                             &&
-
-                            r.AnimeId ==
-                            animeId
+                            r.AnimeId == animeId
                     );
 
 
@@ -881,23 +950,15 @@ namespace AnimeWave.Controllers
             );
 
 
-            await _context
-                .SaveChangesAsync();
-
+            await _context.SaveChangesAsync();
 
 
             TempData["SuccessMessage"] =
                 "Отзыв удалён";
 
 
-            return RedirectToAction(
-                nameof(Details),
-                "Anime",
-                new
-                {
-                    id = animeId
-                },
-                "reviews"
+            return RedirectToReviews(
+                animeId
             );
         }
 
@@ -912,23 +973,16 @@ namespace AnimeWave.Controllers
             int animeId,
             int episodeId)
         {
-            var episode =
+            Episode? episode =
                 await _context.Episodes
-
                     .Include(
-                        e =>
-                            e.Anime
+                        e => e.Anime
                     )
-
                     .FirstOrDefaultAsync(
                         e =>
-                            e.Id ==
-                            episodeId
-
+                            e.Id == episodeId
                             &&
-
-                            e.AnimeId ==
-                            animeId
+                            e.AnimeId == animeId
                     );
 
 
@@ -939,11 +993,11 @@ namespace AnimeWave.Controllers
 
 
 
-            if (
-                User.Identity?.IsAuthenticated
-                ==
-                true
-            )
+            // =====================================================
+            // UPDATE HISTORY
+            // =====================================================
+
+            if (User.Identity?.IsAuthenticated == true)
             {
                 string? userId =
                     User.FindFirstValue(
@@ -953,18 +1007,13 @@ namespace AnimeWave.Controllers
 
                 if (!string.IsNullOrWhiteSpace(userId))
                 {
-                    var history =
+                    ViewingHistory? history =
                         await _context.ViewingHistories
-
                             .FirstOrDefaultAsync(
                                 v =>
-                                    v.UserId ==
-                                    userId
-
+                                    v.UserId == userId
                                     &&
-
-                                    v.AnimeId ==
-                                    animeId
+                                    v.AnimeId == animeId
                             );
 
 
@@ -991,22 +1040,54 @@ namespace AnimeWave.Controllers
                     }
 
 
-                    await _context
-                        .SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
             }
 
 
 
-            return View(
-                episode
+            return View(episode);
+        }
+
+
+
+        // =========================================================
+        // REDIRECT TO REVIEWS
+        //
+        // Специально НЕ используем проблемную перегрузку
+        // RedirectToAction(..., routeValues, fragment).
+        // =========================================================
+
+        private IActionResult RedirectToReviews(
+            int animeId)
+        {
+            string? detailsUrl =
+                Url.Action(
+                    action: nameof(Details),
+                    controller: "Anime",
+                    values: new
+                    {
+                        id = animeId
+                    }
+                );
+
+
+            if (string.IsNullOrWhiteSpace(detailsUrl))
+            {
+                detailsUrl =
+                    $"/Anime/Details/{animeId}";
+            }
+
+
+            return Redirect(
+                $"{detailsUrl}#reviews"
             );
         }
 
 
 
         // =========================================================
-        // AVATAR HELPERS
+        // NORMALIZE AVATAR
         // =========================================================
 
         private static string NormalizeAvatar(
@@ -1014,19 +1095,37 @@ namespace AnimeWave.Controllers
         {
             return avatarStyle switch
             {
-                "sakura" => "sakura",
-                "kitsune" => "kitsune",
-                "blade" => "blade",
-                "neko" => "neko",
-                "star" => "star",
-                "cyber" => "cyber",
-                "wave" => "wave",
+                "sakura" =>
+                    "sakura",
 
-                _ => "violet"
+                "kitsune" =>
+                    "kitsune",
+
+                "blade" =>
+                    "blade",
+
+                "neko" =>
+                    "neko",
+
+                "star" =>
+                    "star",
+
+                "cyber" =>
+                    "cyber",
+
+                "wave" =>
+                    "wave",
+
+                _ =>
+                    "violet"
             };
         }
 
 
+
+        // =========================================================
+        // AVATAR SYMBOL
+        // =========================================================
 
         private static string GetAvatarSymbol(
             string? avatarStyle)
@@ -1035,15 +1134,29 @@ namespace AnimeWave.Controllers
                 avatarStyle
             ) switch
             {
-                "sakura" => "桜",
-                "kitsune" => "狐",
-                "blade" => "刀",
-                "neko" => "猫",
-                "star" => "星",
-                "cyber" => "夢",
-                "wave" => "波",
+                "sakura" =>
+                    "桜",
 
-                _ => "月"
+                "kitsune" =>
+                    "狐",
+
+                "blade" =>
+                    "刀",
+
+                "neko" =>
+                    "猫",
+
+                "star" =>
+                    "星",
+
+                "cyber" =>
+                    "夢",
+
+                "wave" =>
+                    "波",
+
+                _ =>
+                    "月"
             };
         }
     }

@@ -1,6 +1,7 @@
 ﻿using AnimeWave.Data;
 using AnimeWave.Models;
 using AnimeWave.ViewModels;
+using AnimeWave.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

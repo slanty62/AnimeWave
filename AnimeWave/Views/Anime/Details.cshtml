@@ -13,18 +13,8 @@
 
     bool isFavorite =
         ViewBag.IsFavorite is bool favoriteValue
-        && favoriteValue;
-
-
-
-    // =========================================================
-    // SIMILAR ANIME
-    // =========================================================
-
-    var similarAnime =
-        ViewBag.SimilarAnime
-            as IEnumerable<Anime>
-        ?? Enumerable.Empty<Anime>();
+        &&
+        favoriteValue;
 
 
 
@@ -39,7 +29,34 @@
 
 
     // =========================================================
-    // CURRENT GENRES
+    // POPULARITY
+    // =========================================================
+
+    var popularity =
+        ViewBag.Popularity
+            as Dictionary<int, AnimePopularityViewModel>
+        ?? new Dictionary<int, AnimePopularityViewModel>();
+
+
+    var currentPopularity =
+        ViewBag.CurrentPopularity
+            as AnimePopularityViewModel;
+
+
+
+    // =========================================================
+    // SIMILAR
+    // =========================================================
+
+    var similarAnime =
+        ViewBag.SimilarAnime
+            as IEnumerable<Anime>
+        ?? Enumerable.Empty<Anime>();
+
+
+
+    // =========================================================
+    // GENRES
     // =========================================================
 
     var currentGenreIds =
@@ -49,7 +66,6 @@
             )
             .ToHashSet()
         ?? new HashSet<int>();
-
 
 
     var genres =
@@ -95,8 +111,7 @@
 
         <div class="aw-details-bg">
 
-            @if (!string.IsNullOrWhiteSpace(
-                Model.BannerUrl))
+            @if (!string.IsNullOrWhiteSpace(Model.BannerUrl))
             {
                 <img src="@Model.BannerUrl"
                      alt=""
@@ -128,8 +143,18 @@
 
             <div class="aw-details-main-poster">
 
-                @if (!string.IsNullOrWhiteSpace(
-                    Model.PosterUrl))
+
+                <!-- POPULARITY BADGES -->
+                @if (currentPopularity != null)
+                {
+                    <partial name="_AnimePopularityBadges"
+                             model="currentPopularity" />
+                }
+
+
+
+                <!-- POSTER -->
+                @if (!string.IsNullOrWhiteSpace(Model.PosterUrl))
                 {
                     <img src="@Model.PosterUrl"
                          alt="@Model.Title"
@@ -154,14 +179,13 @@
 
 
 
-                <!-- CATALOG RATING -->
+                <!-- CATALOG SCORE -->
 
                 <div class="aw-details-poster-score">
 
                     <span>
                         ★
                     </span>
-
 
                     @Model.Rating.ToString("0.0")
 
@@ -178,6 +202,8 @@
             <div class="aw-details-hero-content">
 
 
+                <!-- KICKER -->
+
                 <div class="aw-details-kicker">
 
                     <i>
@@ -189,6 +215,52 @@
 
 
 
+                <!-- =================================================
+                     POPULARITY STATUS
+                     ================================================= -->
+                @if (
+                                    currentPopularity != null
+                                    &&
+                                    currentPopularity.PopularityScore > 0
+                                )
+                {
+                    <div class="aw-details-popularity-line">
+
+
+                        @if (currentPopularity.IsTop10)
+                        {
+                            <span>
+
+                                TOP @currentPopularity.Rank
+
+                            </span>
+                        }
+
+
+                        @if (currentPopularity.IsTrending)
+                        {
+                            <span>
+
+                                ↗ TRENDING
+
+                            </span>
+                        }
+
+
+                        @if (currentPopularity.IsHot)
+                        {
+                            <span class="is-hot">
+
+                                ● HOT
+
+                            </span>
+                        }
+
+                    </div>
+                }
+
+
+
                 <!-- TITLE -->
 
                 <h1>
@@ -197,8 +269,8 @@
 
 
 
-                @if (!string.IsNullOrWhiteSpace(
-                    Model.OriginalTitle))
+                <!-- ORIGINAL TITLE -->
+                @if (!string.IsNullOrWhiteSpace(Model.OriginalTitle))
                 {
                     <p class="aw-details-original">
 
@@ -215,6 +287,7 @@
 
                 <div class="aw-details-meta">
 
+
                     <span class="aw-details-meta-rating">
 
                         ★ @Model.Rating.ToString("0.0")
@@ -227,13 +300,14 @@
 
 
                     <span>
+
                         @Model.ReleaseYear
+
                     </span>
 
 
 
-                    @if (!string.IsNullOrWhiteSpace(
-                        Model.AgeRating))
+                    @if (!string.IsNullOrWhiteSpace(Model.AgeRating))
                     {
                         <i>
                         </i>
@@ -263,8 +337,7 @@
 
 
 
-                    @if (!string.IsNullOrWhiteSpace(
-                        Model.Status))
+                    @if (!string.IsNullOrWhiteSpace(Model.Status))
                     {
                         <i>
                         </i>
@@ -322,6 +395,95 @@
 
 
                 <!-- =================================================
+                     QUICK POPULARITY STATS
+                     ================================================= -->
+                @if (currentPopularity != null)
+                {
+                    <div class="aw-details-quick-stats">
+
+
+                        <!-- OPENS -->
+
+                        <div>
+
+                            <span>
+                                ◉
+                            </span>
+
+
+                            <section>
+
+                                <strong>
+                                    @currentPopularity.OpenCount
+                                </strong>
+
+
+                                <small>
+                                    открытий
+                                </small>
+
+                            </section>
+
+                        </div>
+
+
+
+                        <!-- FAVORITES -->
+
+                        <div>
+
+                            <span>
+                                ♥
+                            </span>
+
+
+                            <section>
+
+                                <strong>
+                                    @currentPopularity.FavoritesCount
+                                </strong>
+
+
+                                <small>
+                                    в избранном
+                                </small>
+
+                            </section>
+
+                        </div>
+
+
+
+                        <!-- VIEWERS -->
+
+                        <div>
+
+                            <span>
+                                ▶
+                            </span>
+
+
+                            <section>
+
+                                <strong>
+                                    @currentPopularity.UniqueViewersCount
+                                </strong>
+
+
+                                <small>
+                                    зрителей
+                                </small>
+
+                            </section>
+
+                        </div>
+
+                    </div>
+                }
+
+
+
+                <!-- =================================================
                      ACTIONS
                      ================================================= -->
 
@@ -342,9 +504,7 @@
                            class="aw-details-primary">
 
                             <span class="aw-details-play">
-
                                 ▶
-
                             </span>
 
                             Смотреть
@@ -368,11 +528,7 @@
 
 
                     <!-- FAVORITE -->
-                    @if (
-                                            User.Identity?.IsAuthenticated
-                                            ==
-                                            true
-                                        )
+                    @if (User.Identity?.IsAuthenticated == true)
                     {
                         if (isFavorite)
                         {
@@ -451,7 +607,7 @@
 
 
 
-                    <!-- REVIEWS QUICK LINK -->
+                    <!-- REVIEWS -->
 
                     <a href="#reviews"
                        class="aw-details-review-link">
@@ -461,6 +617,7 @@
                         </span>
 
                         Отзывы
+
 
                         @if (
                             reviewsSection != null
@@ -488,7 +645,7 @@
 
 
     <!-- =========================================================
-         MAIN BODY
+         BODY
          ========================================================= -->
 
     <main class="aw-details-body">
@@ -632,6 +789,25 @@
 
 
 
+                    <!-- REVIEWS COUNT -->
+
+                    <div class="aw-details-fact">
+
+                        <span>
+                            ОТЗЫВЫ
+                        </span>
+
+
+                        <strong>
+
+                            @(reviewsSection?.ReviewsCount ?? 0)
+
+                        </strong>
+
+                    </div>
+
+
+
                     <!-- EPISODES -->
 
                     <div class="aw-details-fact">
@@ -689,11 +865,323 @@
 
                     </div>
 
+
+
+                    @if (currentPopularity != null)
+                    {
+
+                        <!-- OPENS -->
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                ОТКРЫТИЯ
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.OpenCount
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <!-- FAVORITES -->
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                В ИЗБРАННОМ
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.FavoritesCount
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <!-- VIEWERS -->
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                ЗРИТЕЛЕЙ
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.UniqueViewersCount
+
+                            </strong>
+
+                        </div>
+
+
+
+                        <!-- RANK -->
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                ПОПУЛЯРНОСТЬ
+                            </span>
+
+
+                            @if (
+                                currentPopularity.PopularityScore > 0
+                            )
+                            {
+                                <strong class="popularity-rank">
+
+                                    #@currentPopularity.Rank
+
+                                </strong>
+                            }
+                            else
+                            {
+                                <strong>
+                                    —
+                                </strong>
+                            }
+
+                        </div>
+
+
+
+                        <!-- SCORE -->
+
+                        <div class="aw-details-fact">
+
+                            <span>
+                                POPULARITY SCORE
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.PopularityScore
+
+                            </strong>
+
+                        </div>
+
+                    }
+
                 </aside>
 
             </div>
 
         </section>
+
+
+
+        <!-- =====================================================
+             POPULARITY DETAILS
+             ===================================================== -->
+        @if (
+                    currentPopularity != null
+                    &&
+                    currentPopularity.PopularityScore > 0
+                )
+        {
+            <section class="aw-details-popularity-section">
+
+
+                <div class="aw-details-section-title">
+
+                    <div>
+
+                        <span>
+                            ACTIVITY
+                        </span>
+
+
+                        <h2>
+                            Популярность
+                        </h2>
+
+                    </div>
+
+
+                    @if (currentPopularity.IsTop10)
+                    {
+                        <small>
+
+                            TOP @currentPopularity.Rank
+
+                        </small>
+                    }
+
+                </div>
+
+
+
+                <div class="aw-details-popularity-grid">
+
+
+                    <!-- OPENS -->
+
+                    <article>
+
+                        <div class="aw-details-popularity-icon">
+
+                            ◉
+
+                        </div>
+
+
+                        <section>
+
+                            <span>
+                                ОТКРЫТИЯ DETAILS
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.OpenCount
+
+                            </strong>
+
+
+                            <p>
+
+                                Сколько раз пользователи
+                                открывали страницу тайтла.
+
+                            </p>
+
+                        </section>
+
+                    </article>
+
+
+
+                    <!-- FAVORITES -->
+
+                    <article>
+
+                        <div class="aw-details-popularity-icon">
+
+                            ♥
+
+                        </div>
+
+
+                        <section>
+
+                            <span>
+                                В ИЗБРАННОМ
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.FavoritesCount
+
+                            </strong>
+
+
+                            <p>
+
+                                Сколько пользователей
+                                сохранили аниме.
+
+                            </p>
+
+                        </section>
+
+                    </article>
+
+
+
+                    <!-- VIEWERS -->
+
+                    <article>
+
+                        <div class="aw-details-popularity-icon">
+
+                            ▶
+
+                        </div>
+
+
+                        <section>
+
+                            <span>
+                                УНИКАЛЬНЫЕ ЗРИТЕЛИ
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.UniqueViewersCount
+
+                            </strong>
+
+
+                            <p>
+
+                                Пользователи, которые
+                                открывали или смотрели тайтл.
+
+                            </p>
+
+                        </section>
+
+                    </article>
+
+
+
+                    <!-- SCORE -->
+
+                    <article class="is-score">
+
+                        <div class="aw-details-popularity-icon">
+
+                            #
+
+                        </div>
+
+
+                        <section>
+
+                            <span>
+                                POPULARITY SCORE
+                            </span>
+
+
+                            <strong>
+
+                                @currentPopularity.PopularityScore
+
+                            </strong>
+
+
+                            <p>
+
+                                Итоговый показатель активности
+                                AnimeWave.
+
+                            </p>
+
+                        </section>
+
+                    </article>
+
+                </div>
+
+            </section>
+        }
 
 
 
@@ -836,16 +1324,14 @@
 
 
         <!-- =====================================================
-             SIMILAR ANIME
+             SIMILAR
              ===================================================== -->
         @if (similarAnime.Any())
         {
             <section class="aw-similar">
 
 
-                <!-- =================================================
-                     HEADER
-                     ================================================= -->
+                <!-- HEADER -->
 
                 <div class="aw-similar-header">
 
@@ -861,7 +1347,9 @@
                         <h2>
 
                             Похожие
-                            <strong>тайтлы</strong>
+                            <strong>
+                                тайтлы
+                            </strong>
 
                         </h2>
 
@@ -892,9 +1380,7 @@
 
 
 
-                <!-- =================================================
-                     GRID
-                     ================================================= -->
+                <!-- GRID -->
 
                 <div class="aw-similar-grid">
 
@@ -911,12 +1397,20 @@
                             ?? 0;
 
 
+                        AnimePopularityViewModel? similarPopularity =
+                            popularity.TryGetValue(
+                                similar.Id,
+                                out var similarPopularityValue
+                            )
+                                ? similarPopularityValue
+                                : null;
+
+
+
                         <article class="aw-similar-card">
 
 
-                            <!-- =====================================
-                                 POSTER
-                                 ===================================== -->
+                            <!-- POSTER -->
 
                             <a asp-controller="Anime"
                                asp-action="Details"
@@ -924,8 +1418,18 @@
                                class="aw-similar-poster">
 
 
+                                <!-- POPULARITY BADGES -->
+                                @if (similarPopularity != null)
+                                {
+                                    <partial name="_AnimePopularityBadges"
+                                             model="similarPopularity" />
+                                }
+
+
+
+                                <!-- IMAGE -->
                                 @if (!string.IsNullOrWhiteSpace(
-                                    similar.PosterUrl))
+                                                                    similar.PosterUrl))
                                 {
                                     <img src="@similar.PosterUrl"
                                          alt="@similar.Title"
@@ -951,10 +1455,9 @@
 
 
 
-                                <!-- TOP BADGES -->
+                                <!-- TOP -->
 
                                 <div class="aw-similar-poster-top">
-
 
                                     <span class="aw-similar-score">
 
@@ -1019,9 +1522,7 @@
 
 
 
-                            <!-- =====================================
-                                 INFORMATION
-                                 ===================================== -->
+                            <!-- INFORMATION -->
 
                             <div class="aw-similar-info">
 
@@ -1102,12 +1603,9 @@
                                         @foreach (
                                             var animeGenre
                                             in similar.AnimeGenres
-
                                                 .Where(
-                                                    ag =>
-                                                        ag.Genre != null
+                                                    ag => ag.Genre != null
                                                 )
-
                                                 .Take(3)
                                         )
                                         {
@@ -1123,6 +1621,43 @@
 
                                             </span>
                                         }
+
+                                    </div>
+                                }
+
+
+
+                                <!-- POPULARITY MINI INFO -->
+                                @if (
+                                                                    similarPopularity != null
+                                                                    &&
+                                                                    similarPopularity.PopularityScore > 0
+                                                                )
+                                {
+                                    <div class="aw-similar-popularity">
+
+                                        <span title="Открытия">
+
+                                            ◉
+                                            @similarPopularity.OpenCount
+
+                                        </span>
+
+
+                                        <span title="В избранном">
+
+                                            ♥
+                                            @similarPopularity.FavoritesCount
+
+                                        </span>
+
+
+                                        <span title="Зрители">
+
+                                            ▶
+                                            @similarPopularity.UniqueViewersCount
+
+                                        </span>
 
                                     </div>
                                 }
@@ -1146,7 +1681,7 @@
 <style>
 
     /* =========================================================
-           DETAILS PAGE
+           DETAILS
            ========================================================= */
 
     .aw-details,
@@ -1238,7 +1773,7 @@
         margin: 0 auto;
         padding: 150px 0 68px;
         display: grid;
-        grid-template-columns: 235px minmax(0,760px);
+        grid-template-columns: 235px minmax(0,780px);
         align-items: end;
         gap: 45px;
     }
@@ -1275,8 +1810,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient( circle at 40% 30%, rgba( var(--aw-accent-rgb, 139,92,246), .22 ), transparent 40% ), #11141c;
-        color: var(--aw-accent-soft, #a78bfa);
+        background: radial-gradient( circle at 40% 30%, rgba( var(--aw-accent-rgb,139,92,246), .22 ), transparent 40% ), #11141c;
+        color: var(--aw-accent-soft,#a78bfa);
         font-size: 28px;
         font-weight: 900;
     }
@@ -1284,6 +1819,7 @@
 
     .aw-details-poster-score {
         position: absolute;
+        z-index: 25;
         right: 10px;
         bottom: 10px;
         display: flex;
@@ -1314,8 +1850,8 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 12px;
-        color: var(--aw-accent-soft, #a78bfa);
+        margin-bottom: 10px;
+        color: var(--aw-accent-soft,#a78bfa);
         font-size: 11px;
         font-weight: 900;
         letter-spacing: 2.2px;
@@ -1325,27 +1861,65 @@
         .aw-details-kicker i {
             width: 18px;
             height: 1px;
-            display: block;
-            background: var(--aw-accent, #8b5cf6);
+            background: var(--aw-accent,#8b5cf6);
         }
 
 
+
+    /* =========================================================
+           POPULARITY LINE
+           ========================================================= */
+
+    .aw-details-popularity-line {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+
+        .aw-details-popularity-line span {
+            min-height: 23px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 8px;
+            border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .18 );
+            border-radius: 6px;
+            background: rgba( var(--aw-accent-rgb,139,92,246), .07 );
+            color: var(--aw-accent-soft,#a78bfa);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: .7px;
+        }
+
+
+        .aw-details-popularity-line .is-hot {
+            border-color: rgba(239,68,68,.25);
+            background: rgba(239,68,68,.08);
+            color: #fb7185;
+        }
+
+
+
+    /* =========================================================
+           TITLE
+           ========================================================= */
+
     .aw-details-hero-content h1 {
-        max-width: 850px;
+        max-width: 900px;
         margin: 0 0 8px;
         color: #fff;
         font-size: clamp( 43px, 5vw, 72px );
         line-height: .96;
         letter-spacing: -3px;
-        text-wrap: balance;
     }
 
 
     .aw-details-original {
         margin: 0 0 19px;
-        color: rgba(255,255,255,.48);
+        color: rgba(255,255,255,.52);
         font-size: 15px;
-        font-weight: 500;
     }
 
 
@@ -1360,7 +1934,7 @@
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 17px;
-        color: rgba(220,224,230,.72);
+        color: rgba(220,224,230,.75);
         font-size: 13px;
         font-weight: 700;
     }
@@ -1369,7 +1943,6 @@
         .aw-details-meta > i {
             width: 3px;
             height: 3px;
-            display: block;
             border-radius: 50%;
             background: rgba(255,255,255,.22);
         }
@@ -1397,7 +1970,6 @@
         .aw-details-status b {
             width: 5px;
             height: 5px;
-            display: block;
             border-radius: 50%;
             background: #22c55e;
             box-shadow: 0 0 10px rgba(34,197,94,.55);
@@ -1418,21 +1990,18 @@
 
 
         .aw-details-genres a {
-            display: inline-flex;
             padding: 6px 9px;
-            border: 1px solid rgba( var(--aw-accent-rgb, 139,92,246), .15 );
+            border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .15 );
             border-radius: 6px;
-            background: rgba( var(--aw-accent-rgb, 139,92,246), .06 );
-            color: var(--aw-accent-soft, #a78bfa) !important;
+            background: rgba( var(--aw-accent-rgb,139,92,246), .06 );
+            color: var(--aw-accent-soft,#a78bfa) !important;
             font-size: 11px;
             font-weight: 700;
-            transition: color .2s ease, background .2s ease, border-color .2s ease;
         }
 
 
             .aw-details-genres a:hover {
-                border-color: rgba( var(--aw-accent-rgb, 139,92,246), .36 );
-                background: rgba( var(--aw-accent-rgb, 139,92,246), .14 );
+                background: rgba( var(--aw-accent-rgb,139,92,246), .14 );
                 color: #fff !important;
             }
 
@@ -1445,14 +2014,67 @@
     .aw-details-hero-description {
         max-width: 720px;
         display: -webkit-box;
-        margin: 0 0 26px;
+        margin: 0 0 20px;
         overflow: hidden;
-        color: rgba(224,227,233,.72);
+        color: rgba(224,227,233,.76);
         font-size: 14px;
         line-height: 1.75;
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
     }
+
+
+
+    /* =========================================================
+           QUICK STATS
+           ========================================================= */
+
+    .aw-details-quick-stats {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 22px;
+    }
+
+
+        .aw-details-quick-stats > div {
+            min-width: 105px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,.055);
+            border-radius: 8px;
+            background: rgba(8,10,15,.38);
+            backdrop-filter: blur(10px);
+        }
+
+
+            .aw-details-quick-stats > div > span {
+                color: var(--aw-accent-soft,#a78bfa);
+                font-size: 11px;
+            }
+
+
+        .aw-details-quick-stats section {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .aw-details-quick-stats strong {
+            color: #e8ebef;
+            font-size: 13px;
+            line-height: 1.1;
+        }
+
+
+        .aw-details-quick-stats small {
+            margin-top: 2px;
+            color: #6d7682;
+            font-size: 8px;
+        }
 
 
 
@@ -1513,21 +2135,18 @@
 
         .aw-details-secondary:hover {
             transform: translateY(-2px);
-            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .30 );
-            background: rgba( var(--aw-accent-rgb, 139,92,246), .12 );
+            border-color: rgba( var(--aw-accent-rgb,139,92,246), .30 );
+            background: rgba( var(--aw-accent-rgb,139,92,246), .12 );
             color: #fff;
         }
 
 
         .aw-details-secondary.is-active {
-            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .28 );
-            background: rgba( var(--aw-accent-rgb, 139,92,246), .13 );
-            color: var(--aw-accent-soft, #a78bfa);
+            border-color: rgba( var(--aw-accent-rgb,139,92,246), .28 );
+            background: rgba( var(--aw-accent-rgb,139,92,246), .13 );
+            color: var(--aw-accent-soft,#a78bfa);
         }
 
-
-
-    /* REVIEW QUICK BUTTON */
 
     .aw-details-review-link {
         border: 1px solid rgba(251,191,36,.13);
@@ -1555,14 +2174,6 @@
         }
 
 
-        .aw-details-review-link:hover {
-            transform: translateY(-2px);
-            border-color: rgba(251,191,36,.30);
-            background: rgba(251,191,36,.07);
-            color: #fff !important;
-        }
-
-
 
     /* =========================================================
            BODY
@@ -1586,7 +2197,7 @@
         .aw-details-section-title span {
             display: block;
             margin-bottom: 5px;
-            color: var(--aw-accent, #8b5cf6);
+            color: var(--aw-accent,#8b5cf6);
             font-size: 10px;
             font-weight: 900;
             letter-spacing: 2px;
@@ -1603,7 +2214,7 @@
 
 
         .aw-details-section-title small {
-            color: #59616d;
+            color: var(--aw-accent-soft,#a78bfa);
             font-size: 11px;
             font-weight: 800;
         }
@@ -1660,9 +2271,8 @@
     .aw-details-description-card p {
         position: relative;
         z-index: 2;
-        max-width: 850px;
         margin: 0;
-        color: #7d8693;
+        color: #828b97;
         font-size: 14px;
         line-height: 1.9;
     }
@@ -1695,7 +2305,7 @@
 
         .aw-details-fact span {
             margin-bottom: 7px;
-            color: #59616d;
+            color: #626b77;
             font-size: 9px;
             font-weight: 900;
             letter-spacing: 1px;
@@ -1715,9 +2325,87 @@
             }
 
 
-            .aw-details-fact strong.user-rating {
-                color: var(--aw-accent-soft, #a78bfa);
+            .aw-details-fact strong.user-rating,
+            .aw-details-fact strong.popularity-rank {
+                color: var(--aw-accent-soft,#a78bfa);
             }
+
+
+
+    /* =========================================================
+           POPULARITY SECTION
+           ========================================================= */
+
+    .aw-details-popularity-section {
+        padding: 5px 0 55px;
+    }
+
+
+    .aw-details-popularity-grid {
+        display: grid;
+        grid-template-columns: repeat( 4, minmax(0,1fr) );
+        gap: 9px;
+    }
+
+
+        .aw-details-popularity-grid > article {
+            min-width: 0;
+            display: grid;
+            grid-template-columns: 48px minmax(0,1fr);
+            gap: 12px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,.045);
+            border-radius: 13px;
+            background: rgba(255,255,255,.014);
+        }
+
+
+            .aw-details-popularity-grid > article.is-score {
+                border-color: rgba( var(--aw-accent-rgb,139,92,246), .13 );
+                background: rgba( var(--aw-accent-rgb,139,92,246), .035 );
+            }
+
+
+    .aw-details-popularity-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .12 );
+        border-radius: 10px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .055 );
+        color: var(--aw-accent-soft,#a78bfa);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+
+    .aw-details-popularity-grid section > span {
+        display: block;
+        margin-bottom: 3px;
+        color: #606976;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: .9px;
+    }
+
+
+    .aw-details-popularity-grid section strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #e5e7eb;
+        font-size: 21px;
+        line-height: 1.1;
+    }
+
+
+    .aw-details-popularity-grid section p {
+        margin: 0;
+        color: #626b76;
+        font-size: 10px;
+        line-height: 1.55;
+    }
 
 
 
@@ -1754,13 +2442,13 @@
 
         .aw-details-episode:hover {
             transform: translateX(4px);
-            border-color: rgba( var(--aw-accent-rgb, 139,92,246), .13 );
-            background: rgba( var(--aw-accent-rgb, 139,92,246), .035 );
+            border-color: rgba( var(--aw-accent-rgb,139,92,246), .13 );
+            background: rgba( var(--aw-accent-rgb,139,92,246), .035 );
         }
 
 
     .aw-details-episode-index {
-        color: #58616c;
+        color: #626b76;
         font-size: 13px;
         font-weight: 800;
         text-align: center;
@@ -1807,7 +2495,7 @@
         .aw-details-episode-text > span {
             display: block;
             margin-bottom: 4px;
-            color: var(--aw-accent, #8b5cf6);
+            color: var(--aw-accent,#8b5cf6);
             font-size: 9px;
             font-weight: 900;
             letter-spacing: 1px;
@@ -1843,7 +2531,7 @@
 
 
     /* =========================================================
-           SIMILAR SECTION
+           SIMILAR
            ========================================================= */
 
     .aw-similar {
@@ -1861,7 +2549,7 @@
             left: -200px;
             top: 0;
             pointer-events: none;
-            background: rgba( var(--aw-accent-rgb, 139,92,246), .055 );
+            background: rgba( var(--aw-accent-rgb,139,92,246), .055 );
             filter: blur(100px);
         }
 
@@ -1884,7 +2572,7 @@
     .aw-similar-kicker {
         display: block;
         margin-bottom: 7px;
-        color: var(--aw-accent, #8b5cf6);
+        color: var(--aw-accent,#8b5cf6);
         font-size: 10px;
         font-weight: 900;
         letter-spacing: 2.2px;
@@ -1901,7 +2589,7 @@
 
 
         .aw-similar-header h2 strong {
-            color: var(--aw-accent-soft, #a78bfa);
+            color: var(--aw-accent-soft,#a78bfa);
         }
 
 
@@ -1916,27 +2604,15 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding-bottom: 2px;
         color: #79828e !important;
         font-size: 12px;
         font-weight: 700;
-        transition: color .2s ease;
     }
-
-
-        .aw-similar-all span {
-            transition: transform .2s ease;
-        }
 
 
         .aw-similar-all:hover {
             color: #fff !important;
         }
-
-
-            .aw-similar-all:hover span {
-                transform: translateX(4px);
-            }
 
 
 
@@ -1980,7 +2656,7 @@
     .aw-similar-card:hover
     .aw-similar-poster {
         transform: translateY(-5px);
-        border-color: rgba( var(--aw-accent-rgb, 139,92,246), .22 );
+        border-color: rgba( var(--aw-accent-rgb,139,92,246), .22 );
         box-shadow: 0 23px 50px rgba(0,0,0,.34);
     }
 
@@ -1990,7 +2666,6 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        display: block;
         object-fit: cover;
         transition: transform .5s ease, filter .35s ease;
     }
@@ -2006,13 +2681,11 @@
     .aw-similar-placeholder {
         position: absolute;
         inset: 0;
-        width: 100%;
-        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient( circle at 30% 20%, rgba( var(--aw-accent-rgb, 139,92,246), .17 ), transparent 45% ), #11141b;
-        color: var(--aw-accent-soft, #a78bfa);
+        background: radial-gradient( circle at 30% 20%, rgba( var(--aw-accent-rgb,139,92,246), .17 ), transparent 45% ), #11141b;
+        color: var(--aw-accent-soft,#a78bfa);
         font-size: 23px;
         font-weight: 900;
     }
@@ -2025,20 +2698,17 @@
 
     .aw-similar-poster-top {
         position: absolute;
-        z-index: 4;
+        z-index: 18;
         top: 8px;
-        left: 8px;
         right: 8px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 6px;
+        gap: 5px;
     }
 
 
     .aw-similar-score,
     .aw-similar-age {
-        display: inline-flex;
         padding: 5px 7px;
         border: 1px solid rgba(255,255,255,.07);
         border-radius: 6px;
@@ -2066,17 +2736,17 @@
 
     .aw-similar-match {
         position: absolute;
-        z-index: 5;
+        z-index: 19;
         left: 8px;
         bottom: 8px;
         display: inline-flex;
         align-items: center;
         gap: 5px;
         padding: 5px 7px;
-        border: 1px solid rgba( var(--aw-accent-rgb, 139,92,246), .18 );
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .18 );
         border-radius: 6px;
         background: rgba(7,9,14,.84);
-        color: var(--aw-accent-soft, #a78bfa);
+        color: var(--aw-accent-soft,#a78bfa);
         font-size: 9px;
         font-weight: 800;
         backdrop-filter: blur(10px);
@@ -2086,25 +2756,9 @@
         .aw-similar-match i {
             width: 4px;
             height: 4px;
-            display: block;
             border-radius: 50%;
-            background: var(--aw-accent, #8b5cf6);
-            box-shadow: 0 0 8px rgba( var(--aw-accent-rgb, 139,92,246), .8 );
+            background: var(--aw-accent,#8b5cf6);
         }
-
-
-
-    /* =========================================================
-           POSTER SHADOW
-           ========================================================= */
-
-    .aw-similar-poster-shadow {
-        position: absolute;
-        z-index: 2;
-        inset: 40% 0 0;
-        pointer-events: none;
-        background: linear-gradient( 180deg, transparent, rgba(7,9,14,.1) 45%, rgba(7,9,14,.72) 100% );
-    }
 
 
 
@@ -2112,9 +2766,17 @@
            HOVER
            ========================================================= */
 
+    .aw-similar-poster-shadow {
+        position: absolute;
+        z-index: 2;
+        inset: 40% 0 0;
+        background: linear-gradient( 180deg, transparent, rgba(7,9,14,.1) 45%, rgba(7,9,14,.72) 100% );
+    }
+
+
     .aw-similar-hover {
         position: absolute;
-        z-index: 6;
+        z-index: 15;
         inset: 0;
         display: flex;
         flex-direction: column;
@@ -2138,24 +2800,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding-left: 2px;
         border-radius: 50%;
         background: #fff;
         color: #080a0f;
         font-size: 10px;
-        transform: scale(.78);
-        transition: transform .3s cubic-bezier(.22,1,.36,1);
-    }
-
-
-    .aw-similar-card:hover
-    .aw-similar-hover-play {
-        transform: scale(1);
     }
 
 
     .aw-similar-hover > span {
-        color: rgba(255,255,255,.88);
+        color: #fff;
         font-size: 11px;
         font-weight: 750;
     }
@@ -2180,13 +2833,6 @@
         font-weight: 750;
         white-space: nowrap;
         text-overflow: ellipsis;
-        transition: color .2s ease;
-    }
-
-
-    .aw-similar-card:hover
-    .aw-similar-title {
-        color: #fff !important;
     }
 
 
@@ -2213,7 +2859,6 @@
         .aw-similar-meta i {
             width: 3px;
             height: 3px;
-            display: block;
             border-radius: 50%;
             background: #404751;
         }
@@ -2221,7 +2866,7 @@
 
 
     /* =========================================================
-           SIMILAR GENRES
+           GENRES
            ========================================================= */
 
     .aw-similar-genres {
@@ -2243,10 +2888,33 @@
 
 
             .aw-similar-genres span.is-match {
-                border-color: rgba( var(--aw-accent-rgb, 139,92,246), .18 );
-                background: rgba( var(--aw-accent-rgb, 139,92,246), .065 );
-                color: var(--aw-accent-soft, #a78bfa);
+                border-color: rgba( var(--aw-accent-rgb,139,92,246), .18 );
+                background: rgba( var(--aw-accent-rgb,139,92,246), .065 );
+                color: var(--aw-accent-soft,#a78bfa);
             }
+
+
+
+    /* =========================================================
+           SIMILAR POPULARITY
+           ========================================================= */
+
+    .aw-similar-popularity {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 7px;
+        border-top: 1px solid rgba(255,255,255,.035);
+    }
+
+
+        .aw-similar-popularity span {
+            color: #5f6874;
+            font-size: 9px;
+            font-weight: 700;
+        }
 
 
 
@@ -2262,7 +2930,12 @@
 
 
         .aw-details-about-grid {
-            grid-template-columns: minmax(0,1fr) 360px;
+            grid-template-columns: minmax(0,1fr) 380px;
+        }
+
+
+        .aw-details-popularity-grid {
+            grid-template-columns: repeat( 2, minmax(0,1fr) );
         }
     }
 
@@ -2318,7 +2991,7 @@
 
         .aw-details-hero-inner {
             width: calc(100% - 28px);
-            padding: 120px 0 40px;
+            padding: 110px 0 40px;
             grid-template-columns: 1fr;
             gap: 24px;
         }
@@ -2351,6 +3024,11 @@
         }
 
 
+        .aw-details-popularity-grid {
+            grid-template-columns: 1fr;
+        }
+
+
         .aw-details-episode {
             grid-template-columns: 30px 80px minmax(0,1fr);
             gap: 8px;
@@ -2362,11 +3040,7 @@
         }
 
 
-        .aw-details-episode-go {
-            display: none;
-        }
-
-
+        .aw-details-episode-go,
         .aw-details-episode-text p {
             display: none;
         }

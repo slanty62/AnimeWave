@@ -47,8 +47,10 @@ namespace AnimeWave.Data
         public DbSet<ViewingHistory> ViewingHistories { get; set; }
             = null!;
 
+
         public DbSet<AnimeReview> AnimeReviews { get; set; }
-    = null!;
+            = null!;
+
 
 
         // =========================================================
@@ -58,7 +60,7 @@ namespace AnimeWave.Data
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
-            // Обязательно вызываем Identity configuration
+            // Очень важно для ASP.NET Core Identity
             base.OnModelCreating(builder);
 
 
@@ -117,6 +119,7 @@ namespace AnimeWave.Data
                 .HasMaxLength(500);
 
 
+
                 // Например: 9.1
                 entity.Property(
                     a => a.Rating
@@ -125,6 +128,19 @@ namespace AnimeWave.Data
                     3,
                     1
                 );
+
+
+
+                // =================================================
+                // POPULARITY
+                //
+                // Количество открытий страницы Details.
+                // =================================================
+
+                entity.Property(
+                    a => a.OpenCount
+                )
+                .HasDefaultValue(0);
             });
 
 
@@ -147,7 +163,8 @@ namespace AnimeWave.Data
                 .HasMaxLength(100);
 
 
-                // Запрещаем одинаковые названия жанров
+                // Нельзя создать два жанра
+                // с одинаковым названием
                 entity.HasIndex(
                     g => g.Name
                 )
@@ -236,6 +253,7 @@ namespace AnimeWave.Data
                 .HasMaxLength(500);
 
 
+
                 // Episode -> Anime
                 entity.HasOne(
                     e => e.Anime
@@ -251,7 +269,8 @@ namespace AnimeWave.Data
                 );
 
 
-                // У одного Anime не может быть
+
+                // У одного Anime не должно быть
                 // двух серий с одинаковым номером
                 entity.HasIndex(
                     e => new
@@ -280,7 +299,7 @@ namespace AnimeWave.Data
                 //
                 // ВАЖНО:
                 // используем именно f.User,
-                // чтобы EF не создавал UserId1
+                // чтобы EF Core не создавал UserId1
                 entity.HasOne(
                     f => f.User
                 )
@@ -306,8 +325,8 @@ namespace AnimeWave.Data
                 );
 
 
-                // Один пользователь не может
-                // добавить одно Anime в избранное дважды
+                // Пользователь не может добавить
+                // одно Anime в избранное дважды
                 entity.HasIndex(
                     f => new
                     {
@@ -374,7 +393,7 @@ namespace AnimeWave.Data
 
 
                 // -------------------------------------------------
-                // CREATED AT
+                // ACCOUNT CREATED DATE
                 // -------------------------------------------------
 
                 entity.Property(
@@ -414,6 +433,7 @@ namespace AnimeWave.Data
                 );
 
 
+
                 // ViewingHistory -> ApplicationUser
                 entity.HasOne(
                     v => v.User
@@ -429,6 +449,7 @@ namespace AnimeWave.Data
                 );
 
 
+
                 // ViewingHistory -> Anime
                 entity.HasOne(
                     v => v.Anime
@@ -442,10 +463,12 @@ namespace AnimeWave.Data
                 );
 
 
+
                 // Для одного пользователя каждое Anime
                 // хранится в истории только один раз.
                 //
-                // При повторном просмотре обновляем ViewedAt.
+                // При повторном просмотре
+                // обновляется ViewedAt.
                 entity.HasIndex(
                     v => new
                     {
@@ -456,8 +479,12 @@ namespace AnimeWave.Data
                 .IsUnique();
             });
 
+
+
             // =====================================================
             // ANIME REVIEWS
+            //
+            // Отзывы и пользовательские оценки
             // =====================================================
 
             builder.Entity<AnimeReview>(entity =>
@@ -467,11 +494,32 @@ namespace AnimeWave.Data
                 );
 
 
+
+                // -------------------------------------------------
+                // USER ID
+                // -------------------------------------------------
+
                 entity.Property(
                     r => r.UserId
                 )
                 .IsRequired();
 
+
+
+                // -------------------------------------------------
+                // RATING
+                // -------------------------------------------------
+
+                entity.Property(
+                    r => r.Rating
+                )
+                .IsRequired();
+
+
+
+                // -------------------------------------------------
+                // REVIEW TEXT
+                // -------------------------------------------------
 
                 entity.Property(
                     r => r.Text
@@ -479,6 +527,11 @@ namespace AnimeWave.Data
                 .IsRequired()
                 .HasMaxLength(2000);
 
+
+
+                // -------------------------------------------------
+                // CREATED AT
+                // -------------------------------------------------
 
                 entity.Property(
                     r => r.CreatedAt
@@ -488,10 +541,15 @@ namespace AnimeWave.Data
                 );
 
 
-                // Review -> User
+
+                // -------------------------------------------------
+                // REVIEW -> USER
                 //
-                // Используем именно r.User,
-                // чтобы EF не создавал UserId1.
+                // ВАЖНО:
+                // используем именно r.User,
+                // чтобы не появился UserId1
+                // -------------------------------------------------
+
                 entity.HasOne(
                     r => r.User
                 )
@@ -504,7 +562,11 @@ namespace AnimeWave.Data
                 );
 
 
-                // Review -> Anime
+
+                // -------------------------------------------------
+                // REVIEW -> ANIME
+                // -------------------------------------------------
+
                 entity.HasOne(
                     r => r.Anime
                 )
@@ -517,8 +579,14 @@ namespace AnimeWave.Data
                 );
 
 
+
+                // -------------------------------------------------
+                // UNIQUE REVIEW
+                //
                 // Один пользователь может оставить
-                // только один отзыв на одно аниме.
+                // только один отзыв на одно Anime.
+                // -------------------------------------------------
+
                 entity.HasIndex(
                     r => new
                     {
@@ -528,9 +596,6 @@ namespace AnimeWave.Data
                 )
                 .IsUnique();
             });
-
-
         }
-
     }
 }

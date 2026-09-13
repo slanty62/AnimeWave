@@ -2,11 +2,17 @@ using AnimeWave.Data;
 using AnimeWave.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AnimeWave.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<
+    IAnimePopularityService,
+    AnimePopularityService
+>();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(
