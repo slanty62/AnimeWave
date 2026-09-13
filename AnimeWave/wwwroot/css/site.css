@@ -12943,3 +12943,35 @@ small,
 .aw-anime-card {
     transform: none;
 }
+
+.aw-profile-joined {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.aw-profile-joined-label {
+    color: rgba(255, 255, 255, 0.62);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.aw-profile-joined-dot {
+    color: #8b5cf6;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.aw-profile-joined-date {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(139, 92, 246, 0.14);
+    border: 1px solid rgba(139, 92, 246, 0.28);
+    box-shadow: 0 0 18px rgba(139, 92, 246, 0.12);
+}

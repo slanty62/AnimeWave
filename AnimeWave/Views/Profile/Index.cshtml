@@ -1,30 +1,54 @@
 ﻿@model AnimeWave.ViewModels.ProfileViewModel
 
+@using System.Globalization
+
 @{
     ViewData["Title"] = "Профиль";
+
+    var russianCulture =
+        CultureInfo.GetCultureInfo("ru-RU");
+
+    var joinedDate =
+        Model.CreatedAt
+            .ToString(
+                "dd MMMM yyyy",
+                russianCulture
+            );
 }
 
 
-<section class="aw-profile-page">
+<div class="aw-profile-page">
 
-    <div class="aw-profile-container">
+
+    <!-- =========================================================
+         PROFILE HERO
+         ========================================================= -->
+
+    <section class="aw-profile-hero">
+
+
+        <!-- BACKGROUND DECORATION -->
+
+        <div class="aw-profile-glow aw-profile-glow-one">
+        </div>
+
+        <div class="aw-profile-glow aw-profile-glow-two">
+        </div>
+
 
 
         <!-- =====================================================
-             PROFILE HERO
+             PROFILE CONTENT
              ===================================================== -->
 
-        <div class="aw-profile-hero">
+        <div class="aw-profile-main">
 
 
-            <div class="aw-profile-glow">
-            </div>
+            <!-- =================================================
+                 AVATAR
+                 ================================================= -->
 
-
-            <div class="aw-profile-user">
-
-
-                <!-- AVATAR -->
+            <div class="aw-profile-avatar-wrap">
 
                 <div class="aw-profile-avatar aw-avatar-@Model.AvatarStyle">
 
@@ -32,61 +56,127 @@
                         @Model.AvatarSymbol
                     </span>
 
-                    <i></i>
+                </div>
+
+
+                <div class="aw-profile-online"
+                     title="Профиль активен">
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 INFORMATION
+                 ================================================= -->
+
+            <div class="aw-profile-info">
+
+
+                <div class="aw-profile-kicker">
+
+                    <span>
+                    </span>
+
+                    ANIMEWAVE PROFILE
 
                 </div>
 
 
 
-                <!-- USER -->
+                <h1>
+                    @Model.UserName
+                </h1>
 
-                <div class="aw-profile-user-info">
 
-                    <span class="aw-profile-eyebrow">
-                        ANIMEWAVE PROFILE
+
+                <p class="aw-profile-email">
+
+                    @Model.Email
+
+                </p>
+
+
+
+                <!-- =================================================
+                     EDIT
+                     ================================================= -->
+
+                <a asp-controller="Profile"
+                   asp-action="Edit"
+                   class="aw-profile-edit">
+
+                    <span>
+                        ✦
                     </span>
 
+                    Редактировать профиль
 
-                    <h1>
-                        @Model.UserName
-                    </h1>
-
-
-                    <p>
-                        @Model.Email
-                    </p>
-
-                    <a asp-controller="Profile"
-                       asp-action="Edit"
-                       class="aw-profile-edit-link">
-
-                        ✦ Редактировать профиль
-
-                    </a>
+                </a>
 
 
-                    <div class="aw-profile-member">
+
+                <!-- =================================================
+                     JOINED DATE
+                     ================================================= -->
+
+                <div class="aw-profile-member-since">
+
+
+                    <div class="aw-profile-member-icon">
+
+                        <svg width="17"
+                             height="17"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+
+                            <rect x="3.5"
+                                  y="5.5"
+                                  width="17"
+                                  height="15"
+                                  rx="3"
+                                  stroke="currentColor"
+                                  stroke-width="1.6" />
+
+
+                            <path d="M8 3.5V7"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round" />
+
+
+                            <path d="M16 3.5V7"
+                                  stroke="currentColor"
+                                  stroke-width="1.6"
+                                  stroke-linecap="round" />
+
+
+                            <path d="M3.5 9.5H20.5"
+                                  stroke="currentColor"
+                                  stroke-width="1.6" />
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="aw-profile-member-text">
 
                         <span>
-                            Участник AnimeWave
+                            С НАМИ В ANIMEWAVE
                         </span>
 
+
                         <strong>
-                            с @Model.CreatedAt.ToLocalTime()
-                            .ToString("dd.MM.yyyy")
+                            @joinedDate
                         </strong>
 
                     </div>
 
                 </div>
 
-            </div>
-
-
-            <!-- DECOR -->
-
-            <div class="aw-profile-decoration">
-                AW
             </div>
 
         </div>
@@ -100,63 +190,115 @@
         <div class="aw-profile-stats">
 
 
+            <!-- FAVORITES -->
+
             <a asp-controller="Favorites"
                asp-action="Index"
                class="aw-profile-stat">
 
-                <span class="aw-profile-stat-label">
-                    ИЗБРАННОЕ
-                </span>
+                <div class="aw-profile-stat-icon">
+
+                    ♥
+
+                </div>
 
 
-                <strong>
-                    @Model.FavoritesCount
-                </strong>
+                <div>
+
+                    <span>
+                        ИЗБРАННОЕ
+                    </span>
 
 
-                <small>
-                    сохранённых аниме
-                </small>
+                    <strong>
+                        @Model.FavoritesCount
+                    </strong>
+
+                </div>
 
             </a>
 
 
 
+            <!-- VIEWED -->
+
             <div class="aw-profile-stat">
 
-                <span class="aw-profile-stat-label">
-                    ПРОСМОТРЕНО
-                </span>
+                <div class="aw-profile-stat-icon">
+
+                    ▶
+
+                </div>
 
 
-                <strong>
-                    @Model.ViewedCount
-                </strong>
+                <div>
+
+                    <span>
+                        ПРОСМОТРЕНО
+                    </span>
 
 
-                <small>
-                    открытых тайтлов
-                </small>
+                    <strong>
+                        @Model.ViewedCount
+                    </strong>
+
+                </div>
 
             </div>
 
 
 
+            <!-- MEMBER -->
+
             <div class="aw-profile-stat">
 
-                <span class="aw-profile-stat-label">
-                    СТАТУС
+                <div class="aw-profile-stat-icon">
+
+                    ◇
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        СТАТУС
+                    </span>
+
+
+                    <strong class="aw-profile-status-text">
+                        Участник
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         PROFILE ACTIONS
+         ========================================================= -->
+
+    <section class="aw-profile-actions-section">
+
+
+        <div class="aw-profile-section-header">
+
+            <div>
+
+                <span>
+                    ACCOUNT
                 </span>
 
 
-                <strong class="aw-profile-status">
-                    ACTIVE
-                </strong>
-
-
-                <small>
-                    аккаунт AnimeWave
-                </small>
+                <h2>
+                    Твой AnimeWave
+                </h2>
 
             </div>
 
@@ -164,174 +306,707 @@
 
 
 
-        <!-- =====================================================
-             RECENT
-             ===================================================== -->
-
-        <section class="aw-profile-recent">
+        <div class="aw-profile-action-grid">
 
 
-            <div class="aw-profile-section-head">
+            <!-- FAVORITES -->
+
+            <a asp-controller="Favorites"
+               asp-action="Index"
+               class="aw-profile-action-card">
+
+                <div class="aw-profile-action-icon">
+
+                    ♥
+
+                </div>
+
 
                 <div>
 
-                    <span>
-                        WATCH HISTORY
-                    </span>
-
-
-                    <h2>
-                        Недавно смотрели
-                    </h2>
-
-                </div>
-
-
-                <a asp-controller="Anime"
-                   asp-action="Index">
-
-                    Перейти в каталог →
-
-                </a>
-
-            </div>
-
-
-
-            @if (Model.RecentAnime.Any())
-            {
-                <div class="aw-profile-recent-grid">
-
-                    @foreach (var anime in Model.RecentAnime)
-                    {
-                        <a asp-controller="Anime"
-                           asp-action="Details"
-                           asp-route-id="@anime.Id"
-                           class="aw-profile-anime-card">
-
-
-                            <div class="aw-profile-poster">
-
-                                @if (!string.IsNullOrWhiteSpace(
-                                    anime.PosterUrl))
-                                {
-                                    <img src="@anime.PosterUrl"
-                                         alt="@anime.Title"
-                                         loading="lazy" />
-                                }
-                                else
-                                {
-                                    <div class="aw-profile-no-poster">
-
-                                        ANIMEWAVE
-
-                                    </div>
-                                }
-
-
-                                <span class="aw-profile-rating">
-
-                                    ★ @anime.Rating.ToString("0.0")
-
-                                </span>
-
-
-                                <div class="aw-profile-card-hover">
-
-                                    <div>
-                                        ▶
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="aw-profile-card-info">
-
-                                <h3>
-                                    @anime.Title
-                                </h3>
-
-
-                                <div class="aw-profile-card-meta">
-
-                                    <span>
-                                        @anime.ReleaseYear
-                                    </span>
-
-
-                                    @if (!string.IsNullOrWhiteSpace(
-                                        anime.AgeRating))
-                                    {
-                                        <i></i>
-
-                                        <span>
-                                            @anime.AgeRating
-                                        </span>
-                                    }
-
-                                </div>
-
-
-                                <small>
-
-                                    Просмотрено
-                                    @anime.ViewedAt
-                                    .ToLocalTime()
-                                    .ToString("dd.MM • HH:mm")
-
-                                </small>
-
-                            </div>
-
-                        </a>
-                    }
-
-                </div>
-            }
-            else
-            {
-                <!-- =============================================
-                     EMPTY HISTORY
-                     ============================================= -->
-
-                <div class="aw-profile-empty">
-
-                    <div class="aw-profile-empty-icon">
-                        ▶
-                    </div>
-
-
-                    <span>
-                        WATCH HISTORY
-                    </span>
-
-
-                    <h3>
-                        История пока пустая
-                    </h3>
+                    <strong>
+                        Избранное
+                    </strong>
 
 
                     <p>
-                        Открой любое аниме из каталога,
-                        и оно появится здесь.
+                        Все тайтлы, которые ты сохранил.
                     </p>
 
+                </div>
 
-                    <a asp-controller="Anime"
-                       asp-action="Index">
 
-                        Открыть каталог
+                <span class="aw-profile-action-arrow">
 
-                    </a>
+                    →
+
+                </span>
+
+            </a>
+
+
+
+            <!-- EDIT -->
+
+            <a asp-controller="Profile"
+               asp-action="Edit"
+               class="aw-profile-action-card">
+
+                <div class="aw-profile-action-icon">
+
+                    ✦
 
                 </div>
-            }
 
-        </section>
 
-    </div>
+                <div>
 
-</section>
+                    <strong>
+                        Настройки профиля
+                    </strong>
+
+
+                    <p>
+                        Имя, email, аватар, пароль и тема.
+                    </p>
+
+                </div>
+
+
+                <span class="aw-profile-action-arrow">
+
+                    →
+
+                </span>
+
+            </a>
+
+
+
+            <!-- CATALOG -->
+
+            <a asp-controller="Anime"
+               asp-action="Index"
+               class="aw-profile-action-card">
+
+                <div class="aw-profile-action-icon">
+
+                    ◈
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Каталог
+                    </strong>
+
+
+                    <p>
+                        Найди новую историю для просмотра.
+                    </p>
+
+                </div>
+
+
+                <span class="aw-profile-action-arrow">
+
+                    →
+
+                </span>
+
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+
+<style>
+
+    /* =========================================================
+           PROFILE PAGE
+           ========================================================= */
+
+    .aw-profile-page,
+    .aw-profile-page * {
+        box-sizing: border-box;
+    }
+
+
+    .aw-profile-page {
+        width: min( 1380px, calc(100% - 64px) );
+        min-height: calc(100vh - 72px);
+        margin: 0 auto;
+        padding: 110px 0 80px;
+        color: #fff;
+    }
+
+
+
+    /* =========================================================
+           HERO
+           ========================================================= */
+
+    .aw-profile-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 48px 52px 34px;
+        border: 1px solid rgba(255,255,255,.055);
+        border-radius: 22px;
+        background: linear-gradient( 120deg, rgba( var(--aw-accent-rgb,139,92,246), .105 ) 0%, rgba(16,19,28,.97) 39%, rgba(11,14,20,.98) 100% );
+        box-shadow: 0 30px 80px rgba(0,0,0,.22);
+    }
+
+
+
+    /* =========================================================
+           GLOW
+           ========================================================= */
+
+    .aw-profile-glow {
+        position: absolute;
+        pointer-events: none;
+        border-radius: 50%;
+        filter: blur(90px);
+    }
+
+
+    .aw-profile-glow-one {
+        width: 300px;
+        height: 300px;
+        top: -120px;
+        left: -80px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .18 );
+    }
+
+
+    .aw-profile-glow-two {
+        width: 280px;
+        height: 280px;
+        right: -100px;
+        bottom: -180px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .07 );
+    }
+
+
+
+    /* =========================================================
+           MAIN
+           ========================================================= */
+
+    .aw-profile-main {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 34px;
+    }
+
+
+
+    /* =========================================================
+           AVATAR
+           ========================================================= */
+
+    .aw-profile-avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+
+    .aw-profile-avatar {
+        width: 126px;
+        height: 126px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 30px;
+        color: #fff;
+        font-size: 49px;
+        font-weight: 900;
+        box-shadow: 0 22px 45px rgba(0,0,0,.30), 0 0 45px rgba( var(--aw-accent-rgb,139,92,246), .08 );
+    }
+
+
+        .aw-profile-avatar span {
+            transform: translateY(-1px);
+        }
+
+
+
+        /* =========================================================
+           AVATAR THEMES
+           ========================================================= */
+
+        .aw-profile-avatar.aw-avatar-violet {
+            background: linear-gradient( 135deg, #64748b, #312e81 );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-sakura {
+            background: linear-gradient( 135deg, #fb7185, #be185d );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-kitsune {
+            background: linear-gradient( 135deg, #fb923c, #c2410c );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-blade {
+            background: linear-gradient( 135deg, #94a3b8, #334155 );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-neko {
+            background: linear-gradient( 135deg, #c084fc, #6b21a8 );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-star {
+            background: linear-gradient( 135deg, #facc15, #b45309 );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-cyber {
+            background: linear-gradient( 135deg, #22d3ee, #1d4ed8 );
+        }
+
+
+        .aw-profile-avatar.aw-avatar-wave {
+            background: linear-gradient( 135deg, #38bdf8, #0f766e );
+        }
+
+
+
+    /* =========================================================
+           ONLINE
+           ========================================================= */
+
+    .aw-profile-online {
+        position: absolute;
+        right: -3px;
+        bottom: -3px;
+        width: 21px;
+        height: 21px;
+        border: 5px solid #11141c;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 14px rgba(34,197,94,.38);
+    }
+
+
+
+    /* =========================================================
+           INFO
+           ========================================================= */
+
+    .aw-profile-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+
+    .aw-profile-kicker {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 10px;
+        color: var(--aw-accent-soft,#a78bfa);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 2px;
+    }
+
+
+        .aw-profile-kicker > span {
+            width: 16px;
+            height: 1px;
+            display: block;
+            background: var(--aw-accent,#8b5cf6);
+        }
+
+
+    .aw-profile-info h1 {
+        margin: 0 0 4px;
+        color: #f7f7f8;
+        font-size: clamp( 42px, 5vw, 64px );
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -2.5px;
+    }
+
+
+    .aw-profile-email {
+        margin: 0 0 17px;
+        color: #7f8997;
+        font-size: 14px;
+    }
+
+
+
+    /* =========================================================
+           EDIT
+           ========================================================= */
+
+    .aw-profile-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 20px;
+        color: var(--aw-accent-soft,#a78bfa) !important;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: color .2s ease, transform .2s ease;
+    }
+
+
+        .aw-profile-edit:hover {
+            transform: translateX(3px);
+            color: #fff !important;
+        }
+
+
+
+    /* =========================================================
+           MEMBER SINCE
+           ========================================================= */
+
+    .aw-profile-member-since {
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 14px 10px 10px;
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .14 );
+        border-radius: 11px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .045 );
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    }
+
+
+    .aw-profile-member-icon {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .15 );
+        border-radius: 8px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .08 );
+        color: var(--aw-accent-soft,#a78bfa);
+    }
+
+
+    .aw-profile-member-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+
+        .aw-profile-member-text > span {
+            color: #626c79;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1.35px;
+        }
+
+
+        .aw-profile-member-text > strong {
+            color: #dfe3e8;
+            font-size: 13px;
+            font-weight: 750;
+            text-transform: lowercase;
+        }
+
+
+    /*
+            CSS lowercase делает:
+
+            03 сентября 2026
+
+            а не:
+            03 Сентября 2026
+        */
+
+
+
+    /* =========================================================
+           STATS
+           ========================================================= */
+
+    .aw-profile-stats {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0,1fr) );
+        gap: 8px;
+        margin-top: 35px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255,255,255,.045);
+    }
+
+
+    .aw-profile-stat {
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 15px;
+        border: 1px solid rgba(255,255,255,.04);
+        border-radius: 12px;
+        background: rgba(255,255,255,.014);
+        color: inherit !important;
+        text-decoration: none;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+
+    a.aw-profile-stat:hover {
+        transform: translateY(-2px);
+        border-color: rgba( var(--aw-accent-rgb,139,92,246), .14 );
+        background: rgba( var(--aw-accent-rgb,139,92,246), .035 );
+    }
+
+
+    .aw-profile-stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .10 );
+        border-radius: 10px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .055 );
+        color: var(--aw-accent-soft,#a78bfa);
+        font-size: 13px;
+    }
+
+
+    .aw-profile-stat > div:last-child {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+
+    .aw-profile-stat span {
+        color: #59626e;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+
+    .aw-profile-stat strong {
+        color: #e8eaed;
+        font-size: 20px;
+        font-weight: 850;
+    }
+
+
+    .aw-profile-status-text {
+        font-size: 14px !important;
+        color: var(--aw-accent-soft,#a78bfa) !important;
+    }
+
+
+
+    /* =========================================================
+           ACTION SECTION
+           ========================================================= */
+
+    .aw-profile-actions-section {
+        padding-top: 45px;
+    }
+
+
+    .aw-profile-section-header {
+        margin-bottom: 17px;
+    }
+
+
+        .aw-profile-section-header span {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--aw-accent,#8b5cf6);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.8px;
+        }
+
+
+        .aw-profile-section-header h2 {
+            margin: 0;
+            color: #eef0f3;
+            font-size: 26px;
+            font-weight: 850;
+            letter-spacing: -.8px;
+        }
+
+
+
+    /* =========================================================
+           ACTION CARDS
+           ========================================================= */
+
+    .aw-profile-action-grid {
+        display: grid;
+        grid-template-columns: repeat( 3, minmax(0,1fr) );
+        gap: 9px;
+    }
+
+
+    .aw-profile-action-card {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: 44px minmax(0,1fr) auto;
+        align-items: center;
+        gap: 12px;
+        min-height: 93px;
+        padding: 16px;
+        border: 1px solid rgba(255,255,255,.045);
+        border-radius: 13px;
+        background: rgba(255,255,255,.013);
+        color: inherit !important;
+        text-decoration: none;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+
+        .aw-profile-action-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba( var(--aw-accent-rgb,139,92,246), .15 );
+            background: rgba( var(--aw-accent-rgb,139,92,246), .03 );
+        }
+
+
+    .aw-profile-action-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba( var(--aw-accent-rgb,139,92,246), .12 );
+        border-radius: 10px;
+        background: rgba( var(--aw-accent-rgb,139,92,246), .055 );
+        color: var(--aw-accent-soft,#a78bfa);
+        font-size: 14px;
+    }
+
+
+    .aw-profile-action-card > div:nth-child(2) {
+        min-width: 0;
+    }
+
+
+    .aw-profile-action-card strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #e4e7eb;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+
+    .aw-profile-action-card p {
+        margin: 0;
+        color: #626b77;
+        font-size: 10px;
+        line-height: 1.45;
+    }
+
+
+    .aw-profile-action-arrow {
+        color: #505965;
+        font-size: 15px;
+        transition: color .2s ease, transform .2s ease;
+    }
+
+
+    .aw-profile-action-card:hover
+    .aw-profile-action-arrow {
+        transform: translateX(4px);
+        color: var(--aw-accent-soft,#a78bfa);
+    }
+
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 850px) {
+
+        .aw-profile-page {
+            width: calc(100% - 32px);
+        }
+
+
+        .aw-profile-hero {
+            padding: 38px 34px 28px;
+        }
+
+
+        .aw-profile-action-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .aw-profile-page {
+            width: calc(100% - 28px);
+            padding-top: 90px;
+        }
+
+
+        .aw-profile-hero {
+            padding: 30px 22px 23px;
+        }
+
+
+        .aw-profile-main {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 23px;
+        }
+
+
+        .aw-profile-avatar {
+            width: 105px;
+            height: 105px;
+            border-radius: 25px;
+            font-size: 40px;
+        }
+
+
+        .aw-profile-info h1 {
+            font-size: 42px;
+        }
+
+
+        .aw-profile-stats {
+            grid-template-columns: 1fr;
+        }
+
+
+        .aw-profile-member-since {
+            max-width: 100%;
+        }
+    }
+
+</style>
