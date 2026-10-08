@@ -1,196 +1,830 @@
 ﻿@model AnimeWave.ViewModels.AnimeFormViewModel
 
-<form method="post"
-      class="admin-form">
 
-    <input asp-for="Id"
-           type="hidden" />
+<div class="aw-create-layout">
 
 
-    <div asp-validation-summary="ModelOnly"
-         class="validation"></div>
+    <!-- LEFT -->
+
+    <div class="aw-create-fields">
 
 
-    <div class="form-grid">
+        <!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
 
-        <div class="form-group">
+        <div class="aw-create-card">
 
-            <label asp-for="Title">
-                Название
-            </label>
 
-            <input asp-for="Title" />
+            <div class="aw-create-card-heading">
+
+                <div class="aw-create-section-icon">
+                    ✦
+                </div>
+
+
+                <div>
+                    <h2>
+                        Основная информация
+                    </h2>
+
+                    <p>
+                        Название и описание аниме.
+                    </p>
+                </div>
+
+            </div>
+
+
+
+            <div class="aw-create-grid">
+
+
+                <div class="aw-create-field">
+
+                    <label asp-for="Title">
+                        Название
+                        <span>*</span>
+                    </label>
+
+
+                    <input asp-for="Title"
+                           id="Title"
+                           placeholder="Название аниме" />
+
+
+                    <span asp-validation-for="Title"
+                          class="aw-create-error">
+                    </span>
+
+                </div>
+
+
+
+
+
+                <div class="aw-create-field">
+
+                    <label asp-for="OriginalTitle">
+                        Оригинальное название
+                    </label>
+
+
+                    <input asp-for="OriginalTitle"
+                           id="OriginalTitle"
+                           placeholder="Original title" />
+
+                </div>
+
+
+
+
+
+                <div class="aw-create-field aw-create-full">
+
+                    <label asp-for="Description">
+                        Описание
+                    </label>
+
+
+                    <textarea asp-for="Description"
+                              rows="7"
+                              placeholder="Описание аниме...">
+                    </textarea>
+
+                </div>
+
+
+            </div>
+
 
         </div>
 
 
-        <div class="form-group">
 
-            <label asp-for="OriginalTitle">
-                Оригинальное название
-            </label>
 
-            <input asp-for="OriginalTitle" />
+
+
+        <!-- ХАРАКТЕРИСТИКИ -->
+
+
+        <div class="aw-create-card">
+
+
+            <div class="aw-create-card-heading">
+
+
+                <div class="aw-create-section-icon">
+                    ★
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Характеристики
+                    </h2>
+
+                    <p>
+                        Год, рейтинг, возраст и статус.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div class="aw-create-grid aw-create-grid-four">
+
+
+
+
+
+                <div class="aw-create-field">
+
+                    <label asp-for="ReleaseYear">
+                        Год
+                    </label>
+
+
+                    <select asp-for="ReleaseYear"
+                            id="ReleaseYear">
+
+
+                        @for (
+                            int year = DateTime.Now.Year;
+                            year >= 1960;
+                            year--
+                        )
+                        {
+                            <option value="@year">
+                                @year
+                            </option>
+                        }
+
+
+                    </select>
+
+                </div>
+
+
+
+
+
+
+
+                <div class="aw-create-field">
+
+
+                    <label asp-for="Rating">
+                        Рейтинг
+                    </label>
+
+
+                    <div class="rating-box">
+
+
+                        <input asp-for="Rating"
+                               id="Rating"
+                               type="range"
+                               min="0"
+                               max="10"
+                               step="0.1" />
+
+
+                        <div class="rating-value">
+
+                            ⭐
+
+                            <span id="ratingValue">
+                                @Model.Rating
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+                <div class="aw-create-field">
+
+
+                    <label>
+                        Возраст
+                    </label>
+
+
+                    <div class="age-buttons">
+
+
+                        @foreach (var age in Model.AgeRatings)
+                        {
+
+
+                            <label class="age-chip">
+
+
+                                <input type="radio"
+                                       asp-for="AgeRating"
+                                       value="@age" />
+
+
+                                <span>
+                                    @age
+                                </span>
+
+
+                            </label>
+
+
+                        }
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+                <div class="aw-create-field">
+
+
+                    <label asp-for="EpisodesCount">
+                        Количество серий
+                    </label>
+
+
+
+                    <div class="episode-counter">
+
+
+                        <button type="button"
+                                id="minusEpisode">
+                            −
+                        </button>
+
+
+                        <input asp-for="EpisodesCount"
+                               id="EpisodesCount"
+                               type="number"
+                               min="0" />
+
+
+                        <button type="button"
+                                id="plusEpisode">
+                            +
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+                <div class="aw-create-field aw-create-full">
+
+
+                    <label asp-for="Status">
+                        Статус
+                    </label>
+
+
+                    <select asp-for="Status"
+                            id="Status">
+
+
+                        @foreach (var status in Model.Statuses)
+                        {
+
+                            <option value="@status">
+                                @status
+                            </option>
+
+                        }
+
+
+                    </select>
+
+
+                </div>
+
+
+
+            </div>
+
 
         </div>
 
 
-        <div class="form-group form-full">
 
-            <label asp-for="Description">
-                Описание
-            </label>
 
-            <textarea asp-for="Description"
-                      rows="6"></textarea>
+
+
+
+        <!-- ИЗОБРАЖЕНИЯ -->
+
+
+        <div class="aw-create-card">
+
+
+            <div class="aw-create-card-heading">
+
+                <div class="aw-create-section-icon">
+                    🖼
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Изображения
+                    </h2>
+
+                    <p>
+                        Постер и баннер.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="aw-create-grid">
+
+
+
+                <div class="aw-create-field aw-create-full">
+
+
+                    <label asp-for="PosterUrl">
+                        Постер
+                    </label>
+
+
+                    <input asp-for="PosterUrl"
+                           id="PosterUrl"
+                           placeholder="/images/posters/example.jpg" />
+
+
+                </div>
+
+
+
+
+
+                <div class="aw-create-field aw-create-full">
+
+
+                    <label asp-for="BannerUrl">
+                        Баннер
+                    </label>
+
+
+                    <input asp-for="BannerUrl"
+                           id="BannerUrl"
+                           placeholder="/images/banners/example-banner.jpg" />
+
+
+                </div>
+
+
+
+            </div>
+
 
         </div>
 
 
-        <div class="form-group">
-
-            <label asp-for="ReleaseYear">
-                Год
-            </label>
-
-            <input asp-for="ReleaseYear" />
-
-        </div>
 
 
-        <div class="form-group">
-
-            <label asp-for="Rating">
-                Рейтинг
-            </label>
-
-            <input asp-for="Rating"
-                   step="0.1" />
-
-        </div>
 
 
-        <div class="form-group">
-
-            <label asp-for="AgeRating">
-                Возраст
-            </label>
-
-            <input asp-for="AgeRating"
-                   placeholder="16+" />
-
-        </div>
 
 
-        <div class="form-group">
-
-            <label asp-for="EpisodesCount">
-                Количество серий
-            </label>
-
-            <input asp-for="EpisodesCount" />
-
-        </div>
+        <!-- ЖАНРЫ -->
 
 
-        <div class="form-group">
-
-            <label asp-for="Status">
-                Статус
-            </label>
-
-            <select asp-for="Status">
-
-                <option>
-                    Выходит
-                </option>
-
-                <option>
-                    Завершён
-                </option>
-
-                <option>
-                    Анонсирован
-                </option>
-
-            </select>
-
-        </div>
+        <div class="aw-create-card">
 
 
-        <div class="form-group form-full">
+            <div class="aw-create-card-heading">
 
-            <label asp-for="PosterUrl">
-                Путь к постеру
-            </label>
-
-            <input asp-for="PosterUrl"
-                   placeholder="/images/posters/example.jpg" />
-
-        </div>
+                <div class="aw-create-section-icon">
+                    #
+                </div>
 
 
-        <div class="form-group form-full">
+                <div>
 
-            <label asp-for="BannerUrl">
-                Путь к баннеру
-            </label>
-
-            <input asp-for="BannerUrl"
-                   placeholder="/images/banners/example.jpg" />
-
-        </div>
+                    <h2>
+                        Жанры
+                    </h2>
 
 
-        <div class="form-group form-full">
+                    <p>
+                        Выберите один или несколько.
+                    </p>
 
-            <label>
-                Жанры
-            </label>
 
-            <div class="genre-checkboxes">
+                </div>
+
+
+            </div>
+
+
+
+
+
+          
+            <div class="aw-create-genres">
 
                 @foreach (var genre in Model.Genres)
                 {
-                    bool selected =
-                        Model.SelectedGenreIds.Contains(
-                            int.Parse(genre.Value));
+                    bool selected = Model.SelectedGenreIds.Contains(
+                        int.Parse(genre.Value)
+                    );
 
-                    <label class="genre-checkbox">
+                    <label class="genre-chip">
+                        @if (selected)
+                        {
+                            <input type="checkbox"
+                                   name="SelectedGenreIds"
+                                   value="@genre.Value"
+                                   checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox"
+                                   name="SelectedGenreIds"
+                                   value="@genre.Value" />
+                        }
 
-                        <input type="checkbox"
-                               name="SelectedGenreIds"
-                               value="@genre.Value"
-                               checked="@selected" />
-
-                        @genre.Text
-
+                        <span>@genre.Text</span>
                     </label>
                 }
 
             </div>
 
+
+
         </div>
 
-    </div>
 
 
-    <div class="admin-form-buttons">
-
-        <button type="submit"
-                class="auth-button">
-
-            Сохранить
-
-        </button>
-
-        <a asp-action="Index"
-           class="list-button">
-
-            Отмена
-
-        </a>
 
     </div>
 
-</form>
+
+
+
+
+
+
+    <!-- RIGHT PREVIEW -->
+
+
+    <aside class="aw-create-preview">
+
+
+        <div class="aw-create-preview-sticky">
+
+
+            <div class="aw-create-preview-label">
+
+                LIVE PREVIEW
+
+            </div>
+
+
+
+            <div class="aw-create-preview-card">
+
+
+                <div class="aw-create-preview-poster">
+
+
+                    <img id="posterPreview"
+                         src="@Model.PosterUrl"
+                         class="@(string.IsNullOrWhiteSpace(Model.PosterUrl)
+                         ? "is-hidden" : "")" />
+
+
+                    <div id="posterPlaceholder"
+                         class="aw-create-preview-placeholder">
+
+                        POSTER
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div class="aw-create-preview-info">
+
+
+                    <h3 id="titlePreview">
+
+                        @(string.IsNullOrWhiteSpace(Model.Title)
+                        ? "Название аниме"
+                        : Model.Title)
+
+                    </h3>
+
+
+
+                    <span id="originalTitlePreview">
+
+                        @(Model.OriginalTitle ?? "Original title")
+
+                    </span>
+
+
+
+
+                    <div class="aw-create-preview-meta">
+
+
+                        <span id="yearPreview">
+                            @Model.ReleaseYear
+                        </span>
+
+
+                        <span id="agePreview">
+                            @Model.AgeRating
+                        </span>
+
+
+                        <span id="statusPreview">
+                            @Model.Status
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+            <div class="aw-create-banner-preview">
+
+
+                <img id="bannerPreview"
+                     src="@Model.BannerUrl"
+                     class="@(string.IsNullOrWhiteSpace(Model.BannerUrl)
+                     ? "is-hidden" : "")" />
+
+
+            </div>
+
+
+
+        </div>
+
+
+    </aside>
+
+
+
+
+</div>
+
+                            
+<script>
+    (function () {
+        function initAnimeForm() {
+            const form = document.querySelector(".aw-create-page form");
+            if (!form || form.dataset.animeInitialized === "true") return;
+
+            form.dataset.animeInitialized = "true";
+
+            const rating = form.querySelector("#Rating");
+            const ratingValue = form.querySelector("#ratingValue");
+            const episodes = form.querySelector("#EpisodesCount");
+            const plus = form.querySelector("#plusEpisode");
+            const minus = form.querySelector("#minusEpisode");
+
+            function updateRating() {
+                if (!rating) return;
+
+                const value = Number(
+                    String(rating.value).replace(",", ".")
+                );
+
+                const formatted = value.toFixed(1).replace(".", ",");
+
+                if (ratingValue) {
+                    ratingValue.textContent = formatted;
+                }
+
+                const ratingPreview = form.querySelector("#ratingPreview");
+                if (ratingPreview) {
+                    ratingPreview.textContent = formatted;
+                }
+
+                const rangePercent = value * 10;
+
+                rating.style.background =
+                    `linear-gradient(to right,
+                    #8b5cf6 ${rangePercent}%,
+                    #262132 ${rangePercent}%)`;
+            }
+
+            rating?.addEventListener("input", updateRating);
+            rating?.addEventListener("change", updateRating);
+
+            function updateEpisodes() {
+                if (!episodes) return;
+
+                const preview = form.querySelector("#previewEpisodes");
+                if (preview) {
+                    preview.textContent = episodes.value || "0";
+                }
+            }
+
+            function changeEpisodes(amount) {
+                if (!episodes) return;
+
+                const current = parseInt(episodes.value, 10) || 0;
+                const next = Math.max(0, Math.min(10000, current + amount));
+
+                episodes.value = next;
+                episodes.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                );
+            }
+
+            plus?.addEventListener("click", function () {
+                changeEpisodes(1);
+            });
+
+            minus?.addEventListener("click", function () {
+                changeEpisodes(-1);
+            });
+
+            episodes?.addEventListener("input", updateEpisodes);
+
+            const genreInputs = form.querySelectorAll(
+                ".genre-chip input[type='checkbox']"
+            );
+
+            function updateGenres() {
+                const preview = form.querySelector("#previewGenres");
+
+                if (preview) preview.innerHTML = "";
+
+                genreInputs.forEach(input => {
+                    const chip = input.closest(".genre-chip");
+
+                    if (!chip) return;
+
+                    chip.classList.toggle("active", input.checked);
+
+                    if (input.checked && preview) {
+                        const badge = document.createElement("span");
+                        badge.textContent =
+                            chip.querySelector("span")?.textContent.trim() || "";
+
+                        preview.appendChild(badge);
+                    }
+                });
+            }
+
+            genreInputs.forEach(input => {
+                input.addEventListener("change", updateGenres);
+            });
+
+            const ageInputs = form.querySelectorAll(
+                'input[name="AgeRating"]'
+            );
+
+            function updateAge() {
+                const selected = form.querySelector(
+                    'input[name="AgeRating"]:checked'
+                );
+
+                const preview = form.querySelector("#agePreview");
+
+                if (preview && selected) {
+                    preview.textContent = selected.value;
+                }
+            }
+
+            ageInputs.forEach(input => {
+                input.addEventListener("change", updateAge);
+            });
+
+            const previewBindings = [
+                ["Title", "titlePreview"],
+                ["OriginalTitle", "originalTitlePreview"],
+                ["ReleaseYear", "yearPreview"],
+                ["Status", "statusPreview"]
+            ];
+
+            previewBindings.forEach(([inputId, outputId]) => {
+                const input = form.querySelector(`#${inputId}`);
+                const output = form.querySelector(`#${outputId}`);
+
+                if (!input || !output) return;
+
+                function update() {
+                    output.textContent = input.value || "—";
+                }
+
+                input.addEventListener("input", update);
+                input.addEventListener("change", update);
+            });
+
+            function bindImage(inputId, imageId, placeholderId) {
+                const input = form.querySelector(`#${inputId}`);
+                const image = form.querySelector(`#${imageId}`);
+                const placeholder = placeholderId
+                    ? form.querySelector(`#${placeholderId}`)
+                    : null;
+
+                if (!input || !image) return;
+
+                function showPlaceholder() {
+                    image.classList.add("is-hidden");
+                    image.style.display = "none";
+
+                    if (placeholder) {
+                        placeholder.classList.remove("is-hidden");
+                        placeholder.style.display = "flex";
+                    }
+                }
+
+                function updateImage() {
+                    const path = input.value.trim();
+
+                    if (!path) {
+                        showPlaceholder();
+                        return;
+                    }
+
+                    image.src = path;
+                    image.classList.remove("is-hidden");
+                    image.style.display = "block";
+
+                    if (placeholder) {
+                        placeholder.classList.add("is-hidden");
+                        placeholder.style.display = "none";
+                    }
+                }
+
+                image.addEventListener("error", showPlaceholder);
+                input.addEventListener("input", updateImage);
+
+                updateImage();
+            }
+
+            bindImage("PosterUrl", "posterPreview", "posterPlaceholder");
+            bindImage("BannerUrl", "bannerPreview", "bannerPlaceholder");
+
+            updateRating();
+            updateEpisodes();
+            updateGenres();
+            updateAge();
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initAnimeForm);
+        } else {
+            initAnimeForm();
+        }
+    })();
+</script>
